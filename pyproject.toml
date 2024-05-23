@@ -7,14 +7,10 @@ name = "config-service"
 classifiers = [
     "Development Status :: 3 - Alpha",
     "License :: OSI Approved :: Apache Software License",
-    "Programming Language :: Python :: 3.7",
-    "Programming Language :: Python :: 3.8",
-    "Programming Language :: Python :: 3.9",
-    "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
 ]
 description = "an service to put and get your config values from"
-dependencies = [] # Add project dependencies here, e.g. ["click", "numpy"]
+dependencies = ["fastapi", "hiredis", "dls-dodal"]
 dynamic = ["version"]
 license.file = "LICENSE"
 readme = "README.md"
