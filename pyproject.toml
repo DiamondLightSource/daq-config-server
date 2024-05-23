@@ -10,13 +10,14 @@ classifiers = [
     "Programming Language :: Python :: 3.11",
 ]
 description = "an service to put and get your config values from"
-dependencies = ["fastapi", "hiredis", "dls-dodal"]
+dependencies = []
 dynamic = ["version"]
 license.file = "LICENSE"
 readme = "README.md"
 requires-python = ">=3.7"
 
 [project.optional-dependencies]
+server = ["fastapi", "hiredis", "dls-dodal"]
 dev = [
     "copier",
     "pipdeptree",
