@@ -1,0 +1,16 @@
+# Changes here will be overwritten by Copier
+_commit: 2.1.0
+_src_path: gh:DiamondLightSource/python-copier-template
+author_email: david.perl@diamond.ac.uk
+author_name: David Perl
+component_owner: group:default/sscc
+description: an service to put and get your config values from
+distribution_name: config-service
+docker: true
+docs_type: README
+git_platform: github.com
+github_org: dperl-dls
+package_name: config_service
+pypi: true
+repo_name: config-service
+type_checker: pyright
