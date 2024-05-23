@@ -6,7 +6,7 @@ from dodal.common.beamlines.beamline_parameters import (
 from fastapi import FastAPI
 
 app = FastAPI()
-r = redis.Redis(host="localhost", port=6379, decode_responses=True)
+valkey = redis.Redis(host="localhost", port=6379, decode_responses=True)
 beamline_params = GDABeamlineParameters.from_file(BEAMLINE_PARAMETER_PATHS["i03"])
 
 
@@ -17,9 +17,9 @@ def beamlineparameter(item_id: str):
 
 @app.post("/featureflag/{item_id}")
 def set_featureflag(item_id: str, value):
-    return {item_id: r.set(item_id, value)}
+    return {item_id: valkey.set(item_id, value)}
 
 
 @app.get("/featureflag/{item_id}")
 def get_featureflag(item_id: str):
-    return {item_id: r.get(item_id)}
+    return {item_id: valkey.get(item_id)}
