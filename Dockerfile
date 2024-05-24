@@ -16,7 +16,7 @@ ENV PATH=/venv/bin:$PATH
 FROM developer as build
 COPY . /context
 WORKDIR /context
-RUN pip install .
+RUN pip install .[server]
 
 # The runtime stage copies the built venv into a slim runtime container
 FROM python:${PYTHON_VERSION}-slim as runtime
@@ -25,5 +25,4 @@ COPY --from=build /venv/ /venv/
 ENV PATH=/venv/bin:$PATH
 
 # change this entrypoint if it is not the same as the repo
-ENTRYPOINT ["config-service"]
-CMD ["--version"]
+ENTRYPOINT ["sh"]
