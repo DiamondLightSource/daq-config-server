@@ -2,7 +2,7 @@ from argparse import ArgumentParser
 
 import redis
 import uvicorn
-from dodal.common.beamlines.beamline_parameters import (
+from dodal.beamlines.beamline_parameters import (
     BEAMLINE_PARAMETER_PATHS,
     GDABeamlineParameters,
 )
@@ -23,7 +23,8 @@ valkey = redis.Redis(host="localhost", port=6379, decode_responses=True)
 
 @app.get(ENDPOINTS.BL_PARAM + "{item_id}")
 def beamlineparameter(item_id: str):
-    return {item_id: beamline_params.params.get(item_id)}
+    assert BEAMLINE_PARAMS is not None
+    return {item_id: BEAMLINE_PARAMS.params.get(item_id)}
 
 
 @app.post(ENDPOINTS.FEATURE + "{item_id}")
