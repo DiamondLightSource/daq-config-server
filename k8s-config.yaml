@@ -1,22 +1,68 @@
+kind: PersistentVolumeClaim
 apiVersion: v1
-kind: Pod
 metadata:
-  name: container-service
+  name: config-service-db-volume
 spec:
-  containers:
-    - name: config-service
-      image:
-      command: ["container_service"]
-      args: []
-      resources:
-        limits:
-          cpu: "1"
-          memory: 300M
-    # - name: config-service-database
-    #   image: valkey/valkey:7.2.5-alpine3.19
-    #   command: ["container_service"]
-    #   args: []
-    #   resources:
-    #     limits:
-    #       cpu: "1"
-    #       memory: 300M
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 500M
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: daq-config-server-balance
+spec:
+  type: LoadBalancer
+  ports:
+    - name: cs-rest
+      port: 8555
+      protocol: TCP
+      targetPort: 8555
+  selector:
+    app: config-service
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: daq-config-server
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: config-service
+  template:
+    metadata:
+      labels:
+        app: config-service
+    spec:
+      volumes:
+        - name: config-service-db-volume
+          persistentVolumeClaim:
+            claimName: config-service-db-volume
+      containers:
+        - name: config-service-main
+          image: gcr.io/diamond-privreg/daq-config-server/daq-config-server
+          command: ["config-service"]
+          args: ["--dev"]
+          ports:
+            - name: cs-rest
+              containerPort: 8555
+              protocol: TCP
+          resources:
+            limits:
+              cpu: "1"
+              memory: 300M
+        - name: config-service-db
+          image: gcr.io/diamond-privreg/daq-config-server/daq-config-server-db
+          command: []
+          args: ["valkey.conf"]
+          ports:
+          volumeMounts:
+            - mountPath: "/persistent_data/"
+              name: config-service-db-volume
+          resources:
+            limits:
+              cpu: "1"
+              memory: 300M

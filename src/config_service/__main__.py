@@ -13,7 +13,6 @@ from .constants import ENDPOINTS
 
 __all__ = ["main"]
 
-
 BEAMLINE_PARAM_PATH = ""
 BEAMLINE_PARAMS: GDABeamlineParameters | None = None
 
@@ -34,8 +33,8 @@ def set_featureflag(item_id: str, value: bool):
 
 @app.get(ENDPOINTS.FEATURE + "{item_id}")
 def get_featureflag(item_id: str):
-    ret = valkey.get(item_id)
-    return {item_id: bool(ret) if ret is not None else None}
+    ret = int(valkey.get(item_id))  # type: ignore
+    return {item_id: bool(ret) if ret is not None else None, "raw": ret}
 
 
 def main():
@@ -50,7 +49,7 @@ def main():
     else:
         BEAMLINE_PARAM_PATH = BEAMLINE_PARAMETER_PATHS["i03"]
     BEAMLINE_PARAMS = GDABeamlineParameters.from_file(BEAMLINE_PARAM_PATH)
-    uvicorn.run(app="config_service.__main__:app", host="localhost", port=8000)
+    uvicorn.run(app="config_service.__main__:app", host="0.0.0.0", port=8555)
 
 
 # test with: python -m config_service
