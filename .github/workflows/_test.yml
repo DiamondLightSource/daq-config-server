@@ -48,7 +48,7 @@ jobs:
         uses: ./.github/actions/install_requirements
         with:
           python-version: ${{ inputs.python-version }}
-          pip-install: ".[dev]"
+          pip-install: ".[dev,server]"
 
       - name: Run tests
         run: tox -e tests

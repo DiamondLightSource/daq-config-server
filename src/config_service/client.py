@@ -1,13 +1,15 @@
 import json
 from http.client import HTTPConnection
+from logging import Logger, getLogger
 
 from .constants import ENDPOINTS
 
 
 class ConfigService:
-    def __init__(self, address: str, port: int) -> None:
+    def __init__(self, address: str, port: int, log: Logger | None) -> None:
         self.address = address
         self.port = port
+        self._log = log if log else getLogger("config_service.client")
 
     def _get(self, endpoint: str, param: str):
         conn = HTTPConnection(self.address, self.port)
@@ -25,4 +27,16 @@ class ConfigService:
         return self._get(ENDPOINTS.BL_PARAM, param)
 
     def get_feature_flag(self, param: str) -> bool | None:
+        """Get the specified feature flag; returns None if it does not exist. Will check
+        that the HTTP response is correct and raise an AssertionError if not."""
         return self._get(ENDPOINTS.FEATURE, param)
+
+    def besteffort_get_feature_flag(self, param: str) -> bool | None:
+        """Get the specified feature flag, returns None if it doesn't exist or if there
+        is a connection error - in the latter case logs to error."""
+        try:
+            return self._get(ENDPOINTS.FEATURE, param)
+        except AssertionError:
+            self._log.error(
+                "Encountered an error reading from the config service.", exc_info=True
+            )
