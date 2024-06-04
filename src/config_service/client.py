@@ -1,8 +1,11 @@
 import json
 from http.client import HTTPConnection
 from logging import Logger, getLogger
+from typing import TypeVar
 
 from .constants import ENDPOINTS
+
+T = TypeVar("T")
 
 
 class ConfigService:
@@ -31,9 +34,7 @@ class ConfigService:
         that the HTTP response is correct and raise an AssertionError if not."""
         return self._get(ENDPOINTS.FEATURE, param)
 
-    def best_effort_get_feature_flag(
-        self, param: str, fallback: bool | None = None
-    ) -> bool | None:
+    def best_effort_get_feature_flag(self, param: str, fallback: T = None) -> bool | T:
         """Get the specified feature flag, returns fallback value (default None) if it
         doesn't exist or if there is a connection error - in the latter case logs
         to error."""
@@ -43,3 +44,4 @@ class ConfigService:
             self._log.error(
                 "Encountered an error reading from the config service.", exc_info=True
             )
+            return fallback
