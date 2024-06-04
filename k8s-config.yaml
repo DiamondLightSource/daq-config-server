@@ -44,6 +44,7 @@ spec:
       containers:
         - name: config-service-main
           image: gcr.io/diamond-privreg/daq-config-server/daq-config-server
+          imagePullPolicy: Always
           command: ["config-service"]
           args: ["--dev"]
           ports:
