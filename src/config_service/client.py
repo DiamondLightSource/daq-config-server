@@ -6,7 +6,7 @@ from .constants import ENDPOINTS
 
 
 class ConfigService:
-    def __init__(self, address: str, port: int, log: Logger | None) -> None:
+    def __init__(self, address: str, port: int, log: Logger | None = None) -> None:
         self.address = address
         self.port = port
         self._log = log if log else getLogger("config_service.client")
@@ -31,7 +31,7 @@ class ConfigService:
         that the HTTP response is correct and raise an AssertionError if not."""
         return self._get(ENDPOINTS.FEATURE, param)
 
-    def besteffort_get_feature_flag(self, param: str) -> bool | None:
+    def best_effort_get_feature_flag(self, param: str) -> bool | None:
         """Get the specified feature flag, returns None if it doesn't exist or if there
         is a connection error - in the latter case logs to error."""
         try:

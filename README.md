@@ -1,6 +1,5 @@
 [![CI](https://github.com/dperl-dls/config-service/actions/workflows/ci.yml/badge.svg)](https://github.com/dperl-dls/config-service/actions/workflows/ci.yml)
 [![Coverage](https://codecov.io/gh/dperl-dls/config-service/branch/main/graph/badge.svg)](https://codecov.io/gh/dperl-dls/config-service)
-[![PyPI](https://img.shields.io/pypi/v/config-service.svg)](https://pypi.org/project/config-service)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
 # config_service
@@ -10,22 +9,20 @@ A service to put and get your config values from.
 
 Source          | <https://github.com/dperl-dls/config-service>
 :---:           | :---:
-PyPI            | `pip install config-service`
 Docker          | `docker run ghcr.io/dperl-dls/config-service:latest`
 Releases        | <https://github.com/dperl-dls/config-service/releases>
 
-This is where you should put some images or code snippets that illustrate
-some relevant examples. If it is a library then you might put some
-introductory code here:
+A simple app for storing and fetching values. Has a Valkey (Redis) instance as well as options for file-backed legacy
+values (e.g. `beamlineParameters`...)
+
+To use the config values in an experimental application (e.g. Hyperion) you can do:
 
 ```python
-from config_service import __version__
+from config_service.client import ConfigService
 
-print(f"Hello config_service {__version__}")
+config_service = ConfigService("<service ip address>", 8555)
+
+use_stub_offsets: bool = config_service.best_effort_get_feature_flag("use_stub_offsets")
+
 ```
 
-Or if it is a commandline tool then you might put some example commands here:
-
-```
-python -m config_service --version
-```
