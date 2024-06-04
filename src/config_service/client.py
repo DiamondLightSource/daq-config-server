@@ -36,7 +36,7 @@ class ConfigService:
         is a connection error - in the latter case logs to error."""
         try:
             return self._get(ENDPOINTS.FEATURE, param)
-        except AssertionError:
+        except (AssertionError, OSError):
             self._log.error(
                 "Encountered an error reading from the config service.", exc_info=True
             )
