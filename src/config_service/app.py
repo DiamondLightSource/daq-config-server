@@ -27,7 +27,7 @@ def beamlineparameter(item_id: str):
 def set_featureflag(item_id: str, value: bool, response: Response):
     if not valkey.sismember(ENDPOINTS.FEATURE_LIST, item_id):
         response.status_code = status.HTTP_404_NOT_FOUND
-        response.body = bytes(f"Feature flag {item_id} does not exist!", "utf-8")
+        return {"message": f"Feature flag {item_id} does not exist!"}
     else:
         return {"success": valkey.set(item_id, int(value))}
 
@@ -36,7 +36,7 @@ def set_featureflag(item_id: str, value: bool, response: Response):
 def get_featureflag(item_id: str, response: Response):
     if not valkey.sismember(ENDPOINTS.FEATURE_LIST, item_id):
         response.status_code = status.HTTP_404_NOT_FOUND
-        response.body = bytes(f"Feature flag {item_id} does not exist!", "utf-8")
+        return {"message": f"Feature flag {item_id} does not exist!"}
     else:
         ret = int(valkey.get(item_id))  # type: ignore
         return {item_id: bool(ret) if ret is not None else None, "raw": ret}
@@ -51,9 +51,10 @@ def get_featureflag_list():
 def create_featureflag(item_id: str, response: Response):
     if valkey.sismember(ENDPOINTS.FEATURE_LIST, item_id):
         response.status_code = status.HTTP_409_CONFLICT
-        response.body = bytes(f"Feature flag {item_id} already exists!", "utf-8")
+        return {"message": f"Feature flag {item_id} already exists!"}
     else:
         valkey.sadd(ENDPOINTS.FEATURE_LIST, item_id)
+        return {"success": valkey.set(item_id, 0)}
 
 
 def main(args):
