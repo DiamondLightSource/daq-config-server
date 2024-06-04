@@ -16,8 +16,6 @@ __all__ = ["main"]
 
 
 def main():
-    global BEAMLINE_PARAM_PATH
-    global BEAMLINE_PARAMS
     parser = ArgumentParser()
     parser.add_argument("-v", "--version", action="version", version=__version__)
     parser.add_argument("-d", "--dev", action="store_true")
