@@ -34,6 +34,11 @@ class ConfigService:
         that the HTTP response is correct and raise an AssertionError if not."""
         return self._get(ENDPOINTS.FEATURE, param)
 
+    def get_feature_flag_list(self) -> list[str]:
+        """Get the specified feature flag; returns None if it does not exist. Will check
+        that the HTTP response is correct and raise an AssertionError if not."""
+        return self._get(ENDPOINTS.FEATURE_LIST)
+
     def best_effort_get_feature_flag(self, param: str, fallback: T = None) -> bool | T:
         """Get the specified feature flag, returns fallback value (default None) if it
         doesn't exist or if there is a connection error - in the latter case logs
