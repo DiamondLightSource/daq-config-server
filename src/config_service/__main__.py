@@ -1,23 +1,30 @@
 from argparse import ArgumentParser
 
-import redis
-import uvicorn
-from dodal.beamlines.beamline_parameters import (
-    BEAMLINE_PARAMETER_PATHS,
-    GDABeamlineParameters,
-)
-from fastapi import FastAPI
+from fastapi import dependencies
 
 from . import __version__
 from .constants import ENDPOINTS
+
+try:
+    import redis
+    import uvicorn
+    from dodal.beamlines.beamline_parameters import (
+        BEAMLINE_PARAMETER_PATHS,
+        GDABeamlineParameters,
+    )
+    from fastapi import FastAPI
+
+    app = FastAPI()
+    valkey = redis.Redis(host="localhost", port=6379, decode_responses=True)
+
+    server_dependencies_exist = True
+except ImportError:
+    server_dependencies_exist = False
 
 __all__ = ["main"]
 
 BEAMLINE_PARAM_PATH = ""
 BEAMLINE_PARAMS: GDABeamlineParameters | None = None
-
-app = FastAPI()
-valkey = redis.Redis(host="localhost", port=6379, decode_responses=True)
 
 
 @app.get(ENDPOINTS.BL_PARAM + "{item_id}")
@@ -44,6 +51,12 @@ def main():
     parser.add_argument("-v", "--version", action="version", version=__version__)
     parser.add_argument("-d", "--dev", action="store_true")
     args = parser.parse_args()
+    if not server_dependencies_exist:
+        print(
+            "To do anything other than print the version and be available for "
+            "importing the client, you must install this package with [server] "
+            "optional dependencies"
+        )
     if args.dev:
         BEAMLINE_PARAM_PATH = "tests/test_data/beamline_parameters.txt"
     else:
