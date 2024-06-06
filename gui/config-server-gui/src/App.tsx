@@ -23,20 +23,48 @@ import {
 import * as React from "react";
 import { ColorModeSwitcher } from "./ColorModeSwitcher";
 
+var BACKEND = "http://localhost:8555"
 type FeatureFlag = { name: string; value: boolean }
 
+let start_data = fetch(`${BACKEND}/featurelist/`)
+  .then((response) => response.json())
+var start_data_processed = false
 
 export const App = () => {
-
-  const [test_data, setTestData] = React.useState([
-    { name: "use_panda", value: false },
-    { name: "use_gpu_for_PIA", value: false },
-    { name: "test2", value: false },
-    { name: "test3", value: true },
-  ])
-  function switchTestData(item: string) {
-    setTestData(test_data.map((i) => i.name === item ? { name: item, value: !i.value } : i))
+  if (!start_data_processed) {
+    start_data.then(data => { resetDataKeys(data.sort()); start_data_processed = true })
   }
+
+  const [feature_flag_data, setFeatureFlagData] = React.useState([
+    { name: "empty", value: false },
+  ])
+  function switchFlag(item: string) {
+    let value = !getFeatureFlagData(item)
+    fetch(`${BACKEND}/featureflag/${item}?value=${value}`, { method: "POST" })
+      .then(_ => fetch(`${BACKEND}/featureflag/${item}`)
+        .then(resp => resp.json())
+        .then(val => {
+          console.log(`Updating ${item} based on response ${val}`);
+          setFlag(item, val[item])
+        }))
+  }
+  function getFeatureFlagData(item: string) {
+    for (let f of feature_flag_data) {
+      if (f.name === item) { return f.value }
+    }
+  }
+  function setFlag(item: string, value: boolean) {
+    setFeatureFlagData(feature_flag_data.map((i) => i.name === item ? { name: item, value: value } : i))
+  }
+  function resetDataKeys(keys: string[]) {
+    return Promise.all(
+      keys.map(k => {
+        return fetch(`${BACKEND}/featureflag/${k}`)
+          .then(resp => resp.json())
+          .then(val => { console.log({ name: k, value: val }); return { name: k, value: val[k] } })
+      })).then(data => setFeatureFlagData(data))
+  }
+
 
   function propertyTableDatum(props: FeatureFlag) {
     return (
@@ -45,7 +73,7 @@ export const App = () => {
         <Td>
           <Checkbox
             isChecked={props.value}
-            onChange={() => { switchTestData(props.name); }}
+            onChange={() => { switchFlag(props.name); }}
           >
           </Checkbox>
         </Td>
@@ -88,7 +116,7 @@ export const App = () => {
                           <Th>&nbsp;</Th>
                         </Tr>
                       </Thead>
-                      {doPropertyTableData(test_data)}
+                      {doPropertyTableData(feature_flag_data)}
                     </Table>
                   </TableContainer>
                 </AccordionPanel>

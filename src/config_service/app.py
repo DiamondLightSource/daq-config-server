@@ -5,10 +5,21 @@ from dodal.common.beamlines.beamline_parameters import (
     GDABeamlineParameters,
 )
 from fastapi import FastAPI, Response, status
+from fastapi.middleware.cors import CORSMiddleware
 
 from .constants import ENDPOINTS
 
 app = FastAPI()
+origins = ["*"]  # TODO fix this
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+
 valkey = redis.Redis(host="localhost", port=6379, decode_responses=True)
 
 __all__ = ["main"]
