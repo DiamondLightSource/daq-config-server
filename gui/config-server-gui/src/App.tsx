@@ -9,6 +9,16 @@ import {
   ChakraProvider,
   Checkbox,
   Grid,
+  Input,
+  InputGroup,
+  InputRightElement,
+  Popover,
+  PopoverArrow,
+  PopoverBody,
+  PopoverCloseButton,
+  PopoverContent,
+  PopoverHeader,
+  PopoverTrigger,
   Table,
   TableCaption,
   TableContainer,
@@ -103,10 +113,41 @@ export const App = () => {
         .then((data) => resetDataKeys(data.sort()));
     });
   }
-  function deleteButton(item: string) {
+  function CreateFeatureSubmit() {
+    const [value, setValue] = React.useState("");
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) =>
+      setValue(e.target.value);
+    const submitCreateFlag = () => {
+      createFeatureFlag(value);
+      setValue("");
+    };
+    return (
+      <>
+        <InputGroup>
+          <Input
+            placeholder="flag_name"
+            size="md"
+            onChange={handleChange}
+          ></Input>
+          <InputRightElement
+            children={<Button onClick={submitCreateFlag}>create</Button>}
+          ></InputRightElement>
+        </InputGroup>
+      </>
+    );
+  }
+  function createFeatureFlag(item: string) {
+    fetch(`${BACKEND}/featurelist/${item}`, {
+      method: "POST",
+    }).then((_) => {
+      return fetch(`${BACKEND}/featurelist/`)
+        .then((response) => response.json())
+        .then((data) => resetDataKeys(data.sort()));
+    });
+  }
+  function deleteFlagButton(item: string) {
     return <Button onClick={() => deleteFeatureFlag(item)}>delete</Button>;
   }
-
   function propertyTableDatum(props: FeatureFlag) {
     return (
       <Tr key={props.name}>
@@ -119,7 +160,7 @@ export const App = () => {
             }}
           ></Checkbox>
         </Td>
-        <Td>{deleteButton(props.name)}</Td>
+        <Td>{deleteFlagButton(props.name)}</Td>
       </Tr>
     );
   }
@@ -159,6 +200,17 @@ export const App = () => {
                       </Thead>
                       {doPropertyTableData(feature_flag_data)}
                     </Table>
+                    <Popover>
+                      <PopoverTrigger>
+                        <Button>Create new</Button>
+                      </PopoverTrigger>
+                      <PopoverContent>
+                        <PopoverArrow />
+                        <PopoverCloseButton />
+                        <PopoverHeader>Create new feature flag</PopoverHeader>
+                        <PopoverBody>{CreateFeatureSubmit()}</PopoverBody>
+                      </PopoverContent>
+                    </Popover>
                   </TableContainer>
                 </AccordionPanel>
               </AccordionItem>
