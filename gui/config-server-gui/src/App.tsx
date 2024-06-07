@@ -18,7 +18,7 @@ import {
   Thead,
   Tr,
   VStack,
-  extendTheme
+  extendTheme,
 } from "@chakra-ui/react";
 import * as React from "react";
 import { ColorModeSwitcher } from "./ColorModeSwitcher";
@@ -34,14 +34,14 @@ var start_data_processed = false;
 const theme = extendTheme({
   textStyles: {
     title: {
-      fontSize: '3xl',
-      fontWeight: 'bold',
-      lineHeight: '120%',
-      textDecoration: 'underline',
-      letterSpacing: '-8%',
+      fontSize: "3xl",
+      fontWeight: "bold",
+      lineHeight: "120%",
+      textDecoration: "underline",
+      letterSpacing: "-8%",
     },
   },
-})
+});
 
 export const App = () => {
   if (!start_data_processed) {

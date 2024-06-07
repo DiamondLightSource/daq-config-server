@@ -22,3 +22,10 @@ repos:
         entry: ruff format --force-exclude
         types: [python]
         require_serial: true
+
+      - id: prettier
+        name: format ts with prettier
+        language: system
+        entry: prettier
+        types: [tsx]
+        require_serial: true
