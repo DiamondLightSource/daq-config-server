@@ -27,7 +27,7 @@ var BACKEND = "http://172.23.168.196:8555";
 type FeatureFlag = { name: string; value: boolean };
 
 let start_data = fetch(`${BACKEND}/featurelist/`).then((response) =>
-  response.json()
+  response.json(),
 );
 var start_data_processed = false;
 
@@ -64,7 +64,7 @@ export const App = () => {
         .then((val) => {
           console.log(`Updating ${item} based on response ${val}`);
           setFlag(item, val[item]);
-        })
+        }),
     );
   }
   function getFeatureFlagData(item: string) {
@@ -77,8 +77,8 @@ export const App = () => {
   function setFlag(item: string, value: boolean) {
     setFeatureFlagData(
       feature_flag_data.map((i) =>
-        i.name === item ? { name: item, value: value } : i
-      )
+        i.name === item ? { name: item, value: value } : i,
+      ),
     );
   }
   function resetDataKeys(keys: string[]) {
@@ -90,7 +90,7 @@ export const App = () => {
             console.log({ name: k, value: val });
             return { name: k, value: val[k] };
           });
-      })
+      }),
     ).then((data) => setFeatureFlagData(data));
   }
 

@@ -24,8 +24,8 @@ repos:
         require_serial: true
 
       - id: prettier
-        name: format ts with prettier
+        name: format js/ts(x) with prettier
         language: system
-        entry: prettier
-        types: [tsx]
+        entry: npx prettier gui/config-server-gui/ --write
+        types: [javascript,jsx,ts,tsx]
         require_serial: true
