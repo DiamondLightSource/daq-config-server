@@ -5,6 +5,7 @@ import {
   AccordionItem,
   AccordionPanel,
   Box,
+  Button,
   ChakraProvider,
   Checkbox,
   Grid,
@@ -27,7 +28,7 @@ var BACKEND = "http://172.23.168.196:8555";
 type FeatureFlag = { name: string; value: boolean };
 
 let start_data = fetch(`${BACKEND}/featurelist/`).then((response) =>
-  response.json(),
+  response.json()
 );
 var start_data_processed = false;
 
@@ -64,7 +65,7 @@ export const App = () => {
         .then((val) => {
           console.log(`Updating ${item} based on response ${val}`);
           setFlag(item, val[item]);
-        }),
+        })
     );
   }
   function getFeatureFlagData(item: string) {
@@ -77,8 +78,8 @@ export const App = () => {
   function setFlag(item: string, value: boolean) {
     setFeatureFlagData(
       feature_flag_data.map((i) =>
-        i.name === item ? { name: item, value: value } : i,
-      ),
+        i.name === item ? { name: item, value: value } : i
+      )
     );
   }
   function resetDataKeys(keys: string[]) {
@@ -90,8 +91,20 @@ export const App = () => {
             console.log({ name: k, value: val });
             return { name: k, value: val[k] };
           });
-      }),
+      })
     ).then((data) => setFeatureFlagData(data));
+  }
+  function deleteFeatureFlag(item: string) {
+    fetch(`${BACKEND}/featureflag/${item}`, {
+      method: "DELETE",
+    }).then((_) => {
+      return fetch(`${BACKEND}/featurelist/`)
+        .then((response) => response.json())
+        .then((data) => resetDataKeys(data.sort()));
+    });
+  }
+  function deleteButton(item: string) {
+    return <Button onClick={() => deleteFeatureFlag(item)}>delete</Button>;
   }
 
   function propertyTableDatum(props: FeatureFlag) {
@@ -106,6 +119,7 @@ export const App = () => {
             }}
           ></Checkbox>
         </Td>
+        <Td>{deleteButton(props.name)}</Td>
       </Tr>
     );
   }
@@ -140,6 +154,7 @@ export const App = () => {
                         <Tr>
                           <Th>Property</Th>
                           <Th>value</Th>
+                          <Th>&nbsp;</Th>
                         </Tr>
                       </Thead>
                       {doPropertyTableData(feature_flag_data)}
