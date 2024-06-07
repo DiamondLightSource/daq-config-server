@@ -6,11 +6,10 @@
 
 A service to put and get your config values from.
 
-
-Source          | <https://github.com/dperl-dls/config-service>
-:---:           | :---:
-Docker          | `docker run ghcr.io/dperl-dls/config-service:latest`
-Releases        | <https://github.com/dperl-dls/config-service/releases>
+|  Source  |     <https://github.com/dperl-dls/config-service>      |
+| :------: | :----------------------------------------------------: |
+|  Docker  |  `docker run ghcr.io/dperl-dls/config-service:latest`  |
+| Releases | <https://github.com/dperl-dls/config-service/releases> |
 
 A simple app for storing and fetching values. Has a Valkey (Redis) instance as well as options for file-backed legacy
 values (e.g. `beamlineParameters`...)
@@ -26,3 +25,9 @@ use_stub_offsets: bool = config_service.best_effort_get_feature_flag("use_stub_o
 
 ```
 
+To work with the GUI you will probably need to run:
+
+```bash
+module load node
+npm install
+```

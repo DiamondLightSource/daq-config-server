@@ -22,3 +22,10 @@ repos:
         entry: ruff format --force-exclude
         types: [python]
         require_serial: true
+
+      - id: prettier
+        name: format js/ts(x) with prettier
+        language: system
+        entry: npx prettier gui/config-server-gui/ --write
+        types: [javascript,jsx,ts,tsx]
+        require_serial: true

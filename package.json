@@ -1,0 +1,12 @@
+{
+  "name": "config-server",
+  "workspaces": [
+    "gui/config-server-gui"
+  ],
+  "scripts": {
+    "start": "cd gui/config-server-gui && react-scripts start",
+    "build": "cd gui/config-server-gui && react-scripts build",
+    "test": "cd gui/config-server-gui && react-scripts test",
+    "eject": "cd gui/config-server-gui && react-scripts eject"
+  }
+}

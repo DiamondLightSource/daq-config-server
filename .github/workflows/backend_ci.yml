@@ -1,8 +1,12 @@
-name: CI
+name: backend CI
 
 on:
   push:
+    paths:
+    - gui/**
   pull_request:
+    paths:
+    - gui/**
 
 jobs:
   check:
