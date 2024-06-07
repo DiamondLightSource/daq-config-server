@@ -23,7 +23,7 @@ import {
 import * as React from "react";
 import { ColorModeSwitcher } from "./ColorModeSwitcher";
 
-var BACKEND = "http://localhost:8555"
+var BACKEND = "http://172.23.168.196:8555"
 type FeatureFlag = { name: string; value: boolean }
 
 let start_data = fetch(`${BACKEND}/featurelist/`)
