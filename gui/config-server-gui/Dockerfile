@@ -1,3 +1,2 @@
-FROM nginx
-COPY public /usr/share/nginx/html
-COPY src /usr/share/nginx/src
+FROM ghcr.io/nginxinc/nginx-unprivileged:1.27-bookworm-perl
+COPY build /usr/share/nginx/html

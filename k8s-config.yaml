@@ -20,6 +20,10 @@ spec:
       port: 8555
       protocol: TCP
       targetPort: 8555
+    - name: http
+      port: 8080
+      protocol: TCP
+      targetPort: 8080
   selector:
     app: config-service
 ---
@@ -67,3 +71,15 @@ spec:
             limits:
               cpu: "1"
               memory: 300M
+        - name: config-service-gui
+          image: gcr.io/diamond-privreg/daq-config-server/daq-config-server-gui
+          imagePullPolicy: Always
+          command: []
+          ports:
+            - name: http
+              containerPort: 8080
+              protocol: TCP
+          resources:
+            limits:
+              cpu: "1"
+              memory: 200M
