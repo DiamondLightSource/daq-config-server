@@ -5,9 +5,20 @@ import {
   AccordionItem,
   AccordionPanel,
   Box,
+  Button,
   ChakraProvider,
   Checkbox,
   Grid,
+  Input,
+  InputGroup,
+  InputRightElement,
+  Popover,
+  PopoverArrow,
+  PopoverBody,
+  PopoverCloseButton,
+  PopoverContent,
+  PopoverHeader,
+  PopoverTrigger,
   Table,
   TableCaption,
   TableContainer,
@@ -19,6 +30,7 @@ import {
   Tr,
   VStack,
   extendTheme,
+  useDisclosure,
 } from "@chakra-ui/react";
 import * as React from "react";
 import { ColorModeSwitcher } from "./ColorModeSwitcher";
@@ -27,7 +39,7 @@ var BACKEND = "http://172.23.168.196:8555";
 type FeatureFlag = { name: string; value: boolean };
 
 let start_data = fetch(`${BACKEND}/featurelist/`).then((response) =>
-  response.json(),
+  response.json()
 );
 var start_data_processed = false;
 
@@ -64,7 +76,7 @@ export const App = () => {
         .then((val) => {
           console.log(`Updating ${item} based on response ${val}`);
           setFlag(item, val[item]);
-        }),
+        })
     );
   }
   function getFeatureFlagData(item: string) {
@@ -77,8 +89,8 @@ export const App = () => {
   function setFlag(item: string, value: boolean) {
     setFeatureFlagData(
       feature_flag_data.map((i) =>
-        i.name === item ? { name: item, value: value } : i,
-      ),
+        i.name === item ? { name: item, value: value } : i
+      )
     );
   }
   function resetDataKeys(keys: string[]) {
@@ -90,10 +102,61 @@ export const App = () => {
             console.log({ name: k, value: val });
             return { name: k, value: val[k] };
           });
-      }),
+      })
     ).then((data) => setFeatureFlagData(data));
   }
-
+  function deleteFeatureFlag(item: string) {
+    fetch(`${BACKEND}/featureflag/${item}`, {
+      method: "DELETE",
+    }).then((_) => {
+      return fetch(`${BACKEND}/featurelist/`)
+        .then((response) => response.json())
+        .then((data) => resetDataKeys(data.sort()));
+    });
+  }
+  function CreateFeatureSubmit(closeDialog: Function | null) {
+    const [value, setValue] = React.useState("");
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) =>
+      setValue(e.target.value);
+    const submitCreateFlag = () => {
+      createFeatureFlag(value);
+      setValue("");
+      if (closeDialog !== null) {
+        closeDialog();
+      }
+    };
+    return (
+      <>
+        <InputGroup width="100%">
+          <Input
+            placeholder="flag_name"
+            size="md"
+            onChange={handleChange}
+          ></Input>
+          <InputRightElement
+            children={
+              <Button onClick={submitCreateFlag} size="xs">
+                create
+              </Button>
+            }
+            width="15%"
+          ></InputRightElement>
+        </InputGroup>
+      </>
+    );
+  }
+  function createFeatureFlag(item: string) {
+    fetch(`${BACKEND}/featurelist/${item}`, {
+      method: "POST",
+    }).then((_) => {
+      return fetch(`${BACKEND}/featurelist/`)
+        .then((response) => response.json())
+        .then((data) => resetDataKeys(data.sort()));
+    });
+  }
+  function deleteFlagButton(item: string) {
+    return <Button onClick={() => deleteFeatureFlag(item)}>delete</Button>;
+  }
   function propertyTableDatum(props: FeatureFlag) {
     return (
       <Tr key={props.name}>
@@ -106,11 +169,30 @@ export const App = () => {
             }}
           ></Checkbox>
         </Td>
+        <Td>{deleteFlagButton(props.name)}</Td>
       </Tr>
     );
   }
   function doPropertyTableData(data: FeatureFlag[]) {
     return <Tbody>{data.map((item) => propertyTableDatum(item))}</Tbody>;
+  }
+  function CreateNewPopover() {
+    const { isOpen, onToggle, onClose } = useDisclosure();
+    return (
+      <Popover onClose={onClose} isOpen={isOpen} arrowSize={15}>
+        <PopoverTrigger>
+          <Button onClick={onToggle}>Create new</Button>
+        </PopoverTrigger>
+        <PopoverContent maxW="xxl" minW="lg">
+          <PopoverHeader fontSize={"medium"}>
+            Create new feature flag
+          </PopoverHeader>
+          <PopoverArrow />
+          <PopoverCloseButton />
+          <PopoverBody>{CreateFeatureSubmit(onClose)}</PopoverBody>
+        </PopoverContent>
+      </Popover>
+    );
   }
 
   return (
@@ -140,9 +222,15 @@ export const App = () => {
                         <Tr>
                           <Th>Property</Th>
                           <Th>value</Th>
+                          <Th>&nbsp;</Th>
                         </Tr>
                       </Thead>
                       {doPropertyTableData(feature_flag_data)}
+                      <Tr>
+                        <Td colSpan={3} textAlign={"center"}>
+                          {CreateNewPopover()}
+                        </Td>
+                      </Tr>
                     </Table>
                   </TableContainer>
                 </AccordionPanel>

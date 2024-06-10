@@ -43,6 +43,16 @@ def set_featureflag(item_id: str, value: bool, response: Response):
         return {"success": valkey.set(item_id, int(value))}
 
 
+@app.delete(ENDPOINTS.FEATURE + "{item_id}")
+def delete_featureflag(item_id: str, response: Response):
+    if not valkey.sismember(ENDPOINTS.FEATURE_LIST, item_id):
+        response.status_code = status.HTTP_404_NOT_FOUND
+        return {"message": f"Feature flag {item_id} does not exist!"}
+    else:
+        valkey.srem(ENDPOINTS.FEATURE_LIST, item_id)
+        return {"success": not valkey.sismember(ENDPOINTS.FEATURE_LIST, item_id)}
+
+
 @app.get(ENDPOINTS.FEATURE + "{item_id}")
 def get_featureflag(item_id: str, response: Response):
     if not valkey.sismember(ENDPOINTS.FEATURE_LIST, item_id):
