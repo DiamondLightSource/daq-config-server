@@ -1,10 +1,11 @@
-import React from "react";
 import { screen } from "@testing-library/react";
-import { render } from "./test-utils";
 import { App } from "./App";
+import { render } from "./test-utils";
 
-test("renders learn react link", () => {
+test("title is displayed", () => {
   render(<App />);
-  const linkElement = screen.getByText(/learn chakra/i);
-  expect(linkElement).toBeInTheDocument();
+  const titleText = screen.getByText(
+    /Read and store configuration for I03 Hyperion/i
+  );
+  expect(titleText).toBeInTheDocument();
 });

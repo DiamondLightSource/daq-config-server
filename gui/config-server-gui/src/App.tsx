@@ -30,6 +30,7 @@ import {
   Tr,
   VStack,
   extendTheme,
+  useDisclosure,
 } from "@chakra-ui/react";
 import * as React from "react";
 import { ColorModeSwitcher } from "./ColorModeSwitcher";
@@ -113,24 +114,32 @@ export const App = () => {
         .then((data) => resetDataKeys(data.sort()));
     });
   }
-  function CreateFeatureSubmit() {
+  function CreateFeatureSubmit(closeDialog: Function | null) {
     const [value, setValue] = React.useState("");
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) =>
       setValue(e.target.value);
     const submitCreateFlag = () => {
       createFeatureFlag(value);
       setValue("");
+      if (closeDialog !== null) {
+        closeDialog();
+      }
     };
     return (
       <>
-        <InputGroup>
+        <InputGroup width="100%">
           <Input
             placeholder="flag_name"
             size="md"
             onChange={handleChange}
           ></Input>
           <InputRightElement
-            children={<Button onClick={submitCreateFlag}>create</Button>}
+            children={
+              <Button onClick={submitCreateFlag} size="xs">
+                create
+              </Button>
+            }
+            width="15%"
           ></InputRightElement>
         </InputGroup>
       </>
@@ -167,6 +176,24 @@ export const App = () => {
   function doPropertyTableData(data: FeatureFlag[]) {
     return <Tbody>{data.map((item) => propertyTableDatum(item))}</Tbody>;
   }
+  function CreateNewPopover() {
+    const { isOpen, onToggle, onClose } = useDisclosure();
+    return (
+      <Popover onClose={onClose} isOpen={isOpen} arrowSize={15}>
+        <PopoverTrigger>
+          <Button onClick={onToggle}>Create new</Button>
+        </PopoverTrigger>
+        <PopoverContent maxW="xxl" minW="lg">
+          <PopoverHeader fontSize={"medium"}>
+            Create new feature flag
+          </PopoverHeader>
+          <PopoverArrow />
+          <PopoverCloseButton />
+          <PopoverBody>{CreateFeatureSubmit(onClose)}</PopoverBody>
+        </PopoverContent>
+      </Popover>
+    );
+  }
 
   return (
     <ChakraProvider theme={theme}>
@@ -199,18 +226,12 @@ export const App = () => {
                         </Tr>
                       </Thead>
                       {doPropertyTableData(feature_flag_data)}
+                      <Tr>
+                        <Td colSpan={3} textAlign={"center"}>
+                          {CreateNewPopover()}
+                        </Td>
+                      </Tr>
                     </Table>
-                    <Popover>
-                      <PopoverTrigger>
-                        <Button>Create new</Button>
-                      </PopoverTrigger>
-                      <PopoverContent>
-                        <PopoverArrow />
-                        <PopoverCloseButton />
-                        <PopoverHeader>Create new feature flag</PopoverHeader>
-                        <PopoverBody>{CreateFeatureSubmit()}</PopoverBody>
-                      </PopoverContent>
-                    </Popover>
                   </TableContainer>
                 </AccordionPanel>
               </AccordionItem>

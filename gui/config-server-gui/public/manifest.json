@@ -1,6 +1,6 @@
 {
-  "short_name": "React App",
-  "name": "Create React App Sample",
+  "short_name": "DAQ Config Server",
+  "name": "DLS Data acquisition configuration storage and retrieval",
   "icons": [
     {
       "src": "favicon.ico",
