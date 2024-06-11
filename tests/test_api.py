@@ -35,7 +35,7 @@ class TestApi:
             mock_app, ENDPOINTS.BL_PARAM, mock_bl_params.params
         )
 
-    async def test_get_one_beamlineparam(self, mock_valkey: MagicMock, mock_app):
+    async def test_get_one_beamlineparam(self, mock_app):
         param = "p3"
         await _assert_get_and_response(
             mock_app,
