@@ -14,10 +14,10 @@ class ConfigService:
         self.port = port
         self._log = log if log else getLogger("config_service.client")
 
-    def _get(self, endpoint: str, param: str):
+    def _get(self, endpoint: str, param: str | None = None):
         conn = HTTPConnection(self.address, self.port)
         conn.connect()
-        conn.request("GET", f"{endpoint}{param}")
+        conn.request("GET", endpoint + (f"/{param}" if param else ""))
         resp = conn.getresponse()
         assert resp.status == 200, f"Failed to get response: {resp}"
         body = json.loads(resp.read())
@@ -37,7 +37,7 @@ class ConfigService:
     def get_feature_flag_list(self) -> list[str]:
         """Get the specified feature flag; returns None if it does not exist. Will check
         that the HTTP response is correct and raise an AssertionError if not."""
-        return self._get(ENDPOINTS.FEATURE_LIST, "")
+        return self._get(ENDPOINTS.FEATURE, "")
 
     def best_effort_get_feature_flag(self, param: str, fallback: T = None) -> bool | T:
         """Get the specified feature flag, returns fallback value (default None) if it

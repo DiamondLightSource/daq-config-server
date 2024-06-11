@@ -1,15 +1,20 @@
-import redis
 import uvicorn
-from dodal.common.beamlines.beamline_parameters import (
+from fastapi import FastAPI, Request, Response, status
+from fastapi.middleware.cors import CORSMiddleware
+from redis import Redis
+
+from .beamline_parameters import (
     BEAMLINE_PARAMETER_PATHS,
     GDABeamlineParameters,
 )
-from fastapi import FastAPI, Response, status
-from fastapi.middleware.cors import CORSMiddleware
+from .constants import DATABASE_KEYS, ENDPOINTS
 
-from .constants import ENDPOINTS
-
-app = FastAPI()
+app = FastAPI(
+    title="DAQ config service",
+    description="""For storing and fetching beamline parameters, etc. which are needed
+    by more than one applicatioon or service""",
+    root_path="/api",
+)
 origins = ["*"]  # TODO fix this
 app.add_middleware(
     CORSMiddleware,
@@ -19,63 +24,99 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-
-valkey = redis.Redis(host="localhost", port=6379, decode_responses=True)
+valkey = Redis(host="localhost", port=6379, decode_responses=True)
 
 __all__ = ["main"]
 
 BEAMLINE_PARAM_PATH = ""
 BEAMLINE_PARAMS: GDABeamlineParameters | None = None
+DEBUG_CATCHALL = False
 
 
-@app.get(ENDPOINTS.BL_PARAM + "{item_id}")
-def beamlineparameter(item_id: str):
+@app.get(ENDPOINTS.BL_PARAM + "/{param}")
+def get_beamline_parameter(param: str):
+    """Get a single beamline parameter"""
     assert BEAMLINE_PARAMS is not None
-    return {item_id: BEAMLINE_PARAMS.params.get(item_id)}
+    return {param: BEAMLINE_PARAMS.params.get(param)}
 
 
-@app.post(ENDPOINTS.FEATURE + "{item_id}")
-def set_featureflag(item_id: str, value: bool, response: Response):
-    if not valkey.sismember(ENDPOINTS.FEATURE_LIST, item_id):
+@app.get(ENDPOINTS.BL_PARAM)
+def get_all_beamline_parameters():
+    """Get a dict of all the current beamline parameters."""
+    assert BEAMLINE_PARAMS is not None
+    return BEAMLINE_PARAMS.params
+
+
+@app.get(ENDPOINTS.FEATURE)
+def get_feature_flag_list():
+    """Get a list of all the current feature flags."""
+    return valkey.smembers(DATABASE_KEYS.FEATURE_SET)
+
+
+@app.get(ENDPOINTS.FEATURE + "/{flag_name}")
+def get_feature_flag(flag_name: str, response: Response):
+    """Get the value of a feature flag"""
+    if not valkey.sismember(DATABASE_KEYS.FEATURE_SET, flag_name):
         response.status_code = status.HTTP_404_NOT_FOUND
-        return {"message": f"Feature flag {item_id} does not exist!"}
+        return {"message": f"Feature flag {flag_name} does not exist!"}
     else:
-        return {"success": valkey.set(item_id, int(value))}
+        ret = int(valkey.get(flag_name))  # type: ignore
+        return {flag_name: bool(ret) if ret is not None else None, "raw": ret}
 
 
-@app.delete(ENDPOINTS.FEATURE + "{item_id}")
-def delete_featureflag(item_id: str, response: Response):
-    if not valkey.sismember(ENDPOINTS.FEATURE_LIST, item_id):
-        response.status_code = status.HTTP_404_NOT_FOUND
-        return {"message": f"Feature flag {item_id} does not exist!"}
-    else:
-        valkey.srem(ENDPOINTS.FEATURE_LIST, item_id)
-        return {"success": not valkey.sismember(ENDPOINTS.FEATURE_LIST, item_id)}
-
-
-@app.get(ENDPOINTS.FEATURE + "{item_id}")
-def get_featureflag(item_id: str, response: Response):
-    if not valkey.sismember(ENDPOINTS.FEATURE_LIST, item_id):
-        response.status_code = status.HTTP_404_NOT_FOUND
-        return {"message": f"Feature flag {item_id} does not exist!"}
-    else:
-        ret = int(valkey.get(item_id))  # type: ignore
-        return {item_id: bool(ret) if ret is not None else None, "raw": ret}
-
-
-@app.get(ENDPOINTS.FEATURE_LIST)
-def get_featureflag_list():
-    return valkey.smembers(ENDPOINTS.FEATURE_LIST)
-
-
-@app.post(ENDPOINTS.FEATURE_LIST + "{item_id}", status_code=status.HTTP_201_CREATED)
-def create_featureflag(item_id: str, response: Response):
-    if valkey.sismember(ENDPOINTS.FEATURE_LIST, item_id):
+@app.post(ENDPOINTS.FEATURE + "/{flag_name}", status_code=status.HTTP_201_CREATED)
+def create_feature_flag(flag_name: str, response: Response, value: bool = False):
+    """Sets a feature flag, creating it if it doesn't exist. Default to False."""
+    if valkey.sismember(DATABASE_KEYS.FEATURE_SET, flag_name):
         response.status_code = status.HTTP_409_CONFLICT
-        return {"message": f"Feature flag {item_id} already exists!"}
+        return {"message": f"Feature flag {flag_name} already exists!"}
     else:
-        valkey.sadd(ENDPOINTS.FEATURE_LIST, item_id)
-        return {"success": valkey.set(item_id, 0)}
+        valkey.sadd(DATABASE_KEYS.FEATURE_SET, flag_name)
+        return {"success": valkey.set(flag_name, int(value))}
+
+
+@app.put(ENDPOINTS.FEATURE + "/{flag_name}")
+def set_feature_flag(flag_name: str, value: bool, response: Response):
+    """Sets a feature flag, return an error if it doesn't exist."""
+    if not valkey.sismember(DATABASE_KEYS.FEATURE_SET, flag_name):
+        response.status_code = status.HTTP_404_NOT_FOUND
+        return {"message": f"Feature flag {flag_name} does not exist!"}
+    else:
+        return {"success": valkey.set(flag_name, int(value))}
+
+
+@app.delete(ENDPOINTS.FEATURE + "/{flag_name}")
+def delete_feature_flag(flag_name: str, response: Response):
+    """Delete a feature flag."""
+    if not valkey.sismember(DATABASE_KEYS.FEATURE_SET, flag_name):
+        response.status_code = status.HTTP_404_NOT_FOUND
+        return {"message": f"Feature flag {flag_name} does not exist!"}
+    else:
+        valkey.srem(DATABASE_KEYS.FEATURE_SET, flag_name)
+        return {"success": not valkey.sismember(DATABASE_KEYS.FEATURE_SET, flag_name)}
+
+
+@app.get(ENDPOINTS.INFO)
+def get_info(request: Request):
+    """Get some generic information about the request, mostly for debugging"""
+    return {
+        "message": "Welcome to daq-config API.",
+        "root_path": request.scope.get("root_path"),
+        "request_headers": request.headers,
+    }
+
+
+if DEBUG_CATCHALL:
+
+    @app.api_route("/{full_path:path}")
+    async def catch_all(request: Request, full_path: str):
+        if DEBUG_CATCHALL:
+            return {
+                "message": "resource not found, supplying info for debug",
+                "root_path": request.scope.get("root_path"),
+                "path": full_path,
+                "request_headers": repr(request.headers),
+            }
 
 
 def main(args):
@@ -86,4 +127,8 @@ def main(args):
     else:
         BEAMLINE_PARAM_PATH = BEAMLINE_PARAMETER_PATHS["i03"]
     BEAMLINE_PARAMS = GDABeamlineParameters.from_file(BEAMLINE_PARAM_PATH)
-    uvicorn.run(app="config_service.app:app", host="0.0.0.0", port=8555)
+    uvicorn.run(
+        app="config_service.app:app",
+        host="0.0.0.0",
+        port=8555,  # root_path="/api"
+    )

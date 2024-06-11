@@ -35,10 +35,10 @@ import {
 import * as React from "react";
 import { ColorModeSwitcher } from "./ColorModeSwitcher";
 
-var BACKEND = "http://172.23.168.196:8555";
+var BACKEND = "https://daq-config.diamond.ac.uk/api";
 type FeatureFlag = { name: string; value: boolean };
 
-let start_data = fetch(`${BACKEND}/featurelist/`).then((response) =>
+let start_data = fetch(`${BACKEND}/featureflag`).then((response) =>
   response.json()
 );
 var start_data_processed = false;
@@ -69,7 +69,7 @@ export const App = () => {
   function switchFlag(item: string) {
     let value = !getFeatureFlagData(item);
     fetch(`${BACKEND}/featureflag/${item}?value=${value}`, {
-      method: "POST",
+      method: "PUT",
     }).then((_) =>
       fetch(`${BACKEND}/featureflag/${item}`)
         .then((resp) => resp.json())
@@ -109,7 +109,7 @@ export const App = () => {
     fetch(`${BACKEND}/featureflag/${item}`, {
       method: "DELETE",
     }).then((_) => {
-      return fetch(`${BACKEND}/featurelist/`)
+      return fetch(`${BACKEND}/featureflag`)
         .then((response) => response.json())
         .then((data) => resetDataKeys(data.sort()));
     });
@@ -146,10 +146,10 @@ export const App = () => {
     );
   }
   function createFeatureFlag(item: string) {
-    fetch(`${BACKEND}/featurelist/${item}`, {
+    fetch(`${BACKEND}/featureflag/${item}`, {
       method: "POST",
     }).then((_) => {
-      return fetch(`${BACKEND}/featurelist/`)
+      return fetch(`${BACKEND}/featureflag`)
         .then((response) => response.json())
         .then((data) => resetDataKeys(data.sort()));
     });

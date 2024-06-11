@@ -17,14 +17,16 @@ readme = "README.md"
 requires-python = ">=3.7"
 
 [project.optional-dependencies]
-server = ["fastapi", "redis", "hiredis", "dls-dodal>=1.26.0"]
+server = ["fastapi", "redis", "hiredis"]
 dev = [
     "copier",
+    "httpx",
     "pipdeptree",
     "pre-commit",
     "pyright",
     "pytest",
     "pytest-cov",
+    "pytest-asyncio",
     "ruff",
     "tox-direct",
     "types-mock",
@@ -51,6 +53,7 @@ reportMissingImports = false # Ignore missing stubs in imported modules
 # Run pytest with all our checkers, and don't spam us with massive tracebacks on error
 addopts = """
     --tb=native -vv
+    --asyncio-mode=auto
     """
 # https://iscinumpy.gitlab.io/post/bound-version-constraints/#watch-for-warnings
 filterwarnings = "error"

@@ -31,3 +31,4 @@ To work with the GUI you will probably need to run:
 module load node
 npm install
 ```
+

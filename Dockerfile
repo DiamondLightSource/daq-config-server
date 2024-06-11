@@ -22,6 +22,7 @@ RUN pip install .[server]
 FROM python:${PYTHON_VERSION}-slim as runtime
 RUN apt-get update && apt-get install -y --no-install-recommends \
     curl \
+    procps \
     && rm -rf /var/lib/apt/lists/*
 COPY --from=build /venv/ /venv/
 COPY tests/test_data/beamline_parameters.txt tests/test_data/beamline_parameters.txt
