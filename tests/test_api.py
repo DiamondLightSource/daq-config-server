@@ -3,7 +3,7 @@ from typing import Any
 from unittest.mock import MagicMock, patch
 
 import pytest
-from fastapi import Response, status
+from fastapi import status
 from fastapi.testclient import TestClient
 
 from config_service.app import app
