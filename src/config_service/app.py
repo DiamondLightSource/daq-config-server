@@ -30,7 +30,7 @@ __all__ = ["main"]
 
 BEAMLINE_PARAM_PATH = ""
 BEAMLINE_PARAMS: GDABeamlineParameters | None = None
-DEBUG_CATCHALL = True
+DEBUG_CATCHALL = False
 
 
 @app.get(ENDPOINTS.BL_PARAM + "/{param}")
