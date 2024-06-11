@@ -4,12 +4,12 @@ from dodal.common.beamlines.beamline_parameters import (
     BEAMLINE_PARAMETER_PATHS,
     GDABeamlineParameters,
 )
-from fastapi import FastAPI, Response, status
+from fastapi import FastAPI, Request, Response, status
 from fastapi.middleware.cors import CORSMiddleware
 
 from .constants import ENDPOINTS
 
-app = FastAPI()
+app = FastAPI(root_path="/api")
 origins = ["*"]  # TODO fix this
 app.add_middleware(
     CORSMiddleware,
@@ -26,15 +26,31 @@ __all__ = ["main"]
 
 BEAMLINE_PARAM_PATH = ""
 BEAMLINE_PARAMS: GDABeamlineParameters | None = None
+DEBUG_CATCHALL = True
 
 
-@app.get(ENDPOINTS.BL_PARAM + "{item_id}")
+@app.get(ENDPOINTS.INFO)
+def get_index(request: Request):
+    return {
+        "message": "Welcome to daq-config API.",
+        "root_path": request.scope.get("root_path"),
+        "request_headers": request.headers,
+    }
+
+
+@app.get(ENDPOINTS.BL_PARAM + "/{item_id}")
 def beamlineparameter(item_id: str):
     assert BEAMLINE_PARAMS is not None
     return {item_id: BEAMLINE_PARAMS.params.get(item_id)}
 
 
-@app.post(ENDPOINTS.FEATURE + "{item_id}")
+@app.get(ENDPOINTS.BL_PARAM)
+def beamlineparameters():
+    assert BEAMLINE_PARAMS is not None
+    return BEAMLINE_PARAMS.params
+
+
+@app.post(ENDPOINTS.FEATURE + "/{item_id}")
 def set_featureflag(item_id: str, value: bool, response: Response):
     if not valkey.sismember(ENDPOINTS.FEATURE_LIST, item_id):
         response.status_code = status.HTTP_404_NOT_FOUND
@@ -43,7 +59,7 @@ def set_featureflag(item_id: str, value: bool, response: Response):
         return {"success": valkey.set(item_id, int(value))}
 
 
-@app.delete(ENDPOINTS.FEATURE + "{item_id}")
+@app.delete(ENDPOINTS.FEATURE + "/{item_id}")
 def delete_featureflag(item_id: str, response: Response):
     if not valkey.sismember(ENDPOINTS.FEATURE_LIST, item_id):
         response.status_code = status.HTTP_404_NOT_FOUND
@@ -53,7 +69,7 @@ def delete_featureflag(item_id: str, response: Response):
         return {"success": not valkey.sismember(ENDPOINTS.FEATURE_LIST, item_id)}
 
 
-@app.get(ENDPOINTS.FEATURE + "{item_id}")
+@app.get(ENDPOINTS.FEATURE + "/{item_id}")
 def get_featureflag(item_id: str, response: Response):
     if not valkey.sismember(ENDPOINTS.FEATURE_LIST, item_id):
         response.status_code = status.HTTP_404_NOT_FOUND
@@ -68,7 +84,7 @@ def get_featureflag_list():
     return valkey.smembers(ENDPOINTS.FEATURE_LIST)
 
 
-@app.post(ENDPOINTS.FEATURE_LIST + "{item_id}", status_code=status.HTTP_201_CREATED)
+@app.post(ENDPOINTS.FEATURE_LIST + "/{item_id}", status_code=status.HTTP_201_CREATED)
 def create_featureflag(item_id: str, response: Response):
     if valkey.sismember(ENDPOINTS.FEATURE_LIST, item_id):
         response.status_code = status.HTTP_409_CONFLICT
@@ -76,6 +92,18 @@ def create_featureflag(item_id: str, response: Response):
     else:
         valkey.sadd(ENDPOINTS.FEATURE_LIST, item_id)
         return {"success": valkey.set(item_id, 0)}
+
+
+if DEBUG_CATCHALL:
+
+    @app.api_route("/{full_path:path}")
+    async def catch_all(request: Request, full_path: str):
+        if DEBUG_CATCHALL:
+            return {
+                "message": "resource not found, supplying info for debug",
+                "path": full_path,
+                "request_headers": repr(request.headers),
+            }
 
 
 def main(args):
@@ -86,4 +114,8 @@ def main(args):
     else:
         BEAMLINE_PARAM_PATH = BEAMLINE_PARAMETER_PATHS["i03"]
     BEAMLINE_PARAMS = GDABeamlineParameters.from_file(BEAMLINE_PARAM_PATH)
-    uvicorn.run(app="config_service.app:app", host="0.0.0.0", port=8555)
+    uvicorn.run(
+        app="config_service.app:app",
+        host="0.0.0.0",
+        port=8555,  # root_path="/api"
+    )

@@ -1,4 +1,4 @@
-# This is for live deployment on argus
+# This is for test deployment on pollux
 
 kind: PersistentVolumeClaim
 apiVersion: v1
@@ -14,9 +14,9 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: daq-config-server-svc
+  name: daq-config-server-balance
 spec:
-  type: ClusterIP
+  type: LoadBalancer
   ports:
     - name: cs-rest
       port: 8555
@@ -28,34 +28,6 @@ spec:
       targetPort: 8080
   selector:
     app: config-service
----
-apiVersion: networking.k8s.io/v1
-kind: Ingress
-metadata:
-  name: daq-config-ingress
-spec:
-  ingressClassName: nginx
-  tls:
-    - hosts:
-        - daq-config.diamond.ac.uk
-  rules:
-    - host: daq-config.diamond.ac.uk
-      http:
-        paths:
-          - path: /
-            pathType: Prefix
-            backend:
-              service:
-                name: daq-config-server-svc
-                port:
-                  number: 8080
-          - path: /api
-            pathType: Prefix
-            backend:
-              service:
-                name: daq-config-server-svc
-                port:
-                  number: 8555
 ---
 apiVersion: apps/v1
 kind: Deployment
