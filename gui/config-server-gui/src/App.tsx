@@ -69,7 +69,7 @@ export const App = () => {
   function switchFlag(item: string) {
     let value = !getFeatureFlagData(item);
     fetch(`${BACKEND}/featureflag/${item}?value=${value}`, {
-      method: "POST",
+      method: "PUT",
     }).then((_) =>
       fetch(`${BACKEND}/featureflag/${item}`)
         .then((resp) => resp.json())

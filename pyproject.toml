@@ -17,9 +17,10 @@ readme = "README.md"
 requires-python = ">=3.7"
 
 [project.optional-dependencies]
-server = ["fastapi", "redis", "hiredis", "dls-dodal>=1.26.0"]
+server = ["fastapi", "redis", "hiredis"]
 dev = [
     "copier",
+    "httpx",
     "pipdeptree",
     "pre-commit",
     "pyright",
