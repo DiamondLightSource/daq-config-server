@@ -1,3 +1,5 @@
+from os import environ
+
 import uvicorn
 from fastapi import FastAPI, Request, Response, status
 from fastapi.middleware.cors import CORSMiddleware
@@ -9,13 +11,15 @@ from .beamline_parameters import (
 )
 from .constants import DATABASE_KEYS, ENDPOINTS
 
+DEV_MODE = bool(environ.get("DEV_MODE"))
+
 app = FastAPI(
     title="DAQ config service",
     description="""For storing and fetching beamline parameters, etc. which are needed
     by more than one applicatioon or service""",
-    root_path="/api",
+    root_path="/api" if not DEV_MODE else "",
 )
-origins = ["*"]  # TODO fix this
+origins = ["*"]
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
@@ -30,7 +34,6 @@ __all__ = ["main"]
 
 BEAMLINE_PARAM_PATH = ""
 BEAMLINE_PARAMS: GDABeamlineParameters | None = None
-DEBUG_CATCHALL = False
 
 
 @app.get(ENDPOINTS.BL_PARAM + "/{param}")
@@ -106,17 +109,16 @@ def get_info(request: Request):
     }
 
 
-if DEBUG_CATCHALL:
+if DEV_MODE:
 
     @app.api_route("/{full_path:path}")
     async def catch_all(request: Request, full_path: str):
-        if DEBUG_CATCHALL:
-            return {
-                "message": "resource not found, supplying info for debug",
-                "root_path": request.scope.get("root_path"),
-                "path": full_path,
-                "request_headers": repr(request.headers),
-            }
+        return {
+            "message": "resource not found, supplying info for debug",
+            "root_path": request.scope.get("root_path"),
+            "path": full_path,
+            "request_headers": repr(request.headers),
+        }
 
 
 def main(args):

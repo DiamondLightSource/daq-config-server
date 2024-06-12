@@ -35,7 +35,7 @@ import {
 import * as React from "react";
 import { ColorModeSwitcher } from "./ColorModeSwitcher";
 
-var BACKEND = "https://daq-config.diamond.ac.uk/api";
+var BACKEND = process.env.REACT_APP_BACKEND_ADDR;
 type FeatureFlag = { name: string; value: boolean };
 
 let start_data = fetch(`${BACKEND}/featureflag`).then((response) =>

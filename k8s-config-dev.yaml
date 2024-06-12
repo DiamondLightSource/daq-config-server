@@ -49,7 +49,7 @@ spec:
             claimName: config-service-db-volume
       containers:
         - name: config-service-main
-          image: gcr.io/diamond-privreg/daq-config-server/daq-config-server
+          image: gcr.io/diamond-privreg/daq-config-server/daq-config-server-dev
           imagePullPolicy: Always
           command: ["config-service"]
           args: ["--dev"]
@@ -62,7 +62,7 @@ spec:
               cpu: "1"
               memory: 300M
         - name: config-service-db
-          image: gcr.io/diamond-privreg/daq-config-server/daq-config-server-db
+          image: gcr.io/diamond-privreg/daq-config-server/daq-config-server-db-dev
           command: []
           args: ["valkey.conf"]
           ports:
@@ -74,7 +74,7 @@ spec:
               cpu: "1"
               memory: 300M
         - name: config-service-gui
-          image: gcr.io/diamond-privreg/daq-config-server/daq-config-server-gui
+          image: gcr.io/diamond-privreg/daq-config-server/daq-config-server-gui-dev
           imagePullPolicy: Always
           command: []
           ports:
