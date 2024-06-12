@@ -4,9 +4,13 @@
 [![PyPI](https://img.shields.io/pypi/v/daq-config-server.svg)](https://pypi.org/project/daq-config-server)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
-# daq_config_server
+# DAQ Config Server
 
 A service to put and get your config values from.
+
+Comprises a FastAPI backend with a valkey database to C/R/U/D config values, and a Chakra/React frontend for easier management.
+
+Currently the scope is JUST storing and retrieving feature flags for Hyperion/I03 UDC but we hope to expand this to replace all DAQ config files.
 
 |  Source  |     <https://github.com/DiamondLightSource/daq-config-server>      |
 | :------: | :----------------------------------------------------------------: |
