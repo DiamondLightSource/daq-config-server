@@ -38,13 +38,6 @@ jobs:
     secrets:
       CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
-  container:
-    needs: check
-    if: needs.check.outputs.branch-pr == ''
-    uses: ./.github/workflows/_container.yml
-    permissions:
-      packages: write
-
   dist:
     needs: check
     if: needs.check.outputs.branch-pr == ''
