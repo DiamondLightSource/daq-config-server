@@ -8,7 +8,7 @@ from .constants import ENDPOINTS
 T = TypeVar("T")
 
 
-class ConfigService:
+class ConfigServer:
     def __init__(self, address: str, port: int, log: Logger | None = None) -> None:
         self.address = address
         self.port = port

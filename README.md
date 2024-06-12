@@ -19,9 +19,9 @@ values (e.g. `beamlineParameters`...)
 To use the config values in an experimental application (e.g. Hyperion) you can do:
 
 ```python
-from daq_config_server.client import ConfigService
+from daq_config_server.client import ConfigServer
 
-daq_config_server = ConfigService("<service ip address>", <port>)
+daq_config_server = ConfigServer("<service ip address>", <port>)
 
 use_stub_offsets: bool = daq_config_server.best_effort_get_feature_flag("use_stub_offsets")
 

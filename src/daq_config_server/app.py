@@ -21,7 +21,7 @@ if DEV_MODE:
     ROOT_PATH = ""
 
 app = FastAPI(
-    title="DAQ config service",
+    title="DAQ config server",
     description="""For storing and fetching beamline parameters, etc. which are needed
     by more than one applicatioon or service""",
     root_path=ROOT_PATH,
