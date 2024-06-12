@@ -1,6 +1,6 @@
-[![Frontend CI](https://github.com/dperl-dls/daq-config-server/actions/workflows/gui_ci.yml/badge.svg)](https://github.com/dperl-dls/daq-config-server/actions/workflows/gui_ci.yml)
-[![Backend CI](https://github.com/dperl-dls/daq-config-server/actions/workflows/backend_ci.yml/badge.svg)](https://github.com/dperl-dls/daq-config-server/actions/workflows/backend_ci.yml)
-[![Coverage](https://codecov.io/gh/dperl-dls/daq-config-server/branch/main/graph/badge.svg)](https://codecov.io/gh/dperl-dls/daq-config-server)
+[![Frontend CI](https://github.com/DiamondLightSource/daq-config-server/actions/workflows/gui_ci.yml/badge.svg)](https://github.com/DiamondLightSource/daq-config-server/actions/workflows/gui_ci.yml)
+[![Backend CI](https://github.com/DiamondLightSource/daq-config-server/actions/workflows/backend_ci.yml/badge.svg)](https://github.com/DiamondLightSource/daq-config-server/actions/workflows/backend_ci.yml)
+[![Coverage](https://codecov.io/gh/DiamondLightSource/daq-config-server/branch/main/graph/badge.svg)](https://codecov.io/gh/DiamondLightSource/daq-config-server)
 [![PyPI](https://img.shields.io/pypi/v/daq-config-server.svg)](https://pypi.org/project/daq-config-server)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
