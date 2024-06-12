@@ -31,4 +31,4 @@ ARG RUN_APP_IN_DEV_MODE=0
 ENV DEV_MODE=${RUN_APP_IN_DEV_MODE}
 
 # change this entrypoint if it is not the same as the repo
-CMD config-service
+CMD daq-config-server
