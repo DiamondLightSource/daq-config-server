@@ -129,4 +129,8 @@ def main(args):
     else:
         BEAMLINE_PARAM_PATH = BEAMLINE_PARAMETER_PATHS["i03"]
     BEAMLINE_PARAMS = GDABeamlineParameters.from_file(BEAMLINE_PARAM_PATH)
-    uvicorn.run(app="config_service.app:app", host="0.0.0.0", port=8555)
+    uvicorn.run(
+        app="config_service.app:app",
+        host="0.0.0.0",
+        port=8555,  # root_path="/api"
+    )
