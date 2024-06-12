@@ -45,7 +45,7 @@ class TestApi:
 
     @patch("daq_config_server.app.valkey")
     async def test_get_feature_list(self, mock_valkey: MagicMock, mock_app):
-        test_param_list = ["param_1", "param_2", "param_3"]
+        test_param_list = ["param_1", "param_2", "param_3", "param_4"]
         mock_valkey.smembers.return_value = test_param_list
         await _assert_get_and_response(
             mock_app,

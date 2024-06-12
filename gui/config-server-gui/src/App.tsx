@@ -135,6 +135,7 @@ export const App = () => {
             placeholder="flag_name"
             size="md"
             onChange={handleChange}
+            onKeyDown={(event) => event.key === "Enter" && submitCreateFlag()}
           ></Input>
           <InputRightElement
             children={
