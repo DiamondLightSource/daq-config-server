@@ -32,6 +32,6 @@ def main():
         main(args)
 
 
-# test with: python -m daq_config_service
+# test with: python -m daq_config_server
 if __name__ == "__main__":
     main()

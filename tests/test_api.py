@@ -3,12 +3,11 @@ from typing import Any
 from unittest.mock import MagicMock, patch
 
 import pytest
+from daq_config_server.app import app
+from daq_config_server.beamline_parameters import GDABeamlineParameters
+from daq_config_server.constants import ENDPOINTS
 from fastapi import status
 from fastapi.testclient import TestClient
-
-from config_service.app import app
-from config_service.beamline_parameters import GDABeamlineParameters
-from config_service.constants import ENDPOINTS
 
 mock_bl_params = GDABeamlineParameters()
 mock_bl_params.params = {"p1": 0.234, "p2": 0.345, "p3": 678}
@@ -28,7 +27,7 @@ async def _assert_get_and_response(
     assert content == expected_response
 
 
-@patch("config_service.app.BEAMLINE_PARAMS", mock_bl_params)
+@patch("daq_config_server.app.BEAMLINE_PARAMS", mock_bl_params)
 class TestApi:
     async def test_get_all_beamlineparams(self, mock_app):
         await _assert_get_and_response(
