@@ -1,0 +1,56 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: daq-config-server
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: daq-config-server
+  template:
+    metadata:
+      labels:
+        app: daq-config-server
+    spec:
+      volumes:
+        - name: daq-config-server-db-volume
+          persistentVolumeClaim:
+            claimName: daq-config-server-db-volume
+      containers:
+        - name: daq-config-server-main
+          image: {{.Values.imageNames.main}}
+          imagePullPolicy: Always
+          command: ["daq-config-server"]
+          args: ["--dev"]
+          ports:
+            - name: cs-rest
+              containerPort: 8555
+              protocol: TCP
+          resources:
+            limits:
+              cpu: "1"
+              memory: 300M
+        - name: daq-config-server-db
+          image: {{.Values.imageNames.db}}
+          command: []
+          args: ["valkey.conf"]
+          ports: []
+          volumeMounts:
+            - mountPath: "/persistent_data/"
+              name: daq-config-server-db-volume
+          resources:
+            limits:
+              cpu: "1"
+              memory: 300M
+        - name: daq-config-server-gui
+          image: {{.Values.imageNames.gui}}
+          imagePullPolicy: Always
+          command: []
+          ports:
+            - name: http
+              containerPort: 8080
+              protocol: TCP
+          resources:
+            limits:
+              cpu: "1"
+              memory: 200M
