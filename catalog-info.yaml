@@ -1,9 +1,9 @@
 apiVersion: backstage.io/v1alpha1
 kind: Component
 metadata:
-  name: config-service
-  title: config-service
-  description: an service to put and get your config values from
+  name: daq-config-server
+  title: daq-config-server
+  description: A service to put and get your config values from
 spec:
   type: documentation
   lifecycle: experimental

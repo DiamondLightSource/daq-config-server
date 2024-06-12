@@ -4,13 +4,13 @@ _src_path: gh:DiamondLightSource/python-copier-template
 author_email: david.perl@diamond.ac.uk
 author_name: David Perl
 component_owner: group:default/sscc
-description: an service to put and get your config values from
-distribution_name: config-service
-docker: true
+description: A service to put and get your config values from
+distribution_name: daq-config-server
+docker: false
 docs_type: README
 git_platform: github.com
-github_org: dperl-dls
-package_name: config_service
+github_org: DiamondLightSource
+package_name: daq_config_server
 pypi: true
-repo_name: config-service
+repo_name: daq-config-server
 type_checker: pyright

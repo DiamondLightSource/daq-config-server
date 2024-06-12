@@ -21,7 +21,7 @@ if DEV_MODE:
     ROOT_PATH = ""
 
 app = FastAPI(
-    title="DAQ config service",
+    title="DAQ config server",
     description="""For storing and fetching beamline parameters, etc. which are needed
     by more than one applicatioon or service""",
     root_path=ROOT_PATH,
@@ -136,4 +136,4 @@ def main(args):
     else:
         BEAMLINE_PARAM_PATH = BEAMLINE_PARAMETER_PATHS["i03"]
     BEAMLINE_PARAMS = GDABeamlineParameters.from_file(BEAMLINE_PARAM_PATH)
-    uvicorn.run(app="config_service.app:app", host="0.0.0.0", port=8555)
+    uvicorn.run(app="daq_config_server.app:app", host="0.0.0.0", port=8555)

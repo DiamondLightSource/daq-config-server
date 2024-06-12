@@ -3,7 +3,7 @@ requires = ["setuptools>=64", "setuptools_scm[toml]>=6.2"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "config-service"
+name = "daq-config-server"
 classifiers = [
     "Development Status :: 3 - Alpha",
     "License :: OSI Approved :: Apache Software License",
@@ -33,10 +33,10 @@ dev = [
 ]
 
 [project.scripts]
-config-service = "config_service.__main__:main"
+daq-config-server = "daq_config_server.__main__:main"
 
 [project.urls]
-GitHub = "https://github.com/dperl-dls/config-service"
+GitHub = "https://github.com/DiamondLightSource/daq-config-server"
 
 [[project.authors]] # Further authors may be added by duplicating this section
 email = "david.perl@diamond.ac.uk"
@@ -44,7 +44,7 @@ name = "David Perl"
 
 
 [tool.setuptools_scm]
-write_to = "src/config_service/_version.py"
+write_to = "src/daq_config_server/_version.py"
 
 [tool.pyright]
 reportMissingImports = false # Ignore missing stubs in imported modules
@@ -61,7 +61,7 @@ filterwarnings = "error"
 testpaths = "docs src tests"
 
 [tool.coverage.run]
-data_file = "/tmp/config_service.coverage"
+data_file = "/tmp/daq_config_server.coverage"
 
 [tool.coverage.paths]
 # Tests are run from installed location, map back to the src directory
@@ -85,7 +85,7 @@ allowlist_externals =
 commands =
     pre-commit: pre-commit run --all-files --show-diff-on-failure {posargs}
     type-checking: pyright src tests {posargs}
-    tests: pytest --cov=config_service --cov-report term --cov-report xml:cov.xml {posargs}
+    tests: pytest --cov=daq_config_server --cov-report term --cov-report xml:cov.xml {posargs}
 """
 
 [tool.ruff]

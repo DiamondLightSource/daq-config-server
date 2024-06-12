@@ -1,27 +1,32 @@
-[![CI](https://github.com/dperl-dls/config-service/actions/workflows/ci.yml/badge.svg)](https://github.com/dperl-dls/config-service/actions/workflows/ci.yml)
-[![Coverage](https://codecov.io/gh/dperl-dls/config-service/branch/main/graph/badge.svg)](https://codecov.io/gh/dperl-dls/config-service)
+[![Frontend CI](https://github.com/dperl-dls/daq-config-server/actions/workflows/gui_ci.yml/badge.svg)](https://github.com/dperl-dls/daq-config-server/actions/workflows/gui_ci.yml)
+[![Backend CI](https://github.com/dperl-dls/daq-config-server/actions/workflows/backend_ci.yml/badge.svg)](https://github.com/dperl-dls/daq-config-server/actions/workflows/backend_ci.yml)
+[![Coverage](https://codecov.io/gh/dperl-dls/daq-config-server/branch/main/graph/badge.svg)](https://codecov.io/gh/dperl-dls/daq-config-server)
+[![PyPI](https://img.shields.io/pypi/v/daq-config-server.svg)](https://pypi.org/project/daq-config-server)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
-# config_service
+# daq_config_server
 
 A service to put and get your config values from.
 
-|  Source  |     <https://github.com/dperl-dls/config-service>      |
-| :------: | :----------------------------------------------------: |
-|  Docker  |  `docker run ghcr.io/dperl-dls/config-service:latest`  |
-| Releases | <https://github.com/dperl-dls/config-service/releases> |
+|  Source  |     <https://github.com/DiamondLightSource/daq-config-server>      |
+| :------: | :----------------------------------------------------------------: |
+|  Docker  |  `docker run ghcr.io/DiamondLightSource/daq-config-server:latest`  |
+| Releases | <https://github.com/DiamondLightSource/daq-config-server/releases> |
 
 A simple app for storing and fetching values. Has a Valkey (Redis) instance as well as options for file-backed legacy
 values (e.g. `beamlineParameters`...)
 
+Currently the server application always needs to be run with the `--dev` flag, as it cannot yet look at the DLS
+filesystem to find the real beamline parameter files.
+
 To use the config values in an experimental application (e.g. Hyperion) you can do:
 
 ```python
-from config_service.client import ConfigService
+from daq_config_server.client import ConfigServer
 
-config_service = ConfigService("<service ip address>", <port>)
+config_server = ConfigServer("<service ip address>", <port>)
 
-use_stub_offsets: bool = config_service.best_effort_get_feature_flag("use_stub_offsets")
+use_stub_offsets: bool = config_server.best_effort_get_feature_flag("use_stub_offsets")
 
 ```
 
@@ -45,5 +50,5 @@ To deploy a live version, you can run the above script with no arguments and the
 argus, run `kubectl rollout restart deployment`
 
 To test locally, you can build everything with `./deployment/build_and_push_all.sh --dev --no-push` and then
-run the containers `daq-config-server-dev` (with the command `config-service --dev`), `daq-config-server-db-dev`,
+run the containers `daq-config-server-dev` (with the command `daq-config-server --dev`), `daq-config-server-db-dev`,
 and `daq-config-server-gui-dev`, all with the `--net host` option.

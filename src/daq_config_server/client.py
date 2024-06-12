@@ -8,11 +8,11 @@ from .constants import ENDPOINTS
 T = TypeVar("T")
 
 
-class ConfigService:
+class ConfigServer:
     def __init__(self, address: str, port: int, log: Logger | None = None) -> None:
         self.address = address
         self.port = port
-        self._log = log if log else getLogger("config_service.client")
+        self._log = log if log else getLogger("daq_config_server.client")
 
     def _get(self, endpoint: str, param: str | None = None):
         conn = HTTPConnection(self.address, self.port)
