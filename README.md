@@ -1,4 +1,5 @@
-[![CI](https://github.com/dperl-dls/config-service/actions/workflows/ci.yml/badge.svg)](https://github.com/dperl-dls/config-service/actions/workflows/ci.yml)
+[![Frontend CI](https://github.com/dperl-dls/config-service/actions/workflows/gui_ci.yml/badge.svg)](https://github.com/dperl-dls/config-service/actions/workflows/gui_ci.yml)
+[![Backend CI](https://github.com/dperl-dls/config-service/actions/workflows/backend_ci.yml/badge.svg)](https://github.com/dperl-dls/config-service/actions/workflows/backend_ci.yml)
 [![Coverage](https://codecov.io/gh/dperl-dls/config-service/branch/main/graph/badge.svg)](https://codecov.io/gh/dperl-dls/config-service)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
@@ -6,10 +7,10 @@
 
 A service to put and get your config values from.
 
-|  Source  |     <https://github.com/dperl-dls/config-service>      |
-| :------: | :----------------------------------------------------: |
-|  Docker  |  `docker run ghcr.io/dperl-dls/config-service:latest`  |
-| Releases | <https://github.com/dperl-dls/config-service/releases> |
+|  Source  |     <https://github.com/DiamondLightSource/daq-config-service>      |
+| :------: | :-----------------------------------------------------------------: |
+|  Docker  |  `docker run ghcr.io/DiamondLightSource/daq-config-service:latest`  |
+| Releases | <https://github.com/DiamondLightSource/daq-config-service/releases> |
 
 A simple app for storing and fetching values. Has a Valkey (Redis) instance as well as options for file-backed legacy
 values (e.g. `beamlineParameters`...)
