@@ -51,8 +51,23 @@ development. This ensures that environment variables for dev or prod builds are 
 such as the GUI pointing at the subdomain URL vs. localhost, and the `root_path` of the FastAPI app.
 
 To deploy a live version, you can run the above script with no arguments and then while logged in to
-argus, run `kubectl rollout restart deployment`
+argus, run `kubectl rollout restart deployment`. If it is not currently deploy it you can deploy it with
+`helm install daq-config ./helmchart`.
 
 To test locally, you can build everything with `./deployment/build_and_push_all.sh --dev --no-push` and then
 run the containers `daq-config-server-dev` (with the command `daq-config-server --dev`), `daq-config-server-db-dev`,
 and `daq-config-server-gui-dev`, all with the `--net host` option.
+
+To test on pollux, log in to pollux in your namespace and run:
+
+```bash
+helm install daq-config ./helmchart/ --values dev-values.yaml
+```
+
+followed by:
+
+```bash
+kubectl port-forward service/daq-config-server-svc 8080 8555
+```
+
+after which you should be able to access the frontend on `http://localhost:8080` and the API on `http://localhost:8555`

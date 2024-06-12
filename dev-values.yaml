@@ -1,0 +1,10 @@
+service:
+  type: LoadBalancer
+
+imageNames:
+  main: "gcr.io/diamond-privreg/daq-config-server/daq-config-server-dev"
+  gui: "gcr.io/diamond-privreg/daq-config-server/daq-config-server-gui-dev"
+  db: "gcr.io/diamond-privreg/daq-config-server/daq-config-server-db-dev"
+
+ingress:
+  enabled: false

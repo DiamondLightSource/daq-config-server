@@ -1,0 +1,27 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: daq-config-ingress
+spec:
+  ingressClassName: nginx
+  tls:
+    - hosts:
+        - daq-config.diamond.ac.uk
+  rules:
+    - host: daq-config.diamond.ac.uk
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: daq-config-server-svc
+                port:
+                  number: 8080
+          - path: /api
+            pathType: Prefix
+            backend:
+              service:
+                name: daq-config-server-svc
+                port:
+                  number: 8555

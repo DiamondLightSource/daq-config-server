@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: daq-config-server-svc
+spec:
+  type: {{.Values.service.type}}
+  ports:
+    - name: cs-rest
+      port: 8555
+      protocol: TCP
+      targetPort: 8555
+    - name: http
+      port: 8080
+      protocol: TCP
+      targetPort: 8080
+  selector:
+    app: daq-config-server
