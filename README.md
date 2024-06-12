@@ -19,16 +19,30 @@ To use the config values in an experimental application (e.g. Hyperion) you can 
 ```python
 from config_service.client import ConfigService
 
-config_service = ConfigService("<service ip address>", 8555)
+config_service = ConfigService("<service ip address>", <port>)
 
 use_stub_offsets: bool = config_service.best_effort_get_feature_flag("use_stub_offsets")
 
 ```
 
-To work with the GUI you will probably need to run:
+To work on the GUI you will probably need to run:
 
 ```bash
 module load node
 npm install
 ```
 
+in the gui directory to setup the environment.
+
+## Testing and deployment
+
+There is a convenient script in `./deployment/build_and_push_all.sh` to build all the containers, which takes
+a `--dev` option to push containers with `-dev` appended to their names and a `--no-push` option for local
+development.
+
+To deploy a live version, you can run the above script with no arguments and then while logged in to
+argus, run `kubectl rollout restart deployment`
+
+To test locally, you can build everything with `./deployment/build_and_push_all.sh --dev --no-push` and then
+run the containers `daq-config-server-dev` (with the command `config-service --dev`), `daq-config-server-db-dev`,
+and `daq-config-server-gui-dev`, all with the `--net host` option.
