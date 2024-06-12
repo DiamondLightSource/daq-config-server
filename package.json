@@ -8,5 +8,8 @@
     "build": "cd gui/config-server-gui && react-scripts build",
     "test": "cd gui/config-server-gui && react-scripts test",
     "eject": "cd gui/config-server-gui && react-scripts eject"
+  },
+  "dependencies": {
+    "svgexport": "^0.4.2"
   }
 }
