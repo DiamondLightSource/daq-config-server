@@ -3,11 +3,12 @@ from typing import Any
 from unittest.mock import MagicMock, patch
 
 import pytest
+from fastapi import status
+from fastapi.testclient import TestClient
+
 from daq_config_server.app import app
 from daq_config_server.beamline_parameters import GDABeamlineParameters
 from daq_config_server.constants import ENDPOINTS
-from fastapi import status
-from fastapi.testclient import TestClient
 
 mock_bl_params = GDABeamlineParameters()
 mock_bl_params.params = {"p1": 0.234, "p2": 0.345, "p3": 678}
@@ -42,7 +43,7 @@ class TestApi:
             {param: mock_bl_params.params[param]},
         )
 
-    @patch("config_service.app.valkey")
+    @patch("daq_config_server.app.valkey")
     async def test_get_feature_list(self, mock_valkey: MagicMock, mock_app):
         test_param_list = ["param_1", "param_2", "param_3"]
         mock_valkey.smembers.return_value = test_param_list
