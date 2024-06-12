@@ -11,13 +11,20 @@ from .beamline_parameters import (
 )
 from .constants import DATABASE_KEYS, ENDPOINTS
 
-DEV_MODE = bool(environ.get("DEV_MODE"))
+DEV_MODE = bool(int(environ.get("DEV_MODE") or 0))
+
+ROOT_PATH = "/api"
+print(f"{DEV_MODE=}")
+print(f"{ROOT_PATH=}")
+if DEV_MODE:
+    print("Running in dev mode! not setting root path!")
+    ROOT_PATH = ""
 
 app = FastAPI(
     title="DAQ config service",
     description="""For storing and fetching beamline parameters, etc. which are needed
     by more than one applicatioon or service""",
-    root_path="/api" if not DEV_MODE else "",
+    root_path=ROOT_PATH,
 )
 origins = ["*"]
 app.add_middleware(
@@ -129,8 +136,4 @@ def main(args):
     else:
         BEAMLINE_PARAM_PATH = BEAMLINE_PARAMETER_PATHS["i03"]
     BEAMLINE_PARAMS = GDABeamlineParameters.from_file(BEAMLINE_PARAM_PATH)
-    uvicorn.run(
-        app="config_service.app:app",
-        host="0.0.0.0",
-        port=8555,  # root_path="/api"
-    )
+    uvicorn.run(app="config_service.app:app", host="0.0.0.0", port=8555)
