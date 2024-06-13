@@ -1,25 +1,28 @@
 import json
-from http.client import HTTPConnection
+from http.client import HTTPConnection, HTTPSConnection
 from logging import Logger, getLogger
 from typing import TypeVar
-
+from urllib3.util import parse_url
 from .constants import ENDPOINTS
 
 T = TypeVar("T")
 
 
 class ConfigServer:
-    def __init__(self, address: str, port: int, log: Logger | None = None) -> None:
-        self.address = address
-        self.port = port
+    def __init__(self, url: str, log: Logger | None = None) -> None:
+        self._url = parse_url(url)
+        if self._url.scheme != "http" and self._url.scheme != "https":
+            raise ValueError("ConfigServer must use HTTP or HTTPS!")
+        self._Conn = HTTPSConnection if self._url.scheme == "https" else HTTPConnection
         self._log = log if log else getLogger("daq_config_server.client")
 
     def _get(self, endpoint: str, item: str | None = None):
-        conn = HTTPConnection(self.address, self.port)
+        req_item = f"/{item}" if item else ""
+        conn = self._Conn(self._url.host, self._url.port or self._url.scheme)
         conn.connect()
-        conn.request("GET", endpoint + (f"/{item}" if item else ""))
+        conn.request("GET", self._url.request_uri + endpoint + req_item)
         resp = conn.getresponse()
-        assert resp.status == 200, f"Failed to get response: {resp}"
+        assert resp.status == 200, f"Failed to get response: {resp!r}"
         body = json.loads(resp.read())
         assert item in body, f"Malformed response: {body} does not contain {item}"
         resp.close()
