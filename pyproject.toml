@@ -21,6 +21,7 @@ server = ["fastapi", "redis", "hiredis"]
 dev = [
     "copier",
     "httpx",
+    "mockito",
     "pipdeptree",
     "pre-commit",
     "pyright",

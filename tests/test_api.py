@@ -5,6 +5,7 @@ from unittest.mock import MagicMock, patch
 import pytest
 from fastapi import status
 from fastapi.testclient import TestClient
+from mockito import when
 
 from daq_config_server.app import app
 from daq_config_server.beamline_parameters import GDABeamlineParameters
@@ -51,4 +52,16 @@ class TestApi:
             mock_app,
             ENDPOINTS.FEATURE,
             test_param_list,
+        )
+
+    @patch("daq_config_server.app.valkey")
+    async def test_get_feature_list_w_values(self, mock_valkey: MagicMock, mock_app):
+        test_params = {"param_1": True, "param_2": True, "param_3": False}
+        mock_valkey.smembers.return_value = list(test_params.keys())
+        for param, value in test_params.items():
+            when(mock_valkey).get(param).thenReturn(value)
+        await _assert_get_and_response(
+            mock_app,
+            ENDPOINTS.FEATURE + "?get_values=true",
+            test_params,
         )

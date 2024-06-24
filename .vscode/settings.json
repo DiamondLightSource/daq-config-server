@@ -2,6 +2,13 @@
     "python.testing.unittestEnabled": false,
     "python.testing.pytestEnabled": true,
     "editor.formatOnSave": true,
+    "files.watcherExclude": {
+        "**/.venv/**": true,
+        "**/venv/**": true,
+        "**/.git/objects/**": true,
+        "**/.git/subtree-cache/**": true,
+        "**/node_modules/*/**": true
+    },
     "editor.codeActionsOnSave": {
         "source.organizeImports": "explicit"
     },

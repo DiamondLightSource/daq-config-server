@@ -58,9 +58,14 @@ def get_all_beamline_parameters():
 
 
 @app.get(ENDPOINTS.FEATURE)
-def get_feature_flag_list():
-    """Get a list of all the current feature flags."""
-    return valkey.smembers(DATABASE_KEYS.FEATURE_SET)
+def get_feature_flag_list(get_values: bool = False):
+    """Get a list of all the current feature flags, or a dict of all the current values
+    if get_values=true is passed"""
+    flags = valkey.smembers(DATABASE_KEYS.FEATURE_SET)
+    if not get_values:
+        return flags
+    else:
+        return {flag: bool(int(valkey.get(flag))) for flag in flags}  # type: ignore
 
 
 @app.get(ENDPOINTS.FEATURE + "/{flag_name}")
