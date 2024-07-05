@@ -64,7 +64,7 @@ livenessProbe:
 readinessProbe:
   httpGet:
     path: /
-    port: http
+    port: https
 
 autoscaling:
   enabled: false
