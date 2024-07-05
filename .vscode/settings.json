@@ -18,6 +18,9 @@
     "[typescriptreact]": {
         "editor.defaultFormatter": "esbenp.prettier-vscode",
         "editor.formatOnSave": true
+    },    "[typescript]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode",
+        "editor.formatOnSave": true
     },
     "[yaml]": {
         "editor.defaultFormatter": "ms-kubernetes-tools.vscode-kubernetes-tools",
