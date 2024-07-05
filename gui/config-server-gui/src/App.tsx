@@ -48,7 +48,7 @@ const start_data = getAllFlagNames();
 
 function setLocalFlag(item: string, value: boolean, local_data_hook: LocalFlagDataHook) {
   local_data_hook.setData(
-    local_data_hook.data.map((i) => (i.name === item ? { name: item, value: value } : i))
+    local_data_hook.data.map((i) => (i.name === item ? { name: item, value: value } : i)),
   );
 }
 
@@ -207,7 +207,10 @@ export const App = () => {
                         </Tr>
                       </Thead>
                       <PropertyTableData
-                        data={{ data: feature_flag_data, setData: setFeatureFlagData }}
+                        data={{
+                          data: feature_flag_data,
+                          setData: setFeatureFlagData,
+                        }}
                       />
                     </Table>
                   </TableContainer>

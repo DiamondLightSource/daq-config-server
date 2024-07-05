@@ -38,7 +38,7 @@ export function refreshDataKeys(keys: string[]) {
           console.log({ name: k, value: val });
           return { name: k, value: val[k] };
         });
-    })
+    }),
   );
 }
 

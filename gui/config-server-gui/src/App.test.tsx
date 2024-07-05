@@ -4,8 +4,6 @@ import { render } from "./test-utils";
 
 test("title is displayed", () => {
   render(<App />);
-  const titleText = screen.getByText(
-    /Read and store configuration for I03 Hyperion/i
-  );
+  const titleText = screen.getByText(/Read and store configuration for I03 Hyperion/i);
   expect(titleText).toBeInTheDocument();
 });
