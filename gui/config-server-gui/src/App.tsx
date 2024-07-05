@@ -36,40 +36,15 @@ import { ColorModeSwitcher } from "./ColorModeSwitcher";
 import {
   createFeatureFlag,
   deleteFeatureFlag,
+  getAllFlagNames,
   getFeatureFlagValue,
   refreshDataKeys,
   switchFlag,
 } from "./communication";
 import { theme } from "./themes";
+import { FeatureFlag, LocalFlagDataHook, SetLocalFeatureFlagData } from "./types";
 
-var BACKEND =
-  process.env.NODE_ENV === "production"
-    ? process.env.REACT_APP_BACKEND_ADDR
-    : "http://localhost:8555";
-
-let start_data = fetch(`${BACKEND}/featureflag`).then((response) => response.json());
-
-type FeatureFlag = { name: string; value: boolean };
-type SetLocalFeatureFlagData = React.Dispatch<
-  React.SetStateAction<
-    {
-      name: string;
-      value: boolean;
-    }[]
-  >
->;
-type LocalFlagDataHook = {
-  data: FeatureFlag[];
-  setData: SetLocalFeatureFlagData;
-};
-
-function getLocalFeatureFlagData(item: string, haystack: FeatureFlag[]) {
-  for (let f of haystack) {
-    if (f.name === item) {
-      return f.value;
-    }
-  }
-}
+const start_data = getAllFlagNames();
 
 function setLocalFlag(item: string, value: boolean, local_data_hook: LocalFlagDataHook) {
   local_data_hook.setData(
@@ -78,7 +53,7 @@ function setLocalFlag(item: string, value: boolean, local_data_hook: LocalFlagDa
 }
 
 //** A button which triggers deletion of a flag */
-let DeleteFlagButton = ({
+const DeleteFlagButton = ({
   item,
   setFeatureFlagData,
 }: {
@@ -97,16 +72,21 @@ let DeleteFlagButton = ({
 );
 
 //** Generate PropertyTableDatum elements for every item */
-let PropertyTableData = ({ data }: { data: LocalFlagDataHook }) => (
+const PropertyTableData = ({ data }: { data: LocalFlagDataHook }) => (
   <Tbody>
     {data.data.map((item) => (
-      <PropertyTableDatum flag={item} data={data} />
+      <PropertyTableDatum flag={item} data={data} key={item.name} />
     ))}
+    <Tr>
+      <Td colSpan={3} textAlign={"center"}>
+        <CreateNewPopover local_data_hook={data} />
+      </Td>
+    </Tr>
   </Tbody>
 );
 
 /** A single row in the table of feature flags */
-let PropertyTableDatum = ({ flag, data }: { flag: FeatureFlag; data: LocalFlagDataHook }) => (
+const PropertyTableDatum = ({ flag, data }: { flag: FeatureFlag; data: LocalFlagDataHook }) => (
   <Tr key={flag.name}>
     <Td>{flag.name}</Td>
     <Td>
@@ -129,11 +109,19 @@ let PropertyTableDatum = ({ flag, data }: { flag: FeatureFlag; data: LocalFlagDa
 );
 
 /** A text field with a submit button for creating new feature flags */
-function CreateFeatureSubmit(closeDialog: Function | null) {
+const CreateFeatureSubmit = ({
+  closeDialog,
+  local_data_hook,
+}: {
+  closeDialog: Function | null;
+  local_data_hook: LocalFlagDataHook;
+}) => {
   const [value, setValue] = React.useState("");
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => setValue(e.target.value);
   const submitCreateFlag = () => {
-    createFeatureFlag(value).then((data) => refreshDataKeys(data.sort()));
+    createFeatureFlag(value)
+      .then((data) => refreshDataKeys(data.sort()))
+      .then((data) => local_data_hook.setData(data));
     setValue("");
     if (closeDialog !== null) {
       closeDialog();
@@ -159,10 +147,10 @@ function CreateFeatureSubmit(closeDialog: Function | null) {
       </InputGroup>
     </>
   );
-}
+};
 
 /** A popover for creating new feature flags */
-function CreateNewPopover() {
+const CreateNewPopover = ({ local_data_hook }: { local_data_hook: LocalFlagDataHook }) => {
   const { isOpen, onToggle, onClose } = useDisclosure();
   return (
     <Popover onClose={onClose} isOpen={isOpen} arrowSize={15}>
@@ -173,18 +161,22 @@ function CreateNewPopover() {
         <PopoverHeader fontSize={"medium"}>Create new feature flag</PopoverHeader>
         <PopoverArrow />
         <PopoverCloseButton />
-        <PopoverBody>{CreateFeatureSubmit(onClose)}</PopoverBody>
+        <PopoverBody>
+          <CreateFeatureSubmit closeDialog={onClose} local_data_hook={local_data_hook} />
+        </PopoverBody>
       </PopoverContent>
     </Popover>
   );
-}
+};
 
 export const App = () => {
-  React.useEffect(() => {
-    start_data.then((data) => refreshDataKeys(data.sort()));
-  }, []);
-
   const [feature_flag_data, setFeatureFlagData] = React.useState([{ name: "empty", value: false }]);
+
+  React.useEffect(() => {
+    start_data
+      .then((data) => refreshDataKeys(data.sort()))
+      .then((data) => setFeatureFlagData(data));
+  }, []);
 
   return (
     <ChakraProvider theme={theme}>
@@ -217,11 +209,6 @@ export const App = () => {
                       <PropertyTableData
                         data={{ data: feature_flag_data, setData: setFeatureFlagData }}
                       />
-                      <Tr>
-                        <Td colSpan={3} textAlign={"center"}>
-                          {CreateNewPopover()}
-                        </Td>
-                      </Tr>
                     </Table>
                   </TableContainer>
                 </AccordionPanel>

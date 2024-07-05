@@ -1,9 +1,13 @@
-var BACKEND =
+import { FeatureFlag } from "./types";
+
+let BACKEND =
   process.env.NODE_ENV === "production"
     ? process.env.REACT_APP_BACKEND_ADDR
     : "http://localhost:8555";
 
-type FeatureFlag = { name: string; value: boolean };
+export function getAllFlagNames() {
+  return fetch(`${BACKEND}/featureflag`).then((response) => response.json());
+}
 
 export function getFeatureFlagValue(flag_name: string) {
   return fetch(`${BACKEND}/featureflag/${flag_name}`).then((resp) => resp.json());
@@ -39,7 +43,7 @@ export function refreshDataKeys(keys: string[]) {
 }
 
 export function switchFlag(item: FeatureFlag): Promise<{ success: boolean }> {
-  return fetch(`${BACKEND}/featureflag/${item}?value=${!item.value}`, {
+  return fetch(`${BACKEND}/featureflag/${item.name}?value=${!item.value}`, {
     method: "PUT",
   }).then((_) => fetch(`${BACKEND}/featureflag/${item}`).then((resp) => resp.json()));
 }
