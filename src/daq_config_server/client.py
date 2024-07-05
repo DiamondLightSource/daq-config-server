@@ -34,7 +34,7 @@ class ConfigServer:
         )
         complete_req = self._uri_prefix + endpoint + req_item + req_ops
         conn.connect()
-        conn.request("GET", complete_req )
+        conn.request("GET", complete_req)
         resp = conn.getresponse()
         assert resp.status == 200, f"Failed to get response: {resp!r}"
         body = json.loads(resp.read())

@@ -5,6 +5,7 @@ repos:
       - id: check-added-large-files
       - id: check-yaml
         args: [--allow-multiple-documents]
+        exclude: ^helmchart/
       - id: check-merge-conflict
 
   - repo: local
@@ -26,7 +27,7 @@ repos:
       - id: prettier
         name: format js/ts(x) with prettier
         language: system
-        entry: npx prettier gui/config-server-gui/ --write
+        entry: npx prettier gui/config-server-gui/ --print-width 100 --write
         types: [javascript,jsx,ts,tsx]
         require_serial: true
 

@@ -29,175 +29,154 @@ import {
   Thead,
   Tr,
   VStack,
-  extendTheme,
   useDisclosure,
 } from "@chakra-ui/react";
 import * as React from "react";
 import { ColorModeSwitcher } from "./ColorModeSwitcher";
+import {
+  createFeatureFlag,
+  deleteFeatureFlag,
+  getAllFlagNames,
+  getFeatureFlagValue,
+  refreshDataKeys,
+  switchFlag,
+} from "./communication";
+import { theme } from "./themes";
+import { FeatureFlag, LocalFlagDataHook, SetLocalFeatureFlagData } from "./types";
 
-var BACKEND =
-  process.env.NODE_ENV === "production"
-    ? process.env.REACT_APP_BACKEND_ADDR
-    : "http://localhost:8555";
-type FeatureFlag = { name: string; value: boolean };
+const start_data = getAllFlagNames();
 
-let start_data = fetch(`${BACKEND}/featureflag`).then((response) =>
-  response.json()
+function setLocalFlag(item: string, value: boolean, local_data_hook: LocalFlagDataHook) {
+  local_data_hook.setData(
+    local_data_hook.data.map((i) => (i.name === item ? { name: item, value: value } : i)),
+  );
+}
+
+//** A button which triggers deletion of a flag */
+const DeleteFlagButton = ({
+  item,
+  setFeatureFlagData,
+}: {
+  item: string;
+  setFeatureFlagData: SetLocalFeatureFlagData;
+}) => (
+  <Button
+    onClick={() =>
+      deleteFeatureFlag(item)
+        .then((data) => refreshDataKeys(data.sort()))
+        .then((data) => setFeatureFlagData(data))
+    }
+  >
+    delete
+  </Button>
 );
-var start_data_processed = false;
 
-const theme = extendTheme({
-  textStyles: {
-    title: {
-      fontSize: "3xl",
-      fontWeight: "bold",
-      lineHeight: "120%",
-      textDecoration: "underline",
-      letterSpacing: "-8%",
-    },
-  },
-});
+//** Generate PropertyTableDatum elements for every item */
+const PropertyTableData = ({ data }: { data: LocalFlagDataHook }) => (
+  <Tbody>
+    {data.data.map((item) => (
+      <PropertyTableDatum flag={item} data={data} key={item.name} />
+    ))}
+    <Tr>
+      <Td colSpan={3} textAlign={"center"}>
+        <CreateNewPopover local_data_hook={data} />
+      </Td>
+    </Tr>
+  </Tbody>
+);
+
+/** A single row in the table of feature flags */
+const PropertyTableDatum = ({ flag, data }: { flag: FeatureFlag; data: LocalFlagDataHook }) => (
+  <Tr key={flag.name}>
+    <Td>{flag.name}</Td>
+    <Td>
+      <Checkbox
+        isChecked={flag.value}
+        onChange={() => {
+          switchFlag(flag).then((_) => {
+            getFeatureFlagValue(flag.name).then((resp) => {
+              setLocalFlag(flag.name, resp[flag.name], data);
+              console.info(`Updating ${flag.name} based on response ${resp}`);
+            });
+          });
+        }}
+      ></Checkbox>
+    </Td>
+    <Td>
+      <DeleteFlagButton item={flag.name} setFeatureFlagData={data.setData} />
+    </Td>
+  </Tr>
+);
+
+/** A text field with a submit button for creating new feature flags */
+const CreateFeatureSubmit = ({
+  closeDialog,
+  local_data_hook,
+}: {
+  closeDialog: Function | null;
+  local_data_hook: LocalFlagDataHook;
+}) => {
+  const [value, setValue] = React.useState("");
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => setValue(e.target.value);
+  const submitCreateFlag = () => {
+    createFeatureFlag(value)
+      .then((data) => refreshDataKeys(data.sort()))
+      .then((data) => local_data_hook.setData(data));
+    setValue("");
+    if (closeDialog !== null) {
+      closeDialog();
+    }
+  };
+  return (
+    <>
+      <InputGroup width="100%">
+        <Input
+          placeholder="flag_name"
+          size="md"
+          onChange={handleChange}
+          onKeyDown={(event) => event.key === "Enter" && submitCreateFlag()}
+        ></Input>
+        <InputRightElement
+          children={
+            <Button onClick={submitCreateFlag} size="xs">
+              create
+            </Button>
+          }
+          width="15%"
+        ></InputRightElement>
+      </InputGroup>
+    </>
+  );
+};
+
+/** A popover for creating new feature flags */
+const CreateNewPopover = ({ local_data_hook }: { local_data_hook: LocalFlagDataHook }) => {
+  const { isOpen, onToggle, onClose } = useDisclosure();
+  return (
+    <Popover onClose={onClose} isOpen={isOpen} arrowSize={15}>
+      <PopoverTrigger>
+        <Button onClick={onToggle}>Create new</Button>
+      </PopoverTrigger>
+      <PopoverContent maxW="xxl" minW="lg">
+        <PopoverHeader fontSize={"medium"}>Create new feature flag</PopoverHeader>
+        <PopoverArrow />
+        <PopoverCloseButton />
+        <PopoverBody>
+          <CreateFeatureSubmit closeDialog={onClose} local_data_hook={local_data_hook} />
+        </PopoverBody>
+      </PopoverContent>
+    </Popover>
+  );
+};
 
 export const App = () => {
-  if (!start_data_processed) {
-    start_data.then((data) => {
-      resetDataKeys(data.sort());
-      start_data_processed = true;
-    });
-  }
+  const [feature_flag_data, setFeatureFlagData] = React.useState([{ name: "empty", value: false }]);
 
-  const [feature_flag_data, setFeatureFlagData] = React.useState([
-    { name: "empty", value: false },
-  ]);
-  function switchFlag(item: string) {
-    let value = !getFeatureFlagData(item);
-    fetch(`${BACKEND}/featureflag/${item}?value=${value}`, {
-      method: "PUT",
-    }).then((_) =>
-      fetch(`${BACKEND}/featureflag/${item}`)
-        .then((resp) => resp.json())
-        .then((val) => {
-          console.log(`Updating ${item} based on response ${val}`);
-          setFlag(item, val[item]);
-        })
-    );
-  }
-  function getFeatureFlagData(item: string) {
-    for (let f of feature_flag_data) {
-      if (f.name === item) {
-        return f.value;
-      }
-    }
-  }
-  function setFlag(item: string, value: boolean) {
-    setFeatureFlagData(
-      feature_flag_data.map((i) =>
-        i.name === item ? { name: item, value: value } : i
-      )
-    );
-  }
-  function resetDataKeys(keys: string[]) {
-    return Promise.all(
-      keys.map((k) => {
-        return fetch(`${BACKEND}/featureflag/${k}`)
-          .then((resp) => resp.json())
-          .then((val) => {
-            console.log({ name: k, value: val });
-            return { name: k, value: val[k] };
-          });
-      })
-    ).then((data) => setFeatureFlagData(data));
-  }
-  function deleteFeatureFlag(item: string) {
-    fetch(`${BACKEND}/featureflag/${item}`, {
-      method: "DELETE",
-    }).then((_) => {
-      return fetch(`${BACKEND}/featureflag`)
-        .then((response) => response.json())
-        .then((data) => resetDataKeys(data.sort()));
-    });
-  }
-  function CreateFeatureSubmit(closeDialog: Function | null) {
-    const [value, setValue] = React.useState("");
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) =>
-      setValue(e.target.value);
-    const submitCreateFlag = () => {
-      createFeatureFlag(value);
-      setValue("");
-      if (closeDialog !== null) {
-        closeDialog();
-      }
-    };
-    return (
-      <>
-        <InputGroup width="100%">
-          <Input
-            placeholder="flag_name"
-            size="md"
-            onChange={handleChange}
-            onKeyDown={(event) => event.key === "Enter" && submitCreateFlag()}
-          ></Input>
-          <InputRightElement
-            children={
-              <Button onClick={submitCreateFlag} size="xs">
-                create
-              </Button>
-            }
-            width="15%"
-          ></InputRightElement>
-        </InputGroup>
-      </>
-    );
-  }
-  function createFeatureFlag(item: string) {
-    fetch(`${BACKEND}/featureflag/${item}`, {
-      method: "POST",
-    }).then((_) => {
-      return fetch(`${BACKEND}/featureflag`)
-        .then((response) => response.json())
-        .then((data) => resetDataKeys(data.sort()));
-    });
-  }
-  function deleteFlagButton(item: string) {
-    return <Button onClick={() => deleteFeatureFlag(item)}>delete</Button>;
-  }
-  function propertyTableDatum(props: FeatureFlag) {
-    return (
-      <Tr key={props.name}>
-        <Td>{props.name}</Td>
-        <Td>
-          <Checkbox
-            isChecked={props.value}
-            onChange={() => {
-              switchFlag(props.name);
-            }}
-          ></Checkbox>
-        </Td>
-        <Td>{deleteFlagButton(props.name)}</Td>
-      </Tr>
-    );
-  }
-  function doPropertyTableData(data: FeatureFlag[]) {
-    return <Tbody>{data.map((item) => propertyTableDatum(item))}</Tbody>;
-  }
-  function CreateNewPopover() {
-    const { isOpen, onToggle, onClose } = useDisclosure();
-    return (
-      <Popover onClose={onClose} isOpen={isOpen} arrowSize={15}>
-        <PopoverTrigger>
-          <Button onClick={onToggle}>Create new</Button>
-        </PopoverTrigger>
-        <PopoverContent maxW="xxl" minW="lg">
-          <PopoverHeader fontSize={"medium"}>
-            Create new feature flag
-          </PopoverHeader>
-          <PopoverArrow />
-          <PopoverCloseButton />
-          <PopoverBody>{CreateFeatureSubmit(onClose)}</PopoverBody>
-        </PopoverContent>
-      </Popover>
-    );
-  }
+  React.useEffect(() => {
+    start_data
+      .then((data) => refreshDataKeys(data.sort()))
+      .then((data) => setFeatureFlagData(data));
+  }, []);
 
   return (
     <ChakraProvider theme={theme}>
@@ -205,9 +184,7 @@ export const App = () => {
         <Grid minH="100vh" p={3}>
           <ColorModeSwitcher justifySelf="flex-end" />
           <VStack spacing={8}>
-            <Text textStyle={"title"}>
-              Read and store configuration for I03 Hyperion
-            </Text>
+            <Text textStyle={"title"}>Read and store configuration for I03 Hyperion</Text>
             <Accordion defaultIndex={[0]} allowMultiple allowToggle>
               <AccordionItem>
                 <AccordionButton>
@@ -229,12 +206,12 @@ export const App = () => {
                           <Th>&nbsp;</Th>
                         </Tr>
                       </Thead>
-                      {doPropertyTableData(feature_flag_data)}
-                      <Tr>
-                        <Td colSpan={3} textAlign={"center"}>
-                          {CreateNewPopover()}
-                        </Td>
-                      </Tr>
+                      <PropertyTableData
+                        data={{
+                          data: feature_flag_data,
+                          setData: setFeatureFlagData,
+                        }}
+                      />
                     </Table>
                   </TableContainer>
                 </AccordionPanel>
@@ -242,16 +219,14 @@ export const App = () => {
               <AccordionItem>
                 <AccordionButton>
                   <Box as="span" flex="1" textAlign="left">
-                    Beamline parameters (not used by Hyperion or GDA, testing
-                    only!)
+                    Beamline parameters (not used by Hyperion or GDA, testing only!)
                   </Box>
                   <AccordionIcon />
                 </AccordionButton>
                 <AccordionPanel pb={4}>
-                  Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed
-                  do eiusmod tempor incididunt ut labore et dolore magna aliqua.
-                  Ut enim ad minim veniam, quis nostrud exercitation ullamco
-                  laboris nisi ut aliquip ex ea commodo consequat.
+                  Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor
+                  incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud
+                  exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
                 </AccordionPanel>
               </AccordionItem>
             </Accordion>
