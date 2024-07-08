@@ -48,7 +48,8 @@ in the gui directory to setup the environment.
 There is a convenient script in `./deployment/build_and_push_all.sh` to build all the containers, which takes
 a `--dev` option to push containers with `-dev` appended to their names and a `--no-push` option for local
 development. This ensures that environment variables for dev or prod builds are included in the built container,
-such as the GUI pointing at the subdomain URL vs. localhost, and the `root_path` of the FastAPI app.
+such as the GUI pointing at the subdomain URL vs. localhost, and the `root_path` of the FastAPI app. To push to
+the registry you must have identified to gcloud by having loaded a kubernetes module and running `gcloud auth login.`
 
 To deploy a live version, you can run the above script with no arguments and then while logged in to
 argus, in the `daq-config-server` namespace, run `kubectl rollout restart deployment`. If it is not
