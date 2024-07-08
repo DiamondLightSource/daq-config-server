@@ -38,7 +38,8 @@ class ConfigServer:
         resp = conn.getresponse()
         assert resp.status == 200, f"Failed to get response: {resp!r}"
         body = json.loads(resp.read())
-        assert item in body, f"Malformed response: {body} does not contain {item}"
+        if item:
+            assert item in body, f"Malformed response: {body} does not contain {item}"
         resp.close()
         conn.close()
         return body[item]
