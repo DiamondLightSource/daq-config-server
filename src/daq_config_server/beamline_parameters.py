@@ -1,5 +1,5 @@
 from logging import Logger
-from typing import Any, Tuple, cast
+from typing import Any, cast
 
 LOGGER = Logger(__name__)
 BEAMLINE_PARAMETER_KEYWORDS = ["FB", "FULL", "deadtime"]
@@ -30,7 +30,7 @@ class GDABeamlineParameters:
             for line in config_lines_nocomments
         ]
         config_pairs: list[tuple[str, Any]] = [
-            cast(Tuple[str, Any], param)
+            cast(tuple[str, Any], param)
             for param in config_lines_sep_key_and_value
             if len(param) == 2
         ]
