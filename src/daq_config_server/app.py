@@ -75,8 +75,8 @@ def get_feature_flag(flag_name: str, response: Response):
         response.status_code = status.HTTP_404_NOT_FOUND
         return {"message": f"Feature flag {flag_name} does not exist!"}
     else:
-        ret = int(valkey.get(flag_name))  # type: ignore
-        return {flag_name: bool(ret) if ret is not None else None, "raw": ret}
+        ret = int(valkey.get(flag_name))  # type: ignore # We checked if it exists above
+        return {flag_name: bool(ret)}
 
 
 @app.post(ENDPOINTS.FEATURE + "/{flag_name}", status_code=status.HTTP_201_CREATED)

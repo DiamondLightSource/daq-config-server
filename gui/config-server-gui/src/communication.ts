@@ -9,7 +9,11 @@ export function getAllFlagNames() {
   return fetch(`${BACKEND}/featureflag`).then((response) => response.json());
 }
 
-export function getFeatureFlagValue(flag_name: string) {
+interface GetValueResponse {
+  [key: string]: boolean;
+}
+
+export function getFeatureFlagValue(flag_name: string): Promise<GetValueResponse> {
   return fetch(`${BACKEND}/featureflag/${flag_name}`).then((resp) => resp.json());
 }
 
@@ -38,12 +42,12 @@ export function refreshDataKeys(keys: string[]) {
           console.log({ name: k, value: val });
           return { name: k, value: val[k] };
         });
-    }),
+    })
   );
 }
 
-export function switchFlag(item: FeatureFlag): Promise<{ success: boolean }> {
+export function switchFlag(item: FeatureFlag): Promise<GetValueResponse> {
   return fetch(`${BACKEND}/featureflag/${item.name}?value=${!item.value}`, {
     method: "PUT",
-  }).then((_) => fetch(`${BACKEND}/featureflag/${item}`).then((resp) => resp.json()));
+  }).then((_) => getFeatureFlagValue(item.name));
 }

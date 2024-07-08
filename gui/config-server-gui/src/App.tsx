@@ -37,7 +37,6 @@ import {
   createFeatureFlag,
   deleteFeatureFlag,
   getAllFlagNames,
-  getFeatureFlagValue,
   refreshDataKeys,
   switchFlag,
 } from "./communication";
@@ -48,7 +47,7 @@ const start_data = getAllFlagNames();
 
 function setLocalFlag(item: string, value: boolean, local_data_hook: LocalFlagDataHook) {
   local_data_hook.setData(
-    local_data_hook.data.map((i) => (i.name === item ? { name: item, value: value } : i)),
+    local_data_hook.data.map((i) => (i.name === item ? { name: item, value: value } : i))
   );
 }
 
@@ -93,11 +92,9 @@ const PropertyTableDatum = ({ flag, data }: { flag: FeatureFlag; data: LocalFlag
       <Checkbox
         isChecked={flag.value}
         onChange={() => {
-          switchFlag(flag).then((_) => {
-            getFeatureFlagValue(flag.name).then((resp) => {
-              setLocalFlag(flag.name, resp[flag.name], data);
-              console.info(`Updating ${flag.name} based on response ${resp}`);
-            });
+          switchFlag(flag).then((resp) => {
+            setLocalFlag(flag.name, resp[flag.name], data);
+            console.info(`Updating ${flag.name} based on response ${resp}`);
           });
         }}
       ></Checkbox>
