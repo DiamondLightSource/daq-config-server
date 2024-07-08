@@ -15,12 +15,14 @@ repos:
         language: system
         entry: ruff check --force-exclude
         types: [python]
+        exclude: ^.github/pages
         require_serial: true
 
       - id: ruff-format
         name: format with ruff
         language: system
         entry: ruff format --force-exclude
+        exclude: ^.github/pages
         types: [python]
         require_serial: true
 
