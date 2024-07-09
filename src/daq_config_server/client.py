@@ -1,11 +1,12 @@
 from logging import Logger, getLogger
-from typing import TypeVar
+from typing import Any, TypeVar
 
 import requests
 
 from .constants import ENDPOINTS
 
 T = TypeVar("T")
+BlParamDType = str | int | float | bool
 
 
 class ConfigServer:
@@ -18,12 +19,21 @@ class ConfigServer:
         endpoint: str,
         item: str | None = None,
         options: dict[str, str] | None = None,
+        data: dict[str, Any] | None = None,
     ):
-        r = requests.get(self._url + endpoint + (f"/{item}" if item else ""), options)
+        r = requests.get(
+            self._url + endpoint + (f"/{item}" if item else ""), options, json=data
+        )
         return r.json()
 
-    def get_beamline_param(self, param: str) -> str | int | float | bool | None:
+    def get_beamline_param(self, param: str) -> BlParamDType | None:
         return self._get(ENDPOINTS.BL_PARAM, param).get(param)
+
+    def get_some_beamline_params(self, params: list[str]) -> dict[str, BlParamDType]:
+        return self._get(ENDPOINTS.BL_PARAM, data={"param_list": params})
+
+    def get_all_beamline_params(self) -> dict[str, BlParamDType]:
+        return self._get(ENDPOINTS.BL_PARAM)
 
     def get_feature_flag(self, flag_name: str) -> bool | None:
         """Get the specified feature flag; returns None if it does not exist. Will check

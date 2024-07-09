@@ -3,7 +3,7 @@ import requests
 
 from daq_config_server.client import ConfigServer
 
-SERVER_ADDRESS = "https://daq-config.diamond.ac.uk/api"
+SERVER_ADDRESS = "http://localhost:8555"  # "https://daq-config.diamond.ac.uk/api"
 USE_PANDA_FLAG = "use_panda_for_gridscan"
 
 
@@ -43,3 +43,12 @@ class TestConfigServerClient:
         )
         assert r.json()["success"] is True
         assert server.get_feature_flag(flag) is initial_value
+
+    def test_get_some_beamline_params(self, server: ConfigServer):
+        params_list = [
+            "miniap_x_ROBOT_LOAD",
+            "miniap_y_ROBOT_LOAD",
+            "miniap_z_ROBOT_LOAD",
+        ]
+        params = server.get_some_beamline_params(params_list)
+        assert all(p in params.keys() for p in params_list)

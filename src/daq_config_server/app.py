@@ -3,6 +3,7 @@ from os import environ
 import uvicorn
 from fastapi import FastAPI, Request, Response, status
 from fastapi.middleware.cors import CORSMiddleware
+from pydantic import BaseModel
 from redis import Redis
 
 from .beamline_parameters import (
@@ -50,11 +51,18 @@ def get_beamline_parameter(param: str):
     return {param: BEAMLINE_PARAMS.params.get(param)}
 
 
+class ParamList(BaseModel):
+    param_list: list[str]
+
+
 @app.get(ENDPOINTS.BL_PARAM)
-def get_all_beamline_parameters():
+def get_all_beamline_parameters(param_list_data: ParamList | None):
     """Get a dict of all the current beamline parameters."""
+    print(param_list_data)
     assert BEAMLINE_PARAMS is not None
-    return BEAMLINE_PARAMS.params
+    if param_list_data is None:
+        return BEAMLINE_PARAMS.params
+    return {k: BEAMLINE_PARAMS.params.get(k) for k in param_list_data.param_list}
 
 
 @app.get(ENDPOINTS.FEATURE)
