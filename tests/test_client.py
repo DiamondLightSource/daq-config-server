@@ -3,7 +3,7 @@ import requests
 
 from daq_config_server.client import ConfigServer
 
-SERVER_ADDRESS = "http://localhost:8555"  # "https://daq-config.diamond.ac.uk/api"
+SERVER_ADDRESS = "https://daq-config.diamond.ac.uk/api"
 USE_PANDA_FLAG = "use_panda_for_gridscan"
 
 
