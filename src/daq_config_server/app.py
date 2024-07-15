@@ -58,7 +58,6 @@ class ParamList(BaseModel):
 @app.get(ENDPOINTS.BL_PARAM)
 def get_all_beamline_parameters(param_list_data: ParamList | None):
     """Get a dict of all the current beamline parameters."""
-    print(param_list_data)
     assert BEAMLINE_PARAMS is not None
     if param_list_data is None:
         return BEAMLINE_PARAMS.params
