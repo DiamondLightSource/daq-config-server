@@ -10,7 +10,7 @@ classifiers = [
     "Programming Language :: Python :: 3.11",
 ]
 description = "A service to put and get your config values from"
-dependencies = []
+dependencies = ["urllib3", "requests"]
 dynamic = ["version"]
 license.file = "LICENSE"
 readme = "README.md"
@@ -56,6 +56,10 @@ addopts = """
     --tb=native -vv
     --asyncio-mode=auto
     """
+markers = """
+    uses_live_server: mark a test which uses the live config server
+"""
+
 # https://iscinumpy.gitlab.io/post/bound-version-constraints/#watch-for-warnings
 filterwarnings = "error"
 # Doctest python code in docs, python code in src docstrings, test functions in tests
@@ -86,7 +90,7 @@ allowlist_externals =
 commands =
     pre-commit: pre-commit run --all-files --show-diff-on-failure {posargs}
     type-checking: pyright src tests {posargs}
-    tests: pytest --cov=daq_config_server --cov-report term --cov-report xml:cov.xml {posargs}
+    tests: pytest -m "not uses_live_server" --cov=daq_config_server --cov-report term --cov-report xml:cov.xml {posargs}
 """
 
 [tool.ruff]
