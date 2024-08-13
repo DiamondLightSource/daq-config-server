@@ -7,7 +7,7 @@ from fastapi import status
 from fastapi.testclient import TestClient
 from mockito import when
 
-from daq_config_server.app import app
+from daq_config_server import app
 from daq_config_server.beamline_parameters import GDABeamlineParameters
 from daq_config_server.constants import ENDPOINTS
 
@@ -17,7 +17,9 @@ mock_bl_params.params = {"p1": 0.234, "p2": 0.345, "p3": 678}
 
 @pytest.fixture
 def mock_app():
-    return TestClient(app)
+    app._set_beamline_param_path(True)
+    app._load_beamline_params()
+    return TestClient(app.app)
 
 
 async def _assert_get_and_response(

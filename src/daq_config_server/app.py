@@ -56,7 +56,7 @@ class ParamList(BaseModel):
 
 
 @app.get(ENDPOINTS.BL_PARAM)
-def get_all_beamline_parameters(param_list_data: ParamList | None):
+def get_all_beamline_parameters(param_list_data: ParamList | None = None):
     """Get a dict of all the current beamline parameters."""
     assert BEAMLINE_PARAMS is not None
     if param_list_data is None:
@@ -140,12 +140,20 @@ if DEV_MODE:
         }
 
 
-def main(args):
-    global BEAMLINE_PARAM_PATH
+def _load_beamline_params():
     global BEAMLINE_PARAMS
-    if args.dev:
+    BEAMLINE_PARAMS = GDABeamlineParameters.from_file(BEAMLINE_PARAM_PATH)
+
+
+def _set_beamline_param_path(dev: bool = True):
+    global BEAMLINE_PARAM_PATH
+    if dev:
         BEAMLINE_PARAM_PATH = "tests/test_data/beamline_parameters.txt"
     else:
         BEAMLINE_PARAM_PATH = BEAMLINE_PARAMETER_PATHS["i03"]
-    BEAMLINE_PARAMS = GDABeamlineParameters.from_file(BEAMLINE_PARAM_PATH)
+
+
+def main(args):
+    _set_beamline_param_path(args.dev)
+    _load_beamline_params()
     uvicorn.run(app="daq_config_server.app:app", host="0.0.0.0", port=8555)

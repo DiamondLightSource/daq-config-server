@@ -3,10 +3,14 @@ name: backend CI
 on:
   push:
     paths:
-      - gui/**
+      - pyproject.toml
+      - src/**
+      - tests/**
   pull_request:
     paths:
-      - gui/**
+      - pyproject.toml
+      - src/**
+      - tests/**
 
 jobs:
   check:
