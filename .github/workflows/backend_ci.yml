@@ -3,10 +3,12 @@ name: backend CI
 on:
   push:
     paths:
-      - gui/**
+      - src/**
+      - tests/**
   pull_request:
     paths:
-      - gui/**
+      - src/**
+      - tests/**
 
 jobs:
   check:
