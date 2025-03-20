@@ -20,15 +20,28 @@ DEV_MODE = bool(int(environ.get("DEV_MODE") or 0))
 
 
 @strawberry.type
-class BeamlineParameter:
+class BeamlineParameterModel(BaseModel):
     key: str
-    value: str | None  # Some parameters may be None
+    value: str | None
 
 
-@strawberry.type
-class FeatureFlag:
+@strawberry.experimental.pydantic.pydantic_model(
+    model=BeamlineParameterModel, all_fields=True
+)
+class BeamlineParameter:
+    pass
+
+
+class FeatureFlagModel(BaseModel):
     name: str
     value: bool
+
+
+@strawberry.experimental.pydantic.pydantic_model(
+    model=FeatureFlagModel, all_fields=True
+)
+class FeatureFlag:
+    pass
 
 
 @strawberry.type
@@ -75,7 +88,35 @@ class Query:
         ]
 
 
-graphql_schema = strawberry.Schema(query=Query)
+@strawberry.type
+class Mutation:
+    @strawberry.mutation
+    def create_feature_flag(self, name: str, value: bool = False) -> FeatureFlag:
+        """Create a new feature flag. If it already exists, return an error."""
+        if valkey.sismember("feature_flags", name):
+            raise ValueError(f"Feature flag '{name}' already exists!")
+        valkey.sadd("feature_flags", name)
+        valkey.set(name, int(value))
+        return FeatureFlag(name=name, value=value)
+
+    @strawberry.mutation
+    def update_feature_flag(self, name: str, value: bool) -> FeatureFlag:
+        """Update the value of an existing feature flag."""
+        if not valkey.sismember("feature_flags", name):
+            raise ValueError(f"Feature flag '{name}' does not exist!")
+        valkey.set(name, int(value))
+        return FeatureFlag(name=name, value=value)
+
+    @strawberry.mutation
+    def delete_feature_flag(self, name: str) -> bool:
+        """Delete a feature flag. Returns True if deleted, False if not found."""
+        if not valkey.sismember("feature_flags", name):
+            return False
+        valkey.srem("feature_flags", name)
+        valkey.delete(name)
+        return True
+
+
 ROOT_PATH = "/api"
 print(f"{DEV_MODE=}")
 print(f"{ROOT_PATH=}")
@@ -97,6 +138,9 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+graphql_schema = strawberry.Schema(query=Query, mutation=Mutation)
+
 graphql_app = GraphQLRouter(graphql_schema)
 app.include_router(graphql_app, prefix="/graphql")
 
