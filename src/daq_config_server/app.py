@@ -1,10 +1,12 @@
 from os import environ
 
+import strawberry
 import uvicorn
 from fastapi import FastAPI, Request, Response, status
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from redis import Redis
+from strawberry.fastapi import GraphQLRouter
 
 from .beamline_parameters import (
     BEAMLINE_PARAMETER_PATHS,
@@ -12,7 +14,97 @@ from .beamline_parameters import (
 )
 from .constants import DATABASE_KEYS, ENDPOINTS
 
+BEAMLINE_PARAM_PATH = ""
+BEAMLINE_PARAMS: GDABeamlineParameters | None = None
 DEV_MODE = bool(int(environ.get("DEV_MODE") or 0))
+
+
+@strawberry.type
+class BeamlineParameterModel(BaseModel):
+    key: str
+    value: str | None
+
+
+@strawberry.experimental.pydantic.pydantic_model(
+    model=BeamlineParameterModel, all_fields=True
+)
+class BeamlineParameter:
+    pass
+
+
+class FeatureFlagModel(BaseModel):
+    name: str
+    value: bool
+
+
+@strawberry.experimental.pydantic.pydantic_model(
+    model=FeatureFlagModel, all_fields=True
+)
+class FeatureFlag:
+    pass
+
+
+@strawberry.type
+class Query:
+    @strawberry.field
+    def all_beamline_parameters(
+        self, keys: list[str] | None = None
+    ) -> list[BeamlineParameter]:
+        """Fetch multiple beamline parameters (all or filtered)"""
+        if BEAMLINE_PARAMS is None:
+            return []
+        if keys is None:
+            return [
+                BeamlineParameter(key=k, value=v)
+                for k, v in BEAMLINE_PARAMS.params.items()
+            ]
+        return [
+            BeamlineParameter(key=k, value=BEAMLINE_PARAMS.params.get(k))
+            for k in keys
+            if k in BEAMLINE_PARAMS.params
+        ]
+
+    @strawberry.field
+    def feature_flags(self, get_values: bool = False) -> list[FeatureFlag]:
+        """Get all feature flags (as names or with values)"""
+        flags = valkey.smembers("feature_flags")  # Set name in Redis
+        if not get_values:
+            return [
+                FeatureFlag(name=flag, value=False) for flag in flags
+            ]  # Only names, values ignored
+        return [
+            FeatureFlag(name=flag, value=bool(int(valkey.get(flag)))) for flag in flags
+        ]
+
+
+@strawberry.type
+class Mutation:
+    @strawberry.mutation
+    def create_feature_flag(self, name: str, value: bool = False) -> FeatureFlag:
+        """Create a new feature flag. If it already exists, return an error."""
+        if valkey.sismember("feature_flags", name):
+            raise ValueError(f"Feature flag '{name}' already exists!")
+        valkey.sadd("feature_flags", name)
+        valkey.set(name, int(value))
+        return FeatureFlag(name=name, value=value)
+
+    @strawberry.mutation
+    def update_feature_flag(self, name: str, value: bool) -> FeatureFlag:
+        """Update the value of an existing feature flag."""
+        if not valkey.sismember("feature_flags", name):
+            raise ValueError(f"Feature flag '{name}' does not exist!")
+        valkey.set(name, int(value))
+        return FeatureFlag(name=name, value=value)
+
+    @strawberry.mutation
+    def delete_feature_flag(self, name: str) -> bool:
+        """Delete a feature flag. Returns True if deleted, False if not found."""
+        if not valkey.sismember("feature_flags", name):
+            return False
+        valkey.srem("feature_flags", name)
+        valkey.delete(name)
+        return True
+
 
 ROOT_PATH = "/api"
 print(f"{DEV_MODE=}")
@@ -36,12 +128,13 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+graphql_schema = strawberry.Schema(query=Query, mutation=Mutation)
+
+graphql_app = GraphQLRouter(graphql_schema)
+app.include_router(graphql_app, prefix="/graphql")
+
 valkey = Redis(host="localhost", port=6379, decode_responses=True)
-
 __all__ = ["main"]
-
-BEAMLINE_PARAM_PATH = ""
-BEAMLINE_PARAMS: GDABeamlineParameters | None = None
 
 
 @app.get(ENDPOINTS.BL_PARAM + "/{param}")
