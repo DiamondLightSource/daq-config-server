@@ -47,17 +47,6 @@ class FeatureFlag:
 @strawberry.type
 class Query:
     @strawberry.field
-    def beamline_parameter(self, key: str) -> BeamlineParameter | None:
-        """Fetch a single beamline parameter"""
-        if BEAMLINE_PARAMS is None:
-            return None
-
-        value = BEAMLINE_PARAMS.params.get(key)
-        if value is None:
-            return None
-        return BeamlineParameter(key=key, value=value)
-
-    @strawberry.field
     def all_beamline_parameters(
         self, keys: list[str] | None = None
     ) -> list[BeamlineParameter]:
