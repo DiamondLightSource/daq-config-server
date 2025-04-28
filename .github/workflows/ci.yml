@@ -2,15 +2,7 @@ name: CI
 
 on:
   push:
-    paths:
-      - pyproject.toml
-      - src/**
-      - tests/**
   pull_request:
-    paths:
-      - pyproject.toml
-      - src/**
-      - tests/**
 
 jobs:
   check:
