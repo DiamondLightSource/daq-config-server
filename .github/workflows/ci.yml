@@ -1,16 +1,8 @@
-name: backend CI
+name: CI
 
 on:
   push:
-    paths:
-      - pyproject.toml
-      - src/**
-      - tests/**
   pull_request:
-    paths:
-      - pyproject.toml
-      - src/**
-      - tests/**
 
 jobs:
   check:
@@ -29,7 +21,7 @@ jobs:
     strategy:
       matrix:
         runs-on: ["ubuntu-latest"] # can add windows-latest, macos-latest
-        python-version: ["3.11"] # Should run with 3.12 once not dependent on Dodal for constants
+        python-version: ["3.11", "3.12"] 
         include:
           # Include one that runs in the dev environment
           - runs-on: "ubuntu-latest"
