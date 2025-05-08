@@ -3,7 +3,6 @@ from argparse import ArgumentParser
 from . import __version__
 
 try:
-    import redis  # noqa
     import uvicorn  # noqa
     from fastapi import FastAPI  # noqa
 
@@ -18,8 +17,7 @@ __all__ = ["main"]
 def main():
     parser = ArgumentParser()
     parser.add_argument("-v", "--version", action="version", version=__version__)
-    parser.add_argument("-d", "--dev", action="store_true")
-    args = parser.parse_args()
+
     if not server_dependencies_exist:
         print(
             "To do anything other than print the version and be available for "
@@ -29,7 +27,7 @@ def main():
     else:
         from .app import main
 
-        main(args)
+        main()
 
 
 # test with: python -m daq_config_server
