@@ -35,7 +35,7 @@ use_stub_offsets: bool = config_server.best_effort_get_feature_flag("use_stub_of
 
 ## Testing and deployment
 
-There is a convenient script in `./deployment/build_and_push_.sh`, which takes
+There is a convenient script in `./deployment/build_and_push.sh`, which takes
 a `--dev` option to push containers with `-dev` appended to their names and a `--no-push` option for local
 development. This ensures that environment variables for dev or prod builds are included in the built container. To push to
 the registry you must have identified to gcloud by having loaded a kubernetes module and running `gcloud auth login.`
@@ -44,7 +44,7 @@ To deploy a live version, you can run the above script with no arguments and the
 argus, in the `daq-config-server` namespace, run `kubectl rollout restart deployment`. If it is not
 currently deployed it you can deploy it with `helm install daq-config ./helmchart`.
 
-To test locally, you can build with `./deployment/build_and_push_all.sh --dev --no-push` and then
+To test locally, you can build with `./deployment/build_and_push.sh --dev --no-push` and then
 run the container `daq-config-server-dev` (with the command `daq-config-server --dev`), `daq-config-server-db-dev`,
 and `daq-config-server-gui-dev`, all with the `--net host` option.
 
