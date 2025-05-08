@@ -51,13 +51,14 @@ write_to = "src/daq_config_server/_version.py"
 reportMissingImports = false # Ignore missing stubs in imported modules
 
 [tool.pytest.ini_options]
+asyncio_mode = "auto"
+asyncio_default_fixture_loop_scope = "function"
 # Run pytest with all our checkers, and don't spam us with massive tracebacks on error
 addopts = """
     --tb=native -vv
-    --asyncio-mode=auto
     """
 markers = """
-    uses_live_server: mark a test which uses the live config server
+    requires_local_server: mark a test which requires locally hosting the config server
 """
 
 # https://iscinumpy.gitlab.io/post/bound-version-constraints/#watch-for-warnings
@@ -79,7 +80,7 @@ legacy_tox_ini = """
 [tox]
 skipsdist=True
 
-[testenv:{pre-commit,type-checking,tests}]
+[testenv]
 # Don't create a virtualenv for the command, requires tox-direct plugin
 direct = True
 passenv = *
@@ -87,10 +88,14 @@ allowlist_externals =
     pytest
     pre-commit
     pyright
+    sphinx-build
+    sphinx-autobuild
+[testenv:{pre-commit,type-checking,unit_tests,system_tests}]
 commands =
     pre-commit: pre-commit run --all-files --show-diff-on-failure {posargs}
     type-checking: pyright src tests {posargs}
-    tests: pytest -m "not uses_live_server" --cov=daq_config_server --cov-report term --cov-report xml:cov.xml {posargs}
+    unit_tests: pytest --cov=daq_config_server --cov-report term --cov-report xml:cov.xml {posargs} tests/unit_tests
+    system_tests: pytest tests/system_tests
 """
 
 [tool.ruff]
