@@ -17,6 +17,7 @@ __all__ = ["main"]
 def main():
     parser = ArgumentParser()
     parser.add_argument("-v", "--version", action="version", version=__version__)
+    parser.parse_args()
 
     if not server_dependencies_exist:
         print(

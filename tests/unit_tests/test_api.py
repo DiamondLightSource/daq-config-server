@@ -4,10 +4,10 @@ from typing import Any
 import pytest
 from fastapi import status
 from fastapi.testclient import TestClient
-from tests.constants import TEST_DATA_DIR
 
 from daq_config_server import app
 from daq_config_server.constants import ENDPOINTS
+from tests.constants import TEST_DATA_DIR
 
 
 @pytest.fixture
