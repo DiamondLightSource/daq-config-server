@@ -57,7 +57,7 @@ echo "========================================="
 echo " "
 echo "Building ${MAIN_CONTAINER_NAME}"
 echo " "
-podman build --build-arg RUN_APP_IN_DEV_MODE=$MAIN_APP_DEV_MODE -t $MAIN_CONTAINER_NAME .
+podman build --build-arg -t $MAIN_CONTAINER_NAME .
 if [ $PUSH -gt 0 ]; then
     podman tag $MAIN_CONTAINER_NAME $MAIN_CONTAINER_TAG
     podman push $MAIN_CONTAINER_NAME $MAIN_CONTAINER_TAG

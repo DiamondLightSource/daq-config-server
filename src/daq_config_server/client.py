@@ -1,5 +1,5 @@
 from logging import Logger, getLogger
-from typing import TypeVar
+from typing import Any, TypeVar
 
 import requests
 
@@ -22,7 +22,7 @@ class ConfigServer:
         r = requests.get(self._url + endpoint + (f"/{item}" if item else ""))
         return r.json()
 
-    def read_unformatted_file(self, file_path: str) -> BlParamDType | None:
+    def read_unformatted_file(self, file_path: str) -> Any:
         # After https://github.com/DiamondLightSource/daq-config-server/issues/67, we
         # can get specific formats, and then have better typing on
         # return values

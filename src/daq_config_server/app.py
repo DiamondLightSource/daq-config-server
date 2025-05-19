@@ -28,7 +28,7 @@ def get_configuration(file_path: Path):
     https://github.com/DiamondLightSource/daq-config-server/issues/67, this endpoint
     will convert commonly read files to a dictionary format
     """
-    if not file_path.exists():
+    if not file_path.is_file():
         raise FileNotFoundError(f"File {file_path} cannot be found")
 
     with file_path.open("r", encoding="utf-8") as f:
