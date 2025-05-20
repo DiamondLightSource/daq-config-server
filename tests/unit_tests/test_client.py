@@ -39,6 +39,23 @@ def test_read_unformatted_file_reading_cache(mock_request: MagicMock):
 
 
 @patch("daq_config_server.client.requests.get")
+def test_read_unformatted_file_reading_use_cache_false_without_cache(
+    mock_request: MagicMock,
+):
+    mock_request.side_effect = [
+        Response(status_code=status.HTTP_200_OK, json="1st_read"),
+        Response(status_code=status.HTTP_200_OK, json="2nd_read"),
+        Response(status_code=status.HTTP_200_OK, json="3rd_read"),
+    ]
+    file_path = "test"
+    url = "url"
+    server = ConfigServer(url)
+    assert "1st_read" == server.read_unformatted_file(file_path, use_cache=False)
+    assert "2nd_read" == server.read_unformatted_file(file_path, use_cache=False)
+    assert "3rd_read" == server.read_unformatted_file(file_path, use_cache=False)
+
+
+@patch("daq_config_server.client.requests.get")
 def test_read_unformatted_file_reading_not_OK(mock_request: MagicMock):
     mock_request.side_effect = [
         Response(status_code=status.HTTP_204_NO_CONTENT, json="1st_read"),
