@@ -44,10 +44,8 @@ MAIN_CONTAINER_TAG="${BASE_REPO_ADDR}${MAIN_CONTAINER_NAME}"
 # set env vars which will be used by build process:
 if [ $DEV -gt 0 ]; then
     export REACT_APP_BACKEND_ADDR="http://localhost:8555"
-    export MAIN_APP_DEV_MODE=1
 else
     export REACT_APP_BACKEND_ADDR="https://daq-config.diamond.ac.uk/api"
-    export MAIN_APP_DEV_MODE=0
 fi
 
 echo " "
