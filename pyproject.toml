@@ -17,7 +17,7 @@ readme = "README.md"
 requires-python = ">=3.11"
 
 [project.optional-dependencies]
-server = ["fastapi", "uvicorn", "redis", "hiredis"]
+server = ["fastapi", "uvicorn", "redis", "hiredis", "cachetools"]
 dev = [
     "copier",
     "httpx",
