@@ -1,10 +1,16 @@
+import json
+import os
+from enum import StrEnum
 from pathlib import Path
+from typing import Annotated
 
 import uvicorn
-from fastapi import FastAPI
+from fastapi import FastAPI, Header
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse, Response
 
 from daq_config_server.constants import ENDPOINTS
+from daq_config_server.log import LOGGER
 
 app = FastAPI(
     title="DAQ config server",
@@ -22,17 +28,48 @@ app.add_middleware(
 __all__ = ["main"]
 
 
+class AcceptedFileTypes(StrEnum):
+    JSON = "application/json"
+    PLAIN_TEXT = "text/plain"
+    RAW_BYTES = "application/octet-stream"
+
+
 @app.get(ENDPOINTS.CONFIG + "/{file_path:path}")
-def get_configuration(file_path: Path):
-    """Read a file and return its contents completely unformatted as a string. After
-    https://github.com/DiamondLightSource/daq-config-server/issues/67, this endpoint
-    will convert commonly read files to a dictionary format
+def get_configuration(
+    file_path: Path,
+    accept: Annotated[AcceptedFileTypes, Header()] = AcceptedFileTypes.PLAIN_TEXT,
+):
+    """
+    Read a file and return its contents in a format specified by the accept header.
     """
     if not file_path.is_file():
         raise FileNotFoundError(f"File {file_path} cannot be found")
 
-    with file_path.open("r", encoding="utf-8") as f:
-        return f.read()
+    file_name = os.path.basename(file_path)
+
+    try:
+        match accept:
+            case AcceptedFileTypes.JSON:
+                with file_path.open("r", encoding="utf-8") as f:
+                    content = json.load(f)
+                json_response = JSONResponse(
+                    content=content,
+                )
+                return json_response
+            case AcceptedFileTypes.PLAIN_TEXT:
+                with file_path.open("r", encoding="utf-8") as f:
+                    content = f.read()
+                Response(content=content, media_type=accept)
+    except Exception as e:
+        LOGGER.warning(
+            f"Failed to convert {file_name} to {accept} and caught \
+            exception: {e} \nSending file as raw bytes instead"
+        )
+
+    with file_path.open("rb") as f:
+        content = f.read()
+
+    return Response(content=content, media_type=AcceptedFileTypes.RAW_BYTES)
 
 
 def main():
