@@ -54,8 +54,6 @@ class ConfigServer:
             self._log.debug(f"Cache hit for {endpoint}/{item}.")
 
             if reset_cached_result:
-                self._cache.pop(input_hash)
-                self._log.debug(f"Cache entry for {endpoint}/{item} removed.")
                 return self._cached_get(endpoint, item)
             return self._cache[input_hash]
         self._log.debug(f"Cache miss for {endpoint}/{item}.")
