@@ -51,15 +51,14 @@ def get_configuration(
         match accept:
             case AcceptedFileTypes.JSON:
                 with file_path.open("r", encoding="utf-8") as f:
-                    content = json.load(f)
-                json_response = JSONResponse(
+                    content = json.loads(f.read())
+                return JSONResponse(
                     content=content,
                 )
-                return json_response
             case AcceptedFileTypes.PLAIN_TEXT:
                 with file_path.open("r", encoding="utf-8") as f:
                     content = f.read()
-                Response(content=content, media_type=accept)
+                return Response(content=content, media_type=accept)
     except Exception as e:
         LOGGER.warning(
             f"Failed to convert {file_name} to {accept} and caught \
