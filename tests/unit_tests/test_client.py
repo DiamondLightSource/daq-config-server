@@ -3,6 +3,7 @@ from unittest.mock import MagicMock, patch
 from fastapi import status
 from httpx import Response
 
+from daq_config_server.app import AcceptedFileTypes
 from daq_config_server.client import ConfigServer, RequestedResponseFormats
 from daq_config_server.constants import ENDPOINTS
 
@@ -19,3 +20,25 @@ def test_get_file_contents(mock_request: MagicMock):
         url + ENDPOINTS.CONFIG + "/" + file_path,
         headers={"Accept": RequestedResponseFormats.DECODED_STRING},
     )
+
+
+@patch("daq_config_server.client.requests.get")
+def test_get_file_contents_warns_and_gives_bytes_on_invalid_json(
+    mock_request: MagicMock,
+):
+    bad_json = "bad_dict}"
+    mock_request.return_value = Response(
+        status_code=status.HTTP_200_OK,
+        json="test",
+        headers={
+            "accept": AcceptedFileTypes.JSON,
+            "content-type": AcceptedFileTypes.JSON,
+        },
+        content=bad_json,
+    )
+    file_path = "test"
+    url = "url"
+    server = ConfigServer(url)
+    server._log.warning = MagicMock()
+    assert server.get_file_contents(file_path) == bad_json.encode()
+    server._log.warning.assert_called_once()

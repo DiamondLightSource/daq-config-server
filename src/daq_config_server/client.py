@@ -44,8 +44,11 @@ class ConfigServer:
                     content = r.text
                 case _:
                     content = r.content
-        except Exception:
-            # TODO warn here
+        except Exception as e:
+            self._log.warning(
+                f"Failed trying to convert to content-type {content_type} due to\
+                exception {e} \nReturning as bytes instead"
+            )
             content = r.content
 
         return content
