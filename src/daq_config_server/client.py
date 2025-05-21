@@ -69,14 +69,12 @@ class ConfigServer:
         """
         url = self._url + endpoint + (f"/{item}" if item else "")
 
-        r = requests.get(url)
-        if r.status_code != 200:
-            self._log.error(f"Failed to GET {url}: {r.status_code} {r.text}")
-            raise requests.RequestException(
-                f"Failed to GET {url}: {r.status_code} {r.text}"
-            )
-        else:
-            return r.json()
+        try:
+            r = requests.get(url)
+            r.raise_for_status()
+        except requests.exceptions.HTTPError as e:
+            return "Error: " + str(e)
+        return r.json()
 
     def read_unformatted_file(self, file_path: str, use_cache: bool = True) -> Any:
         """
