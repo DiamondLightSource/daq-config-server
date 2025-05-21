@@ -67,7 +67,7 @@ class ConfigServer:
         item: str | None = None,
     ) -> Any:
         """
-        Get a value from the config server and cache it.
+        Get data from the config server and cache it.
 
         Args:
             endpoint: API endpoint.
