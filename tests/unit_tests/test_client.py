@@ -72,12 +72,10 @@ def test_read_unformatted_file_reading_use_cache_false_without_cache(
 def test_read_unformatted_file_reading_not_OK(mock_request: MagicMock):
     """Test that a non-200 response raises a RequestException."""
     mock_request.return_value = make_mock_response(
-        "1st_read",
-        status.HTTP_204_NO_CONTENT,
-        raise_exc=requests.RequestException("error"),
+        "1st_read", status.HTTP_204_NO_CONTENT, raise_exc=requests.exceptions.HTTPError
     )
     file_path = "test"
     url = "url"
     server = ConfigServer(url)
-    with pytest.raises(requests.RequestException):
+    with pytest.raises(requests.exceptions.HTTPError):
         server.read_unformatted_file(file_path)

@@ -70,7 +70,8 @@ class ConfigServer:
             r = requests.get(url)
             r.raise_for_status()
         except requests.exceptions.HTTPError as e:
-            return "Error: " + str(e)
+            self._log.error(f"HTTP error: {e}")
+            raise
         return r.json()
 
     def read_unformatted_file(self, file_path: str, use_cache: bool = True) -> Any:
