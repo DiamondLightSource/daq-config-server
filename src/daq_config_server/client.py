@@ -1,12 +1,9 @@
 from logging import Logger, getLogger
-from typing import Any, TypeVar
+from typing import Any
 
 import requests
 
 from .constants import ENDPOINTS
-
-T = TypeVar("T")
-BlParamDType = str | int | float | bool
 
 
 class ConfigServer:
