@@ -5,7 +5,7 @@ from typing import Any, TypeVar
 
 import requests
 
-from daq_config_server.app import AcceptedFileTypes
+from daq_config_server.app import ValidAcceptHeaders
 
 from .constants import ENDPOINTS
 
@@ -14,9 +14,9 @@ BlParamDType = str | int | float | bool
 
 
 class RequestedResponseFormats(StrEnum):
-    DICT = AcceptedFileTypes.JSON  # Tries to convert to dict using json.loads()
-    DECODED_STRING = AcceptedFileTypes.PLAIN_TEXT  # Use utf-8 decoding in response
-    RAW_BYTE_STRING = AcceptedFileTypes.RAW_BYTES  # Use raw bytes in response
+    DICT = ValidAcceptHeaders.JSON  # Convert to dict using json.loads()
+    DECODED_STRING = ValidAcceptHeaders.PLAIN_TEXT  # Use utf-8 decoding in response
+    RAW_BYTE_STRING = ValidAcceptHeaders.RAW_BYTES  # Use raw bytes in response
 
 
 class ConfigServer:
@@ -38,9 +38,9 @@ class ConfigServer:
 
         try:
             match content_type:
-                case AcceptedFileTypes.JSON:
+                case ValidAcceptHeaders.JSON:
                     content = json.loads(r.content)
-                case AcceptedFileTypes.PLAIN_TEXT:
+                case ValidAcceptHeaders.PLAIN_TEXT:
                     content = r.text
                 case _:
                     content = r.content
@@ -60,5 +60,16 @@ class ConfigServer:
             RequestedResponseFormats.DECODED_STRING
         ),
     ) -> Any:
+        """
+        Get an file contents from the config server in the format specified.
+
+        If data parsing fails, the return type will be bytes
+
+        Args:
+            file_path: Path to the file.
+            requested_response_format: Specify how to parse the response.
+        Returns:
+            The file contents, in the type specified.
+        """
         headers = {"Accept": requested_response_format}
         return self._get(ENDPOINTS.CONFIG, headers, file_path)

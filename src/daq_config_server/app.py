@@ -28,7 +28,7 @@ app.add_middleware(
 __all__ = ["main"]
 
 
-class AcceptedFileTypes(StrEnum):
+class ValidAcceptHeaders(StrEnum):
     JSON = "application/json"
     PLAIN_TEXT = "text/plain"
     RAW_BYTES = "application/octet-stream"
@@ -37,7 +37,7 @@ class AcceptedFileTypes(StrEnum):
 @app.get(ENDPOINTS.CONFIG + "/{file_path:path}")
 def get_configuration(
     file_path: Path,
-    accept: Annotated[AcceptedFileTypes, Header()] = AcceptedFileTypes.PLAIN_TEXT,
+    accept: Annotated[ValidAcceptHeaders, Header()] = ValidAcceptHeaders.PLAIN_TEXT,
 ):
     """
     Read a file and return its contents in a format specified by the accept header.
@@ -49,13 +49,13 @@ def get_configuration(
 
     try:
         match accept:
-            case AcceptedFileTypes.JSON:
+            case ValidAcceptHeaders.JSON:
                 with file_path.open("r", encoding="utf-8") as f:
                     content = json.loads(f.read())
                 return JSONResponse(
                     content=content,
                 )
-            case AcceptedFileTypes.PLAIN_TEXT:
+            case ValidAcceptHeaders.PLAIN_TEXT:
                 with file_path.open("r", encoding="utf-8") as f:
                     content = f.read()
                 return Response(content=content, media_type=accept)
@@ -68,7 +68,7 @@ def get_configuration(
     with file_path.open("rb") as f:
         content = f.read()
 
-    return Response(content=content, media_type=AcceptedFileTypes.RAW_BYTES)
+    return Response(content=content, media_type=ValidAcceptHeaders.RAW_BYTES)
 
 
 def main():

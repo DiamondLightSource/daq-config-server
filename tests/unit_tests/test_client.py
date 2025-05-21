@@ -3,7 +3,7 @@ from unittest.mock import MagicMock, patch
 from fastapi import status
 from httpx import Response
 
-from daq_config_server.app import AcceptedFileTypes
+from daq_config_server.app import ValidAcceptHeaders
 from daq_config_server.client import ConfigServer, RequestedResponseFormats
 from daq_config_server.constants import ENDPOINTS
 
@@ -31,8 +31,8 @@ def test_get_file_contents_warns_and_gives_bytes_on_invalid_json(
         status_code=status.HTTP_200_OK,
         json="test",
         headers={
-            "accept": AcceptedFileTypes.JSON,
-            "content-type": AcceptedFileTypes.JSON,
+            "accept": ValidAcceptHeaders.JSON,
+            "content-type": ValidAcceptHeaders.JSON,
         },
         content=bad_json,
     )

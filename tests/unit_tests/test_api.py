@@ -7,7 +7,7 @@ from fastapi import status
 from fastapi.testclient import TestClient
 
 from daq_config_server import app
-from daq_config_server.app import AcceptedFileTypes
+from daq_config_server.app import ValidAcceptHeaders
 from daq_config_server.constants import ENDPOINTS
 from tests.constants import TEST_DATA_DIR
 
@@ -17,7 +17,7 @@ def mock_app():
     return TestClient(app.app)
 
 
-HEADER_DEFAULTS = {"Accept": AcceptedFileTypes.PLAIN_TEXT}
+HEADER_DEFAULTS = {"Accept": ValidAcceptHeaders.PLAIN_TEXT}
 
 
 async def _assert_get_and_response(
@@ -34,9 +34,9 @@ async def _assert_get_and_response(
     # Copy logic of the real client when decoding responses
     try:
         match header["Accept"]:
-            case AcceptedFileTypes.JSON:
+            case ValidAcceptHeaders.JSON:
                 content = response.json()
-            case AcceptedFileTypes.PLAIN_TEXT:
+            case ValidAcceptHeaders.PLAIN_TEXT:
                 content = content_bytes.decode()
             case _:
                 content = content_bytes
@@ -70,7 +70,7 @@ async def test_get_configuration_on_json_file(mock_app: TestClient):
         mock_app,
         f"{ENDPOINTS.CONFIG}/{file_path}",
         expected_response,
-        header={"Accept": AcceptedFileTypes.JSON},
+        header={"Accept": ValidAcceptHeaders.JSON},
     )
 
 
@@ -86,6 +86,6 @@ async def test_get_configuration_warns_and_uses_raw_bytes_on_invalid_json(
         mock_app,
         f"{ENDPOINTS.CONFIG}/{file_path}",
         expected_response,
-        header={"Accept": AcceptedFileTypes.JSON},
+        header={"Accept": ValidAcceptHeaders.JSON},
     )
     mock_warn.assert_called_once()
