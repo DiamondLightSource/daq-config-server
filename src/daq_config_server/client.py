@@ -45,10 +45,9 @@ class ConfigServer:
             The response data.
         """
         if not use_cache:
-            try:
+            if (self, endpoint, item) in CACHE:
                 CACHE.pop((self, endpoint, item))
-            except KeyError:
-                pass  # Cache miss is fine
+                self._log.debug(f"Cache entry for {endpoint}/{item} removed.")
         return self._cached_get(endpoint, item)
 
     @cached(cache=CACHE)
