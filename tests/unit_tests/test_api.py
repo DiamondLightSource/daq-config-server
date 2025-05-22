@@ -57,9 +57,8 @@ async def test_get_configuration_on_plain_text_file(mock_app: TestClient):
 
 def test_get_configuration_exception_on_invalid_file(mock_app: TestClient):
     file_path = f"{TEST_DATA_DIR}/nonexistent_file.yaml"
-
-    with pytest.raises(FileNotFoundError):
-        mock_app.get(f"{ENDPOINTS.CONFIG}/{file_path}", headers=HEADER_DEFAULTS)
+    response = mock_app.get(f"{ENDPOINTS.CONFIG}/{file_path}", headers=HEADER_DEFAULTS)
+    assert response.status_code == status.HTTP_404_NOT_FOUND
 
 
 async def test_get_configuration_on_json_file(mock_app: TestClient):

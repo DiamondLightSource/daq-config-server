@@ -5,7 +5,7 @@ from pathlib import Path
 from typing import Annotated
 
 import uvicorn
-from fastapi import FastAPI, Header
+from fastapi import FastAPI, Header, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse, Response
 
@@ -43,7 +43,7 @@ def get_configuration(
     Read a file and return its contents in a format specified by the accept header.
     """
     if not file_path.is_file():
-        raise FileNotFoundError(f"File {file_path} cannot be found")
+        raise HTTPException(status_code=404, detail=f"File {file_path} cannot be found")
 
     file_name = os.path.basename(file_path)
 

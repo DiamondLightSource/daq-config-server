@@ -1,4 +1,3 @@
-import json
 from enum import StrEnum
 from logging import Logger, getLogger
 from typing import Any, TypeVar
@@ -36,10 +35,16 @@ class ConfigServer:
 
         content_type = r.headers["content-type"].split(";")[0].strip()
 
+        if content_type != headers["Accept"]:
+            self._log.warning(
+                f"Server failed to parse the file as requested. Requested \
+                {headers['Accept']} but response came as content-type {content_type}"
+            )
+
         try:
             match content_type:
                 case ValidAcceptHeaders.JSON:
-                    content = json.loads(r.content)
+                    content = r.json()
                 case ValidAcceptHeaders.PLAIN_TEXT:
                     content = r.text
                 case _:
