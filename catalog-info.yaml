@@ -3,8 +3,8 @@ kind: Component
 metadata:
   name: daq-config-server
   title: daq-config-server
-  description: A service to put and get your config values from
+  description: A service to read files on dls_sw from a blueapi container
 spec:
-  type: documentation
+  type: service
   lifecycle: experimental
-  owner: group:default/sscc
+  owner: group:default/data-acquisition

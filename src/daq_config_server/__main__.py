@@ -1,3 +1,5 @@
+"""Interface for ``python -m daq_config_server``."""
+
 from argparse import ArgumentParser
 
 from . import __version__
@@ -33,6 +35,5 @@ def main():
         main()
 
 
-# test with: python -m daq_config_server
 if __name__ == "__main__":
     main()
