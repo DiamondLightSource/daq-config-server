@@ -76,12 +76,12 @@ class ConfigServer:
         try:
             r = requests.get(url)
             r.raise_for_status()
+            data = r.json()
+            self._log.debug(f"Cache set for {endpoint}/{item}.")
+            return data
         except requests.exceptions.HTTPError as e:
             self._log.error(f"HTTP error: {e}")
             raise
-        response = r.json()
-        self._log.debug(f"Cache set for {endpoint}/{item}.")
-        return response
 
     def read_unformatted_file(
         self, file_path: str, reset_cached_result: bool = False
