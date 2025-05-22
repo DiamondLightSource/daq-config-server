@@ -108,7 +108,7 @@ def test_read_unformatted_file_cache_custom_lifetime(mock_request: MagicMock):
     ]
     file_path = "test"
     url = "url"
-    server = ConfigServer(url=url, cache_lifetime=0.1)  # type: ignore
+    server = ConfigServer(url=url, cache_lifetime_s=0.1)  # type: ignore
     assert server.read_unformatted_file(file_path) == "1st_read"
     assert server.read_unformatted_file(file_path) == "1st_read"
     sleep(0.1)

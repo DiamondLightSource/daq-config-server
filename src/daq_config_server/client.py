@@ -14,7 +14,7 @@ class ConfigServer:
         url: str,
         log: Logger | None = None,
         cache_size: int = 10,
-        cache_lifetime: int = 3600,
+        cache_lifetime_s: int = 3600,
     ) -> None:
         """
         Initialize the ConfigServer client.
@@ -22,10 +22,12 @@ class ConfigServer:
         Args:
             url: Base URL of the config server.
             log: Optional logger instance.
+            cache_size: Size of the cache (maximum number of items can be stored).
+            cache_lifetime: Lifetime of the cache (in seconds).
         """
         self._url = url.rstrip("/")
         self._log = log if log else getLogger("daq_config_server.client")
-        self._cache = TTLCache(maxsize=cache_size, ttl=cache_lifetime)
+        self._cache = TTLCache(maxsize=cache_size, ttl=cache_lifetime_s)
 
     def _get(
         self,
@@ -34,13 +36,11 @@ class ConfigServer:
         reset_cached_result: bool = False,
     ) -> Any:
         """
-        Internal method to get data from the cache config server, with cache
-        management.
-        This method checks if the data is already cached. If it is, it returns
-        the cached data. If not, it fetches the data from the config server,
-        caches it, and returns the data.
-        If reset_cached_result is True, it will remove the cached data and
-        fetch it again from the config server.
+        Get data from the config server with cache management.
+        If a cached response doesn't already exist, makes a request to
+        the config server.
+        If reset_cached_result is true, remove the cache entry for that request and
+        make a new request
 
         Args:
             endpoint: API endpoint.
