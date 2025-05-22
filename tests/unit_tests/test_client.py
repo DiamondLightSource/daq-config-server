@@ -8,14 +8,20 @@ from daq_config_server.client import ConfigServer, RequestedResponseFormats
 from daq_config_server.constants import ENDPOINTS
 
 
-# More useful tests for the client are in tests/system_tests
 @patch("daq_config_server.client.requests.get")
-def test_get_file_contents(mock_request: MagicMock):
-    mock_request.return_value = Response(status_code=status.HTTP_200_OK, json="test")
+def test_get_file_contents_default_header(mock_request: MagicMock):
+    content_type = ValidAcceptHeaders.PLAIN_TEXT
+    mock_request.return_value = Response(
+        status_code=status.HTTP_200_OK,
+        content="test",
+        headers={
+            "content-type": content_type,
+        },
+    )
     file_path = "test"
     url = "url"
     server = ConfigServer(url)
-    server.get_file_contents(file_path)
+    assert server.get_file_contents(file_path) == "test"
     mock_request.assert_called_once_with(
         url + ENDPOINTS.CONFIG + "/" + file_path,
         headers={"Accept": RequestedResponseFormats.DECODED_STRING},
@@ -61,7 +67,6 @@ def test_logger_warning_if_content_type_doesnt_match_requested_type(
     text = "text"
     mock_request.return_value = Response(
         status_code=status.HTTP_200_OK,
-        json="test",
         headers={
             "content-type": content_type,
         },
