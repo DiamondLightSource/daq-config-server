@@ -37,7 +37,7 @@ class ConfigServer:
         """
         self._url = url.rstrip("/")
         self._log = log if log else getLogger("daq_config_server.client")
-        self._cache: TTLCache[tuple[str, str | None], str] = TTLCache(
+        self._cache: TTLCache[tuple[str, str, str], str] = TTLCache(
             maxsize=cache_size, ttl=cache_lifetime_s
         )
 
@@ -75,7 +75,7 @@ class ConfigServer:
         endpoint: str,
         accept_header: str,
         item: str,
-        reset_cached_result=False,
+        reset_cached_result: bool = False,
     ):
         """
         Get data from the config server with cache management and use

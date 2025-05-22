@@ -59,6 +59,8 @@ def get_configuration(
                 with file_path.open("r", encoding="utf-8") as f:
                     content = f.read()
                 return Response(content=content, media_type=accept)
+            case _:
+                pass
     except Exception as e:
         LOGGER.warning(
             f"Failed to convert {file_name} to {accept} and caught \

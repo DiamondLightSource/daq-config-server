@@ -24,7 +24,7 @@ async def _assert_get_and_response(
     client: TestClient,
     endpoint: str,
     expected_response: Any,
-    header: dict = HEADER_DEFAULTS,
+    header: dict[str, ValidAcceptHeaders] = HEADER_DEFAULTS,
 ):
     response = client.get(endpoint, headers=header)
     assert response.status_code == status.HTTP_200_OK
