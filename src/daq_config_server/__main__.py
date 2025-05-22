@@ -14,12 +14,10 @@ def check_server_dependencies():
         import uvicorn  # noqa
         from fastapi import FastAPI  # noqa
 
-        server_dependencies_exist = True
+        return True
 
     except ImportError:
-        server_dependencies_exist = False
-
-    return server_dependencies_exist
+        return False
 
 
 def main():
