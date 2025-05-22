@@ -30,10 +30,11 @@ async def _assert_get_and_response(
     assert response.status_code == status.HTTP_200_OK
 
     content_bytes = await response.aread()
+    content_type = response.headers["content-type"].split(";")[0].strip()
 
     # Copy logic of the real client when decoding responses
     try:
-        match header["Accept"]:
+        match content_type:
             case ValidAcceptHeaders.JSON:
                 content = response.json()
             case ValidAcceptHeaders.PLAIN_TEXT:

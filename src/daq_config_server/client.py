@@ -13,7 +13,7 @@ from .constants import ENDPOINTS
 
 
 class RequestedResponseFormats(StrEnum):
-    DICT = ValidAcceptHeaders.JSON  # Convert to dict using json.loads()
+    DICT = ValidAcceptHeaders.JSON  # Convert to dict using Response.json()
     DECODED_STRING = ValidAcceptHeaders.PLAIN_TEXT  # Use utf-8 decoding in response
     RAW_BYTE_STRING = ValidAcceptHeaders.RAW_BYTES  # Use raw bytes in response
 
@@ -60,11 +60,10 @@ class ConfigServer:
         """
 
         try:
-            r = requests.get(
-                self._url + endpoint + (f"/{item}"), headers={"Accept": accept_header}
-            )
+            request_url = self._url + endpoint + (f"/{item}")
+            r = requests.get(request_url, headers={"Accept": accept_header})
             r.raise_for_status()
-            self._log.debug(f"Cache set for {endpoint}/{item}.")
+            self._log.debug(f"Cache set for {request_url}.")
             return r
         except requests.exceptions.HTTPError as e:
             self._log.error(f"HTTP error: {e}")
@@ -121,21 +120,22 @@ class ConfigServer:
     ) -> Any:
         """
         Get contents of a file from the config server in the format specified.
-        If data parsing fails, the return type will be bytes. Optionally try to use
-        cached result.
+        If data parsing fails, contents will return as raw bytes. Optionally look
+        for cached result before making request.
 
         Args:
             file_path: Path to the file.
             requested_response_format: Specify how to parse the response.
-            reset_cached_result: Whether to reset cache for specific request.
+            reset_cached_result: If true, make a request and store response in cache,
+                                otherwise look for cached response before making
+                                new request
         Returns:
             The file contents, in the format specified.
         """
 
-        accept_header = requested_response_format
         return self._get(
             ENDPOINTS.CONFIG,
-            accept_header,
+            requested_response_format,
             file_path,
             reset_cached_result=reset_cached_result,
         )

@@ -93,7 +93,7 @@ def test_get_file_contents_warns_and_gives_bytes_on_invalid_json(
 
 
 @patch("daq_config_server.client.requests.get")
-def test_read_unformatted_file_reading_reset_cached_result_true_without_cache(
+def test_get_file_contents_caching(
     mock_request: MagicMock,
 ):
     """Test reset_cached_result=False and reset_cached_result=True."""
