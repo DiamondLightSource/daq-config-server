@@ -1,8 +1,9 @@
+import operator
 from logging import Logger, getLogger
 from typing import Any
 
 import requests
-from cachetools import TTLCache
+from cachetools import TTLCache, cachedmethod
 
 from .constants import ENDPOINTS
 
@@ -49,16 +50,12 @@ class ConfigServer:
         Returns:
             The response data.
         """
-        input_hash = hash(endpoint + (f"/{item}" if item else ""))
-        if (input_hash) in self._cache:
-            self._log.debug(f"Cache hit for {endpoint}/{item}.")
 
-            if reset_cached_result:
-                return self._cached_get(endpoint, item)
-            return self._cache[input_hash]
-        self._log.debug(f"Cache miss for {endpoint}/{item}.")
+        if (endpoint, item) in self._cache and reset_cached_result:
+            del self._cache[(endpoint, item)]
         return self._cached_get(endpoint, item)
 
+    @cachedmethod(cache=operator.attrgetter("_cache"))
     def _cached_get(
         self,
         endpoint: str,
@@ -83,7 +80,6 @@ class ConfigServer:
             self._log.error(f"HTTP error: {e}")
             raise
         response = r.json()
-        self._cache[hash(endpoint + (f"/{item}" if item else ""))] = r.json()
         self._log.debug(f"Cache set for {endpoint}/{item}.")
         return response
 
