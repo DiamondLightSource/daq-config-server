@@ -23,7 +23,7 @@ class ConfigServer:
             url: Base URL of the config server.
             log: Optional logger instance.
             cache_size: Size of the cache (maximum number of items can be stored).
-            cache_lifetime: Lifetime of the cache (in seconds).
+            cache_lifetime_s: Lifetime of the cache (in seconds).
         """
         self._url = url.rstrip("/")
         self._log = log if log else getLogger("daq_config_server.client")
