@@ -19,7 +19,7 @@ def test_cli_version():
 @patch("daq_config_server.__main__.ArgumentParser.parse_args")
 @patch.dict("sys.modules", {"uvicorn": None, "fastapi": None})
 def test_print_and_exit_if_incorrect_dependencies(
-    mock_parse_args, mock_print: MagicMock, mock_main: MagicMock
+    mock_parse_args: MagicMock, mock_print: MagicMock, mock_main: MagicMock
 ):
     main()
     mock_print.assert_called_once_with(INSUFFICIENT_DEPENDENCIES_MESSAGE)
@@ -28,6 +28,8 @@ def test_print_and_exit_if_incorrect_dependencies(
 
 @patch("daq_config_server.app.main")
 @patch("daq_config_server.__main__.ArgumentParser.parse_args")
-def test_main_runs_with_correct_dependencies(mock_parse_args, mock_main: MagicMock):
+def test_main_runs_with_correct_dependencies(
+    mock_parse_args: MagicMock, mock_main: MagicMock
+):
     main()
     mock_main.assert_called_once()

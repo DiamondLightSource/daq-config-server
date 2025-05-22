@@ -4,12 +4,17 @@ from unittest.mock import MagicMock, patch
 import pytest
 import requests
 from fastapi import status
+from requests import RequestException
 
 from daq_config_server.client import ConfigServer
 from daq_config_server.constants import ENDPOINTS
 
 
-def make_mock_response(json_value, status_code=200, raise_exc=None):
+def make_mock_response(
+    json_value: str | dict[str, str],
+    status_code: int = 200,
+    raise_exc: type[RequestException] | None = None,
+):
     mock_response = MagicMock()
     mock_response.json.return_value = json_value
     mock_response.status_code = status_code
