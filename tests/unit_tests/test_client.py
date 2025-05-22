@@ -51,6 +51,23 @@ def test_get_file_contents_default_header(mock_request: MagicMock):
 
 
 @patch("daq_config_server.client.requests.get")
+def test_get_file_contents_with_bytes(mock_request: MagicMock):
+    test_str = "test"
+    mock_request.return_value = make_test_response(
+        test_str, content_type=ValidAcceptHeaders.RAW_BYTES
+    )
+    file_path = test_str
+    url = "url"
+    server = ConfigServer(url)
+    assert (
+        server.get_file_contents(
+            file_path, requested_response_format=RequestedResponseFormats.DICT
+        )
+        == test_str.encode()
+    )
+
+
+@patch("daq_config_server.client.requests.get")
 def test_get_file_contents_warns_and_gives_bytes_on_invalid_json(
     mock_request: MagicMock,
 ):

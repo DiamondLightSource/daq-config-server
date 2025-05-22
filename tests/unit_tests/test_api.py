@@ -55,6 +55,18 @@ async def test_get_configuration_on_plain_text_file(mock_app: TestClient):
     )
 
 
+async def test_get_configuration_raw_bytes(mock_app: TestClient):
+    file_path = f"{TEST_DATA_DIR}/beamline_parameters.txt"
+    with open(file_path, "rb") as f:
+        expected_response = f.read()
+    await _assert_get_and_response(
+        mock_app,
+        f"{ENDPOINTS.CONFIG}/{file_path}",
+        expected_response,
+        header={"Accept": ValidAcceptHeaders.RAW_BYTES},
+    )
+
+
 def test_get_configuration_exception_on_invalid_file(mock_app: TestClient):
     file_path = f"{TEST_DATA_DIR}/nonexistent_file.yaml"
     response = mock_app.get(f"{ENDPOINTS.CONFIG}/{file_path}", headers=HEADER_DEFAULTS)
