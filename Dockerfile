@@ -28,5 +28,4 @@ COPY --from=build /venv/ /venv/
 COPY tests/test_data/beamline_parameters.txt tests/test_data/beamline_parameters.txt
 ENV PATH=/venv/bin:$PATH
 
-# change this entrypoint if it is not the same as the repo
-CMD daq-config-server
+ENTRYPOINT ["daq-config-server"]

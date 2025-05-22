@@ -62,3 +62,5 @@ kubectl port-forward service/daq-config-server-svc 8555
 ```
 
 after which you should be able to access the API on `http://localhost:8555/docs`
+
+<!-- README only content. Anything below this line won't be included in index.md -->
