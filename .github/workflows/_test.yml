@@ -50,8 +50,8 @@ jobs:
           python-version: ${{ inputs.python-version }}
           pip-install: ".[dev,server]"
 
-      - name: Run tests
-        run: tox -e tests
+      - name: Run unit tests
+        run: tox -e unit_tests
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v4

@@ -44,10 +44,8 @@ MAIN_CONTAINER_TAG="${BASE_REPO_ADDR}${MAIN_CONTAINER_NAME}"
 # set env vars which will be used by build process:
 if [ $DEV -gt 0 ]; then
     export REACT_APP_BACKEND_ADDR="http://localhost:8555"
-    export MAIN_APP_DEV_MODE=1
 else
     export REACT_APP_BACKEND_ADDR="https://daq-config.diamond.ac.uk/api"
-    export MAIN_APP_DEV_MODE=0
 fi
 
 echo " "
@@ -57,7 +55,7 @@ echo "========================================="
 echo " "
 echo "Building ${MAIN_CONTAINER_NAME}"
 echo " "
-podman build --build-arg RUN_APP_IN_DEV_MODE=$MAIN_APP_DEV_MODE -t $MAIN_CONTAINER_NAME .
+podman build --build-arg -t $MAIN_CONTAINER_NAME .
 if [ $PUSH -gt 0 ]; then
     podman tag $MAIN_CONTAINER_NAME $MAIN_CONTAINER_TAG
     podman push $MAIN_CONTAINER_NAME $MAIN_CONTAINER_TAG

@@ -27,8 +27,6 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 COPY --from=build /venv/ /venv/
 COPY tests/test_data/beamline_parameters.txt tests/test_data/beamline_parameters.txt
 ENV PATH=/venv/bin:$PATH
-ARG RUN_APP_IN_DEV_MODE=0
-ENV DEV_MODE=${RUN_APP_IN_DEV_MODE}
 
 # change this entrypoint if it is not the same as the repo
 CMD daq-config-server

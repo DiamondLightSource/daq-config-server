@@ -35,6 +35,7 @@ use_stub_offsets: bool = config_server.best_effort_get_feature_flag("use_stub_of
 
 ## Testing and deployment
 
+
 There is a convenient script in `./deployment/build_and_push.sh`, which takes
 a `--dev` option to push containers with `-dev` appended to their names and a `--no-push` option for local
 development. This ensures that environment variables for dev or prod builds are included in the built container. To push to
