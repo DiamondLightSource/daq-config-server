@@ -9,9 +9,9 @@ SERVER_ADDRESS = "http://0.0.0.0:8555"
 
 """For now, these tests require locally hosting the config server
 
-While in the python environment, run
+While in the python environment, run from the terminal:
 
-python -m daq_config_server --dev
+daq-config-server
 
 before running the tests
 """

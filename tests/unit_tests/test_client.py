@@ -1,23 +1,45 @@
 from unittest.mock import MagicMock, patch
 
+import pytest
+import requests
 from fastapi import status
 from httpx import Response
+from requests import RequestException
 
 from daq_config_server.app import ValidAcceptHeaders
 from daq_config_server.client import ConfigServer, RequestedResponseFormats
 from daq_config_server.constants import ENDPOINTS
 
 
+def make_test_response(
+    content: str,
+    status_code: int = 200,
+    raise_exc: type[RequestException] | None = None,
+    json_value: str | None = None,
+    content_type=ValidAcceptHeaders.PLAIN_TEXT,
+):
+    r = Response(
+        json=json_value,
+        status_code=status_code,
+        headers={"content-type": content_type},
+        content=content,
+    )
+    r.raise_for_status = MagicMock()
+
+    if raise_exc:
+        r.raise_for_status.side_effect = raise_exc
+    else:
+        r.raise_for_status.return_value = None
+    return r
+
+
 @patch("daq_config_server.client.requests.get")
 def test_get_file_contents_default_header(mock_request: MagicMock):
-    content_type = ValidAcceptHeaders.PLAIN_TEXT
     mock_request.return_value = Response(
         status_code=status.HTTP_200_OK,
         content="test",
-        headers={
-            "content-type": content_type,
-        },
     )
+    mock_request.return_value = make_test_response("test")
     file_path = "test"
     url = "url"
     server = ConfigServer(url)
@@ -34,13 +56,8 @@ def test_get_file_contents_warns_and_gives_bytes_on_invalid_json(
 ):
     content_type = ValidAcceptHeaders.JSON
     bad_json = "bad_dict}"
-    mock_request.return_value = Response(
-        status_code=status.HTTP_200_OK,
-        json="test",
-        headers={
-            "content-type": content_type,
-        },
-        content=bad_json,
+    mock_request.return_value = make_test_response(
+        bad_json, content_type=content_type, json_value=bad_json
     )
     file_path = "test"
     url = "url"
@@ -59,28 +76,31 @@ def test_get_file_contents_warns_and_gives_bytes_on_invalid_json(
 
 
 @patch("daq_config_server.client.requests.get")
-def test_logger_warning_if_content_type_doesnt_match_requested_type(
+def test_read_unformatted_file_reading_reset_cached_result_true_without_cache(
     mock_request: MagicMock,
 ):
-    headers = {"Accept": RequestedResponseFormats.DICT}
-    content_type = ValidAcceptHeaders.PLAIN_TEXT
-    text = "text"
-    mock_request.return_value = Response(
-        status_code=status.HTTP_200_OK,
-        headers={
-            "content-type": content_type,
-        },
-        content=text,
+    """Test reset_cached_result=False and reset_cached_result=True."""
+    mock_request.side_effect = [
+        make_test_response("1st_read"),
+        make_test_response("2nd_read"),
+        make_test_response("3rd_read"),
+    ]
+    file_path = "test"
+    url = "url"
+    server = ConfigServer(url)
+    assert server.get_file_contents(file_path, reset_cached_result=True) == "1st_read"
+    assert server.get_file_contents(file_path, reset_cached_result=True) == "2nd_read"
+    assert server.get_file_contents(file_path, reset_cached_result=False) == "2nd_read"
+
+
+@patch("daq_config_server.client.requests.get")
+def test_read_unformatted_file_reading_not_OK(mock_request: MagicMock):
+    """Test that a non-200 response raises a RequestException."""
+    mock_request.return_value = make_test_response(
+        "1st_read", status.HTTP_204_NO_CONTENT, raise_exc=requests.exceptions.HTTPError
     )
     file_path = "test"
     url = "url"
     server = ConfigServer(url)
-    server._log.warning = MagicMock()
-    server.get_file_contents(
-        file_path, requested_response_format=RequestedResponseFormats.DICT
-    )
-
-    server._log.warning.assert_called_once_with(
-        f"Server failed to parse the file as requested. Requested \
-                {headers['Accept']} but response came as content-type {content_type}"
-    )
+    with pytest.raises(requests.exceptions.HTTPError):
+        server.get_file_contents(file_path)
