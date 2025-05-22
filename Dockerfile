@@ -1,7 +1,7 @@
 # The devcontainer should use the developer target and run as root with podman
 # or docker with user namespaces.
 ARG PYTHON_VERSION=3.11
-FROM python:${PYTHON_VERSION} as developer
+FROM python:${PYTHON_VERSION} AS developer
 
 # Add any system dependencies for the developer/build environment here
 RUN apt-get update && apt-get install -y --no-install-recommends \
@@ -28,5 +28,4 @@ COPY --from=build /venv/ /venv/
 COPY tests/test_data/beamline_parameters.txt tests/test_data/beamline_parameters.txt
 ENV PATH=/venv/bin:$PATH
 
-# change this entrypoint if it is not the same as the repo
-CMD daq-config-server
+ENTRYPOINT ["daq-config-server"]
