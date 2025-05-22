@@ -1,3 +1,5 @@
+"""Interface for ``python -m daq_config_server``."""
+
 from argparse import ArgumentParser
 
 from . import __version__
@@ -11,8 +13,8 @@ INSUFFICIENT_DEPENDENCIES_MESSAGE = "To do anything other than print the version
 
 def check_server_dependencies():
     try:
-        import uvicorn  # noqa
-        from fastapi import FastAPI  # noqa
+        import uvicorn  # type: ignore  # noqa: F401
+        from fastapi import FastAPI  # type: ignore # noqa
 
         return True
 
@@ -33,6 +35,5 @@ def main():
         main()
 
 
-# test with: python -m daq_config_server
 if __name__ == "__main__":
     main()

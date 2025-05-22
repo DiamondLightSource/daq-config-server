@@ -1,5 +1,5 @@
 [build-system]
-requires = ["setuptools>=64", "setuptools_scm[toml]>=6.2"]
+requires = ["setuptools>=64", "setuptools_scm[toml]>=8"]
 build-backend = "setuptools.build_meta"
 
 [project]
@@ -8,8 +8,10 @@ classifiers = [
     "Development Status :: 3 - Alpha",
     "License :: OSI Approved :: Apache Software License",
     "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
 ]
-description = "A service to put and get your config values from"
+description = "A service to read files on dls_sw from a blueapi container"
 dependencies = ["urllib3", "requests"]
 dynamic = ["version"]
 license.file = "LICENSE"
@@ -22,13 +24,18 @@ dev = [
     "copier",
     "httpx",
     "mockito",
+    "myst-parser",
     "pipdeptree",
     "pre-commit",
+    "pydata-sphinx-theme>=0.12",
     "pyright",
     "pytest",
     "pytest-cov",
     "pytest-asyncio",
     "ruff",
+    "sphinx-autobuild",
+    "sphinx-copybutton",
+    "sphinx-design",
     "tox-direct",
     "types-mock",
     "cachetools",
@@ -43,14 +50,15 @@ daq-config-server = "daq_config_server.__main__:main"
 GitHub = "https://github.com/DiamondLightSource/daq-config-server"
 
 [[project.authors]] # Further authors may be added by duplicating this section
-email = "david.perl@diamond.ac.uk"
-name = "David Perl"
+email = "oliver.silvester@diamond.ac.uk"
+name = "Oliver Silvester"
 
 
 [tool.setuptools_scm]
-write_to = "src/daq_config_server/_version.py"
+version_file = "src/daq_config_server/_version.py"
 
 [tool.pyright]
+typeCheckingMode = "strict"
 reportMissingImports = false # Ignore missing stubs in imported modules
 
 [tool.pytest.ini_options]
@@ -58,7 +66,7 @@ asyncio_mode = "auto"
 asyncio_default_fixture_loop_scope = "function"
 # Run pytest with all our checkers, and don't spam us with massive tracebacks on error
 addopts = """
-    --tb=native -vv
+    --tb=native -vv --doctest-modules --doctest-glob="*.rst"
     """
 markers = """
     requires_local_server: mark a test which requires locally hosting the config server
@@ -83,7 +91,7 @@ legacy_tox_ini = """
 [tox]
 skipsdist=True
 
-[testenv]
+[testenv:{pre-commit,type-checking,unit_tests,docs}]
 # Don't create a virtualenv for the command, requires tox-direct plugin
 direct = True
 passenv = *
@@ -93,11 +101,11 @@ allowlist_externals =
     pyright
     sphinx-build
     sphinx-autobuild
-[testenv:{pre-commit,type-checking,unit_tests,system_tests}]
 commands =
     pre-commit: pre-commit run --all-files --show-diff-on-failure {posargs}
     type-checking: pyright src tests {posargs}
     unit_tests: pytest --cov=daq_config_server --cov-report term --cov-report xml:cov.xml {posargs} tests/unit_tests
+    docs: sphinx-{posargs:build -EW --keep-going} -T docs build/html
     system_tests: pytest tests/system_tests
 """
 
@@ -105,11 +113,18 @@ commands =
 src = ["src", "tests"]
 line-length = 88
 lint.select = [
-    "B",  # flake8-bugbear - https://docs.astral.sh/ruff/rules/#flake8-bugbear-b
-    "C4", # flake8-comprehensions - https://docs.astral.sh/ruff/rules/#flake8-comprehensions-c4
-    "E",  # pycodestyle errors - https://docs.astral.sh/ruff/rules/#error-e
-    "F",  # pyflakes rules - https://docs.astral.sh/ruff/rules/#pyflakes-f
-    "W",  # pycodestyle warnings - https://docs.astral.sh/ruff/rules/#warning-w
-    "I",  # isort - https://docs.astral.sh/ruff/rules/#isort-i
-    "UP", # pyupgrade - https://docs.astral.sh/ruff/rules/#pyupgrade-up
+    "B",   # flake8-bugbear - https://docs.astral.sh/ruff/rules/#flake8-bugbear-b
+    "C4",  # flake8-comprehensions - https://docs.astral.sh/ruff/rules/#flake8-comprehensions-c4
+    "E",   # pycodestyle errors - https://docs.astral.sh/ruff/rules/#error-e
+    "F",   # pyflakes rules - https://docs.astral.sh/ruff/rules/#pyflakes-f
+    "W",   # pycodestyle warnings - https://docs.astral.sh/ruff/rules/#warning-w
+    "I",   # isort - https://docs.astral.sh/ruff/rules/#isort-i
+    "UP",  # pyupgrade - https://docs.astral.sh/ruff/rules/#pyupgrade-up
+    "SLF", # self - https://docs.astral.sh/ruff/settings/#lintflake8-self
 ]
+
+[tool.ruff.lint.per-file-ignores]
+# By default, private member access is allowed in tests
+# See https://github.com/DiamondLightSource/python-copier-template/issues/154
+# Remove this line to forbid private member access in tests
+"tests/**/*" = ["SLF001"]

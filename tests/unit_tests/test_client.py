@@ -16,7 +16,7 @@ def make_test_response(
     status_code: int = 200,
     raise_exc: type[RequestException] | None = None,
     json_value: str | None = None,
-    content_type=ValidAcceptHeaders.PLAIN_TEXT,
+    content_type: ValidAcceptHeaders = ValidAcceptHeaders.PLAIN_TEXT,
 ):
     r = Response(
         json=json_value,

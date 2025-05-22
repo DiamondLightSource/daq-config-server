@@ -37,7 +37,9 @@ class ConfigServer:
         """
         self._url = url.rstrip("/")
         self._log = log if log else getLogger("daq_config_server.client")
-        self._cache = TTLCache(maxsize=cache_size, ttl=cache_lifetime_s)
+        self._cache: TTLCache[tuple[str, str | None], str] = TTLCache(
+            maxsize=cache_size, ttl=cache_lifetime_s
+        )
 
     @cachedmethod(cache=operator.attrgetter("_cache"))
     def _cached_get(

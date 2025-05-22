@@ -2,7 +2,7 @@
 [![Backend CI](https://github.com/DiamondLightSource/daq-config-server/actions/workflows/ci.yml/badge.svg)](https://github.com/DiamondLightSource/daq-config-server/actions/workflows/backend_ci.yml)
 [![Coverage](https://codecov.io/gh/DiamondLightSource/daq-config-server/branch/main/graph/badge.svg)](https://codecov.io/gh/DiamondLightSource/daq-config-server)
 [![PyPI](https://img.shields.io/pypi/v/daq-config-server.svg)](https://pypi.org/project/daq-config-server)
-[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://www.apache.org/licenses/LICENSE-2.0)
 
 # DAQ Config Server
 
@@ -62,3 +62,5 @@ kubectl port-forward service/daq-config-server-svc 8555
 ```
 
 after which you should be able to access the API on `http://localhost:8555/docs`
+
+<!-- README only content. Anything below this line won't be included in index.md -->

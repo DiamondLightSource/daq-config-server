@@ -3,7 +3,7 @@ import json
 import pytest
 
 from daq_config_server.client import ConfigServer, RequestedResponseFormats
-from tests.constants import TEST_DATA_DIR
+from tests.constants import TEST_DATA_DIR  # type: ignore
 
 SERVER_ADDRESS = "http://0.0.0.0:8555"
 

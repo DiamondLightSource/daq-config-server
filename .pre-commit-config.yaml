@@ -7,13 +7,14 @@ repos:
         args: [--allow-multiple-documents]
         exclude: ^helmchart/
       - id: check-merge-conflict
+      - id: end-of-file-fixer
 
   - repo: local
     hooks:
       - id: ruff
         name: lint with ruff
         language: system
-        entry: ruff check --force-exclude
+        entry: ruff check --force-exclude --fix
         types: [python]
         exclude: ^.github/pages
         require_serial: true
