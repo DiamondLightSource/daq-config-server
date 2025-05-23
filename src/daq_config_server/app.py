@@ -2,10 +2,9 @@ import json
 import os
 from enum import StrEnum
 from pathlib import Path
-from typing import Annotated
 
 import uvicorn
-from fastapi import FastAPI, Header, HTTPException
+from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse, Response
 
@@ -34,10 +33,39 @@ class ValidAcceptHeaders(StrEnum):
     RAW_BYTES = "application/octet-stream"
 
 
-@app.get(ENDPOINTS.CONFIG + "/{file_path:path}")
+@app.get(
+    ENDPOINTS.CONFIG + "/{file_path:path}",
+    responses={
+        200: {
+            "description": "Returns JSON, plain text, or binary file.",
+            "content": {
+                "application/json": {
+                    "schema": {
+                        "type": "object",
+                        "additionalProperties": True,
+                        "example": {
+                            "key": "value",
+                            "list": [1, 2, 3],
+                            "nested": {"a": 1},
+                        },
+                    }
+                },
+                "text/plain": {
+                    "schema": {
+                        "type": "string",
+                        "example": "This is a plain text response",
+                    }
+                },
+                "application/octet-stream": {
+                    "schema": {"type": "string", "format": "binary"},
+                },
+            },
+        },
+    },
+)
 def get_configuration(
     file_path: Path,
-    accept: Annotated[ValidAcceptHeaders, Header()] = ValidAcceptHeaders.PLAIN_TEXT,
+    request: Request,
 ):
     """
     Read a file and return its contents in a format specified by the accept header.
@@ -46,6 +74,7 @@ def get_configuration(
         raise HTTPException(status_code=404, detail=f"File {file_path} cannot be found")
 
     file_name = os.path.basename(file_path)
+    accept = request.headers.get("accept", ValidAcceptHeaders.PLAIN_TEXT)
 
     try:
         match accept:
