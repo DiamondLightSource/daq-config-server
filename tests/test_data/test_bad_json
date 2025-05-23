@@ -1,0 +1,11 @@
+{
+  "user": {
+    "id": 1,
+    "name": "fake_person",
+    "email": "fake_person@example.com"
+  },
+  "status": "active",
+  "roles": ["fake_person", "tester"],
+  "preferences": {
+    "theme": "dark",
+    "notifications": 1

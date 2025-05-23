@@ -1,0 +1,13 @@
+{
+  "typeCheckingMode": "strict",
+  "reportMissingImports": false,
+  "reportPrivateUsage": true,
+  "executionEnvironments": [
+    {
+      "root": "./tests",
+      "reportPrivateUsage": false
+    }
+  ],
+  "reportMissingTypeStubs": false,
+  "extraPaths": ["."]
+}

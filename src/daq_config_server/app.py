@@ -1,10 +1,15 @@
+import json
+import os
+from enum import StrEnum
 from pathlib import Path
 
 import uvicorn
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse, Response
 
 from daq_config_server.constants import ENDPOINTS
+from daq_config_server.log import LOGGER
 
 app = FastAPI(
     title="DAQ config server",
@@ -22,17 +27,79 @@ app.add_middleware(
 __all__ = ["main"]
 
 
-@app.get(ENDPOINTS.CONFIG + "/{file_path:path}")
-def get_configuration(file_path: Path):
-    """Read a file and return its contents completely unformatted as a string. After
-    https://github.com/DiamondLightSource/daq-config-server/issues/67, this endpoint
-    will convert commonly read files to a dictionary format
+class ValidAcceptHeaders(StrEnum):
+    JSON = "application/json"
+    PLAIN_TEXT = "text/plain"
+    RAW_BYTES = "application/octet-stream"
+
+
+@app.get(
+    ENDPOINTS.CONFIG + "/{file_path:path}",
+    responses={
+        200: {
+            "description": "Returns JSON, plain text, or binary file.",
+            "content": {
+                "application/json": {
+                    "schema": {
+                        "type": "object",
+                        "additionalProperties": True,
+                        "example": {
+                            "key": "value",
+                            "list": [1, 2, 3],
+                            "nested": {"a": 1},
+                        },
+                    }
+                },
+                "text/plain": {
+                    "schema": {
+                        "type": "string",
+                        "example": "This is a plain text response",
+                    }
+                },
+                "application/octet-stream": {
+                    "schema": {"type": "string", "format": "binary"},
+                },
+            },
+        },
+    },
+)
+def get_configuration(
+    file_path: Path,
+    request: Request,
+):
+    """
+    Read a file and return its contents in a format specified by the accept header.
     """
     if not file_path.is_file():
-        raise FileNotFoundError(f"File {file_path} cannot be found")
+        raise HTTPException(status_code=404, detail=f"File {file_path} cannot be found")
 
-    with file_path.open("r", encoding="utf-8") as f:
-        return f.read()
+    file_name = os.path.basename(file_path)
+    accept = request.headers.get("accept", ValidAcceptHeaders.PLAIN_TEXT)
+
+    try:
+        match accept:
+            case ValidAcceptHeaders.JSON:
+                with file_path.open("r", encoding="utf-8") as f:
+                    content = json.loads(f.read())
+                return JSONResponse(
+                    content=content,
+                )
+            case ValidAcceptHeaders.PLAIN_TEXT:
+                with file_path.open("r", encoding="utf-8") as f:
+                    content = f.read()
+                return Response(content=content, media_type=accept)
+            case _:
+                pass
+    except Exception as e:
+        LOGGER.warning(
+            f"Failed to convert {file_name} to {accept} and caught \
+            exception: {e} \nSending file as raw bytes instead"
+        )
+
+    with file_path.open("rb") as f:
+        content = f.read()
+
+    return Response(content=content, media_type=ValidAcceptHeaders.RAW_BYTES)
 
 
 def main():
