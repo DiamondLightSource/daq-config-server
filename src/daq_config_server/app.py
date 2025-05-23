@@ -1,4 +1,3 @@
-import json
 import os
 from enum import StrEnum
 from pathlib import Path
@@ -48,16 +47,14 @@ def get_configuration(
     file_name = os.path.basename(file_path)
 
     try:
+        with file_path.open("r", encoding="utf-8") as f:
+            content = f.read()
         match accept:
             case ValidAcceptHeaders.JSON:
-                with file_path.open("r", encoding="utf-8") as f:
-                    content = json.loads(f.read())
                 return JSONResponse(
                     content=content,
                 )
             case ValidAcceptHeaders.PLAIN_TEXT:
-                with file_path.open("r", encoding="utf-8") as f:
-                    content = f.read()
                 return Response(content=content, media_type=accept)
             case _:
                 pass
