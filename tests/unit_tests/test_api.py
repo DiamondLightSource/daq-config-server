@@ -1,3 +1,4 @@
+import json
 from pathlib import Path
 from unittest.mock import MagicMock, patch
 
@@ -85,7 +86,7 @@ def test_get_configuration_exception_on_invalid_file(mock_app: TestClient):
 async def test_get_configuration_on_json_file(mock_app: TestClient):
     file_path = f"{TEST_DATA_DIR}/test_good_json.json"
     with open(file_path) as f:
-        expected_contents = f.read()
+        expected_contents = json.load(f)
     expected_type = ValidAcceptHeaders.JSON
     expected_response = JSONResponse(
         content=expected_contents,
