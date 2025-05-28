@@ -2,7 +2,8 @@
 
 DEV=0
 PUSH=1
-
+# make dockerignore from .gitignore
+cp .gitignore .dockerignore
 for option in "$@"; do
     case $option in
         -d|--dev)
@@ -55,7 +56,7 @@ echo "========================================="
 echo " "
 echo "Building ${MAIN_CONTAINER_NAME}"
 echo " "
-podman build --build-arg -t $MAIN_CONTAINER_NAME .
+podman build -t $MAIN_CONTAINER_NAME .
 if [ $PUSH -gt 0 ]; then
     podman tag $MAIN_CONTAINER_NAME $MAIN_CONTAINER_TAG
     podman push $MAIN_CONTAINER_NAME $MAIN_CONTAINER_TAG
