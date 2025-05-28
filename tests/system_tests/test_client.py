@@ -3,7 +3,11 @@ import json
 import pytest
 
 from daq_config_server.client import ConfigServer, RequestedResponseFormats
-from tests.constants import TEST_DATA_DIR  # type: ignore
+from tests.constants import (
+    TEST_BAD_JSON_PATH,
+    TEST_BEAMLINE_PARAMETERS_PATH,
+    TEST_GOOD_JSON_PATH,
+)
 
 SERVER_ADDRESS = "http://0.0.0.0:8555"
 
@@ -24,7 +28,7 @@ def server():
 
 @pytest.mark.requires_local_server
 def test_read_unformatted_file_as_plain_text(server: ConfigServer):
-    file_path = f"{TEST_DATA_DIR}/beamline_parameters.txt"
+    file_path = TEST_BEAMLINE_PARAMETERS_PATH
     with open(file_path) as f:
         expected_response = f.read()
 
@@ -38,7 +42,7 @@ def test_read_unformatted_file_as_plain_text(server: ConfigServer):
 
 @pytest.mark.requires_local_server
 def test_read_file_as_bytes(server: ConfigServer):
-    file_path = f"{TEST_DATA_DIR}/beamline_parameters.txt"
+    file_path = TEST_BEAMLINE_PARAMETERS_PATH
     with open(file_path, "rb") as f:
         expected_response = f.read()
 
@@ -53,7 +57,7 @@ def test_read_file_as_bytes(server: ConfigServer):
 
 @pytest.mark.requires_local_server
 def test_read_good_json_as_dict(server: ConfigServer):
-    file_path = f"{TEST_DATA_DIR}/test_good_json.json"
+    file_path = TEST_GOOD_JSON_PATH
     with open(file_path) as f:
         expected_response = json.loads(f.read())
 
@@ -68,7 +72,7 @@ def test_read_good_json_as_dict(server: ConfigServer):
 
 @pytest.mark.requires_local_server
 def test_bad_json_read_as_bytes(server: ConfigServer):
-    file_path = f"{TEST_DATA_DIR}/test_bad_json"
+    file_path = TEST_BAD_JSON_PATH
     with open(file_path, "rb") as f:
         expected_response = f.read()
 

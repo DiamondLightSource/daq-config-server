@@ -10,7 +10,10 @@ from fastapi.testclient import TestClient
 from daq_config_server import app
 from daq_config_server.app import ValidAcceptHeaders
 from daq_config_server.constants import ENDPOINTS
-from tests.constants import TEST_DATA_DIR
+from tests.constants import (
+    TEST_BEAMLINE_PARAMETERS_PATH,
+    TEST_GOOD_JSON_PATH,
+)
 
 
 @pytest.fixture
@@ -39,7 +42,7 @@ async def _assert_get_and_response(
 
 
 async def test_get_configuration_on_plain_text_file(mock_app: TestClient):
-    file_path = f"{TEST_DATA_DIR}/beamline_parameters.txt"
+    file_path = TEST_BEAMLINE_PARAMETERS_PATH
     with open(file_path) as f:
         expected_contents = f.read()
 
@@ -57,7 +60,7 @@ async def test_get_configuration_on_plain_text_file(mock_app: TestClient):
 
 
 async def test_get_configuration_raw_bytes(mock_app: TestClient):
-    file_path = f"{TEST_DATA_DIR}/beamline_parameters.txt"
+    file_path = TEST_BEAMLINE_PARAMETERS_PATH
     with open(file_path, "rb") as f:
         expected_contents = f.read()
     expected_type = ValidAcceptHeaders.RAW_BYTES
@@ -76,7 +79,7 @@ async def test_get_configuration_raw_bytes(mock_app: TestClient):
 
 
 def test_get_configuration_exception_on_invalid_file(mock_app: TestClient):
-    file_path = f"{TEST_DATA_DIR}/nonexistent_file.yaml"
+    file_path = Path("/nonexistent_file.yaml")
     response = mock_app.get(
         f"{ENDPOINTS.CONFIG}/{file_path}", headers=ACCEPT_HEADER_DEFAULT
     )
@@ -84,7 +87,7 @@ def test_get_configuration_exception_on_invalid_file(mock_app: TestClient):
 
 
 async def test_get_configuration_on_json_file(mock_app: TestClient):
-    file_path = f"{TEST_DATA_DIR}/test_good_json.json"
+    file_path = TEST_GOOD_JSON_PATH
     with open(file_path) as f:
         expected_contents = json.load(f)
     expected_type = ValidAcceptHeaders.JSON
@@ -105,7 +108,7 @@ async def test_get_configuration_on_json_file(mock_app: TestClient):
 async def test_get_configuration_warns_and_uses_raw_bytes_on_failed_utf_8_encoding(
     mock_warn: MagicMock, mock_app: TestClient, tmpdir: Path
 ):
-    file_path = f"{tmpdir}/test_bad_utf_8.txt"
+    file_path = Path(f"{tmpdir}/test_bad_utf_8.txt")
     with open(file_path, "wb") as f:
         f.write(b"\x80\x81\xfe\xff")
     expected_contents = b"\x80\x81\xfe\xff"

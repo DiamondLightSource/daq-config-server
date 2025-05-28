@@ -1,3 +1,4 @@
+from pathlib import Path
 from unittest.mock import MagicMock, patch
 
 import pytest
@@ -9,6 +10,8 @@ from requests import RequestException
 from daq_config_server.app import ValidAcceptHeaders
 from daq_config_server.client import ConfigServer, RequestedResponseFormats
 from daq_config_server.constants import ENDPOINTS
+
+test_path = Path("test")
 
 
 def make_test_response(
@@ -40,12 +43,11 @@ def test_get_file_contents_default_header(mock_request: MagicMock):
         content="test",
     )
     mock_request.return_value = make_test_response("test")
-    file_path = "test"
     url = "url"
     server = ConfigServer(url)
-    assert server.get_file_contents(file_path) == "test"
+    assert server.get_file_contents(test_path) == "test"
     mock_request.assert_called_once_with(
-        url + ENDPOINTS.CONFIG + "/" + file_path,
+        url + ENDPOINTS.CONFIG + "/" + str(test_path),
         headers={"Accept": RequestedResponseFormats.DECODED_STRING},
     )
 
@@ -56,12 +58,11 @@ def test_get_file_contents_with_bytes(mock_request: MagicMock):
     mock_request.return_value = make_test_response(
         test_str, content_type=ValidAcceptHeaders.RAW_BYTES
     )
-    file_path = test_str
     url = "url"
     server = ConfigServer(url)
     assert (
         server.get_file_contents(
-            file_path, requested_response_format=RequestedResponseFormats.DICT
+            test_path, requested_response_format=RequestedResponseFormats.DICT
         )
         == test_str.encode()
     )
@@ -76,13 +77,12 @@ def test_get_file_contents_warns_and_gives_bytes_on_invalid_json(
     mock_request.return_value = make_test_response(
         bad_json, content_type=content_type, json_value=bad_json
     )
-    file_path = "test"
     url = "url"
     server = ConfigServer(url)
     server._log.warning = MagicMock()
     assert (
         server.get_file_contents(
-            file_path, requested_response_format=RequestedResponseFormats.DICT
+            test_path, requested_response_format=RequestedResponseFormats.DICT
         )
         == bad_json.encode()
     )
@@ -102,12 +102,11 @@ def test_get_file_contents_caching(
         make_test_response("2nd_read"),
         make_test_response("3rd_read"),
     ]
-    file_path = "test"
     url = "url"
     server = ConfigServer(url)
-    assert server.get_file_contents(file_path, reset_cached_result=True) == "1st_read"
-    assert server.get_file_contents(file_path, reset_cached_result=True) == "2nd_read"
-    assert server.get_file_contents(file_path, reset_cached_result=False) == "2nd_read"
+    assert server.get_file_contents(test_path, reset_cached_result=True) == "1st_read"
+    assert server.get_file_contents(test_path, reset_cached_result=True) == "2nd_read"
+    assert server.get_file_contents(test_path, reset_cached_result=False) == "2nd_read"
 
 
 @patch("daq_config_server.client.requests.get")
@@ -116,8 +115,7 @@ def test_read_unformatted_file_reading_not_OK(mock_request: MagicMock):
     mock_request.return_value = make_test_response(
         "1st_read", status.HTTP_204_NO_CONTENT, raise_exc=requests.exceptions.HTTPError
     )
-    file_path = "test"
     url = "url"
     server = ConfigServer(url)
     with pytest.raises(requests.exceptions.HTTPError):
-        server.get_file_contents(file_path)
+        server.get_file_contents(test_path)

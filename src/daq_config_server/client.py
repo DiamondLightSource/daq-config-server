@@ -1,6 +1,7 @@
 import operator
 from enum import StrEnum
 from logging import Logger, getLogger
+from pathlib import Path
 from typing import Any
 
 import requests
@@ -37,7 +38,7 @@ class ConfigServer:
         """
         self._url = url.rstrip("/")
         self._log = log if log else getLogger("daq_config_server.client")
-        self._cache: TTLCache[tuple[str, str, str], str] = TTLCache(
+        self._cache: TTLCache[tuple[str, str, Path], str] = TTLCache(
             maxsize=cache_size, ttl=cache_lifetime_s
         )
 
@@ -46,21 +47,21 @@ class ConfigServer:
         self,
         endpoint: str,
         accept_header: str,
-        item: str,
+        file_path: Path,
     ) -> Response:
         """
         Get data from the config server and cache it.
 
         Args:
             endpoint: API endpoint.
-            item: item identifier - the filepath.
+            file_path: absolute path to the file which will be read
 
         Returns:
             The response data.
         """
 
         try:
-            request_url = self._url + endpoint + (f"/{item}")
+            request_url = self._url + endpoint + (f"/{file_path}")
             r = requests.get(request_url, headers={"Accept": accept_header})
             r.raise_for_status()
             self._log.debug(f"Cache set for {request_url}.")
@@ -73,7 +74,7 @@ class ConfigServer:
         self,
         endpoint: str,
         accept_header: str,
-        item: str,
+        file_path: Path,
         reset_cached_result: bool = False,
     ):
         """
@@ -81,9 +82,9 @@ class ConfigServer:
         the content-type response header to format the return value.
         If data parsing fails, return the response contents in bytes
         """
-        if (endpoint, accept_header, item) in self._cache and reset_cached_result:
-            del self._cache[(endpoint, accept_header, item)]
-        r = self._cached_get(endpoint, accept_header, item)
+        if (endpoint, accept_header, file_path) in self._cache and reset_cached_result:
+            del self._cache[(endpoint, accept_header, file_path)]
+        r = self._cached_get(endpoint, accept_header, file_path)
 
         content_type = r.headers["content-type"].split(";")[0].strip()
 
@@ -112,7 +113,7 @@ class ConfigServer:
 
     def get_file_contents(
         self,
-        file_path: str,
+        file_path: Path,
         requested_response_format: RequestedResponseFormats = (
             RequestedResponseFormats.DECODED_STRING
         ),
