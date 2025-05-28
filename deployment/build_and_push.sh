@@ -2,6 +2,7 @@
 
 DEV=0
 PUSH=1
+RUNCONTAINER=0
 # make dockerignore from .gitignore
 cp .gitignore .dockerignore
 for option in "$@"; do
@@ -12,6 +13,10 @@ for option in "$@"; do
         -n|--no-push)
             PUSH=0
             ;;
+        -r|--run)
+            echo "Run the container after building it."
+            RUNCONTAINER=1
+            ;;
         --help|--info|--h)
             echo "Build and push the current repository state into containers and publish them to"
             echo "gcr.io/diamond-privreg/daq-config-server/<container-name> ready for deployment."
@@ -21,6 +26,7 @@ for option in "$@"; do
             echo " "
             exit 0
             ;;
+
         -*|--*)
             echo "Unknown option ${option}. Use --help for info on option usage."
             exit 1
@@ -60,4 +66,9 @@ podman build -t $MAIN_CONTAINER_NAME .
 if [ $PUSH -gt 0 ]; then
     podman tag $MAIN_CONTAINER_NAME $MAIN_CONTAINER_TAG
     podman push $MAIN_CONTAINER_NAME $MAIN_CONTAINER_TAG
+fi
+
+if [ $RUNCONTAINER -gt 0 ]; then
+    echo "Running container ${MAIN_CONTAINER_NAME}..."
+    podman run -d --name $MAIN_CONTAINER_NAME -p 8555:8555 $MAIN_CONTAINER_NAME
 fi
