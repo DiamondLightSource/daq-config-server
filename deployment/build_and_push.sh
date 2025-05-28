@@ -2,7 +2,8 @@
 
 DEV=0
 PUSH=1
-RUNCONTAINER=0
+RUN_CONTAINER=0
+REBUILD_CONTAINER=0
 # make dockerignore from .gitignore
 cp .gitignore .dockerignore
 for option in "$@"; do
@@ -15,7 +16,12 @@ for option in "$@"; do
             ;;
         -r|--run)
             echo "Run the container after building it."
-            RUNCONTAINER=1
+            RUN_CONTAINER=1
+            ;;
+        -b|--rebuild)
+            echo "Rebuild the container even if it already exists."
+            REBUILD_CONTAINER=1
+
             ;;
         --help|--info|--h)
             echo "Build and push the current repository state into containers and publish them to"
@@ -54,21 +60,24 @@ if [ $DEV -gt 0 ]; then
 else
     export REACT_APP_BACKEND_ADDR="https://daq-config.diamond.ac.uk/api"
 fi
-
-echo " "
-echo "========================================="
-echo "====  Building and pushing main app  ===="
-echo "========================================="
-echo " "
-echo "Building ${MAIN_CONTAINER_NAME}"
-echo " "
-podman build -t $MAIN_CONTAINER_NAME .
+if [ -z "$(podman images -q $MAIN_CONTAINER_NAME 2> /dev/null)" ] || [ $REBUILD_CONTAINER -gt 0 ]; then
+    echo " "
+    echo "========================================="
+    echo "====           Building              ===="
+    echo "========================================="
+    echo " "
+    echo "Building ${MAIN_CONTAINER_NAME}"
+    echo " "
+    podman build -t $MAIN_CONTAINER_NAME .
+else
+    echo "Local image found, using existing image."
+  
+fi
 if [ $PUSH -gt 0 ]; then
     podman tag $MAIN_CONTAINER_NAME $MAIN_CONTAINER_TAG
     podman push $MAIN_CONTAINER_NAME $MAIN_CONTAINER_TAG
 fi
-
-if [ $RUNCONTAINER -gt 0 ]; then
+if [ $RUN_CONTAINER -gt 0 ]; then
     echo "Running container ${MAIN_CONTAINER_NAME}..."
-    podman run -d --name $MAIN_CONTAINER_NAME -p 8555:8555 $MAIN_CONTAINER_NAME
+    podman run -d --replace --name $MAIN_CONTAINER_NAME -p 8555:8555 $MAIN_CONTAINER_NAME
 fi
