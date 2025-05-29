@@ -1,0 +1,27 @@
+{{- if .Values.ingress.create }}
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ include "common.names.fullname" $ }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "common.labels.standard" $ | nindent 4 }}
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: {{ .Values.ingress.host }}
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: {{ include "common.names.fullname" $ }}
+                port:
+                  name: http
+
+  tls:
+    - secretName: {{ .Values.ingress.hostSecret }}
+      hosts:
+        - {{ .Values.ingress.host}}
+{{- end }}

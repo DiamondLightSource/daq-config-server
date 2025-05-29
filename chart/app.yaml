@@ -1,0 +1,16 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: daq-config-server
+spec:
+  project: daq-config-server
+  source:
+    repoURL: https://github.com/diamondlightsource/daq-config-server
+    path: chart
+  destination:
+    name: argus
+    namespace: daq-config-server
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
