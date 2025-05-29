@@ -1,6 +1,5 @@
 #!/bin/bash
-
-TAG="dev"
+TAG="latest"
 PUSH=0
 RUN_CONTAINER=0
 REBUILD_CONTAINER=0
@@ -67,10 +66,9 @@ MAIN_CONTAINER_NAME="${BASE_CONTAINER_NAME}"
 
 echo " "
 
-MAIN_CONTAINER_TAG="${BASE_REPO_ADDR}${MAIN_CONTAINER_NAME}-${TAG}"
+MAIN_CONTAINER_TAG="${BASE_REPO_ADDR}${MAIN_CONTAINER_NAME}:${TAG}"
 
-# set env vars which will be used by build process:
-if [ -z "$(podman images -q $MAIN_CONTAINER_NAME 2> /dev/null)" ] || [ $REBUILD_CONTAINER -gt 0 ]; then
+if [ -z "$(podman images -q $MAIN_CONTAINER_NAME:$TAG 2> /dev/null)" ] || [ $REBUILD_CONTAINER -gt 0 ]; then
     echo " "
     echo "========================================="
     echo "====           Building              ===="
@@ -78,7 +76,7 @@ if [ -z "$(podman images -q $MAIN_CONTAINER_NAME 2> /dev/null)" ] || [ $REBUILD_
     echo " "
     echo "Building ${MAIN_CONTAINER_NAME}"
     echo " "
-    podman build -t $MAIN_CONTAINER_NAME .
+    podman build -t "${MAIN_CONTAINER_NAME}:${TAG}" .
 else
     echo "Local image found, using existing image."
 fi
@@ -88,11 +86,11 @@ if [ $PUSH -gt 0 ]; then
     podman push $MAIN_CONTAINER_NAME $MAIN_CONTAINER_TAG
 fi
 if [ $RUN_CONTAINER -gt 0 ]; then
-    echo "Running container ${MAIN_CONTAINER_NAME}..."
+    echo "Running container ${MAIN_CONTAINER_NAME}:${TAG}..."
     # if the container is already running, stop it first
     if [ -n "$(podman ps -q --filter "name=$MAIN_CONTAINER_NAME")" ] ; then
         echo "Container $MAIN_CONTAINER_NAME is already running, stopping it first..."
         podman stop $MAIN_CONTAINER_NAME
     fi
-    podman run -d -v /dls_sw/:/dls_sw/ -v ./tests/test_data:/tests/test_data:z --replace --name $MAIN_CONTAINER_NAME -p 8555:8555 $MAIN_CONTAINER_NAME
+    podman run -d -v /dls_sw/:/dls_sw/ -v ./tests/test_data:/tests/test_data:z --replace --name $MAIN_CONTAINER_NAME -p 8555:8555 "${MAIN_CONTAINER_NAME}:${TAG}"
 fi
