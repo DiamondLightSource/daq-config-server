@@ -1,6 +1,5 @@
 import json
 from pathlib import Path
-from unittest.mock import MagicMock, patch
 
 import pytest
 from fastapi import status
@@ -104,24 +103,13 @@ async def test_get_configuration_on_json_file(mock_app: TestClient):
     )
 
 
-@patch("daq_config_server.app.LOGGER.warning")
-async def test_get_configuration_warns_and_uses_raw_bytes_on_failed_utf_8_encoding(
-    mock_warn: MagicMock, mock_app: TestClient, tmpdir: Path
+async def test_get_configuration_gives_http_422_on_failed_conversion(
+    mock_app: TestClient, tmpdir: Path
 ):
     file_path = Path(f"{tmpdir}/test_bad_utf_8.txt")
     with open(file_path, "wb") as f:
         f.write(b"\x80\x81\xfe\xff")
-    expected_contents = b"\x80\x81\xfe\xff"
-    expected_type = ValidAcceptHeaders.RAW_BYTES
-    expected_response = Response(
-        content=expected_contents,
-        headers={"content-type": expected_type},
-        status_code=status.HTTP_200_OK,
+    response = mock_app.get(
+        f"{ENDPOINTS.CONFIG}/{file_path}", headers=ACCEPT_HEADER_DEFAULT
     )
-    await _assert_get_and_response(
-        mock_app,
-        f"{ENDPOINTS.CONFIG}/{file_path}",
-        expected_response,
-        accept_header={"Accept": ValidAcceptHeaders.PLAIN_TEXT},
-    )
-    mock_warn.assert_called_once()
+    assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY

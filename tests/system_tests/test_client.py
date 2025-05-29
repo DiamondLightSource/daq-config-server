@@ -1,8 +1,11 @@
 import json
+import os
+from unittest.mock import MagicMock
 
 import pytest
+import requests
 
-from daq_config_server.client import ConfigServer, RequestedResponseFormats
+from daq_config_server.client import ConfigServer
 from tests.constants import (
     TEST_BAD_JSON_PATH,
     TEST_BEAMLINE_PARAMETERS_PATH,
@@ -49,7 +52,7 @@ def test_read_file_as_bytes(server: ConfigServer):
     assert (
         server.get_file_contents(
             file_path,
-            requested_response_format=RequestedResponseFormats.RAW_BYTE_STRING,
+            bytes,
         )
         == expected_response
     )
@@ -64,22 +67,25 @@ def test_read_good_json_as_dict(server: ConfigServer):
     assert (
         server.get_file_contents(
             file_path,
-            requested_response_format=RequestedResponseFormats.DICT,
+            dict,
         )
         == expected_response
     )
 
 
 @pytest.mark.requires_local_server
-def test_bad_json_read_as_bytes(server: ConfigServer):
+def test_bad_json_gives_http_error_with_details(server: ConfigServer):
     file_path = TEST_BAD_JSON_PATH
-    with open(file_path, "rb") as f:
-        expected_response = f.read()
+    file_name = os.path.basename(file_path)
+    expected_detail = (
+        f"Failed to convert {file_name} to application/json. "
+        "Try requesting this file as a different type."
+    )
 
-    assert (
+    server._log.error = MagicMock()
+    with pytest.raises(requests.exceptions.HTTPError):
         server.get_file_contents(
             file_path,
-            requested_response_format=RequestedResponseFormats.DICT,
+            dict,
         )
-        == expected_response
-    )
+    server._log.error.assert_called_once_with(expected_detail)
