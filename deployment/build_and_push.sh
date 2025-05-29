@@ -5,8 +5,6 @@ PUSH=1
 RUN_CONTAINER=0
 REBUILD_CONTAINER=0
 
-
-
 cd -- "$( dirname -- "$BASH_SOURCE[0]" )"
 cd ..
 # make dockerignore from .gitignore
