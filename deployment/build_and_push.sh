@@ -1,7 +1,7 @@
 #!/bin/bash
 
 DEV=0
-PUSH=1
+PUSH=0
 RUN_CONTAINER=0
 REBUILD_CONTAINER=0
 
@@ -19,8 +19,9 @@ for option in "$@"; do
         -d|--dev)
             DEV=1
             ;;
-        -n|--no-push)
-            PUSH=0
+        -p|--push)
+            PUSH=1
+            echo "Push the container to GCR."
             ;;
         -r|--run)
             echo "Run the container after building it."
@@ -36,7 +37,7 @@ for option in "$@"; do
             echo "gcr.io/diamond-privreg/daq-config-server/<container-name> ready for deployment."
             echo " "
             echo "  -d, --dev       Creates -dev:latest tagged containers for testing on argus."
-            echo "  -n, --no-push   Don't push containers to GCR."
+            echo "  -p, --push      Push the container to GCR."
             echo "  -r, --run       Run the container after building it."
             echo "  -b, --rebuild   Rebuild the container even if it already exists."
             echo "  --help, --info, -h  Show this help message."    
