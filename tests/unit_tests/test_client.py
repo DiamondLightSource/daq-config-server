@@ -1,120 +1,121 @@
-from time import sleep
+from pathlib import Path
 from unittest.mock import MagicMock, patch
 
 import pytest
 import requests
 from fastapi import status
+from httpx import Response
 from requests import RequestException
 
-from daq_config_server.client import ConfigServer
+from daq_config_server.app import ValidAcceptHeaders
+from daq_config_server.client import ConfigServer, RequestedResponseFormats
 from daq_config_server.constants import ENDPOINTS
 
+test_path = Path("test")
 
-def make_mock_response(
-    json_value: str | dict[str, str],
+
+def make_test_response(
+    content: str,
     status_code: int = 200,
     raise_exc: type[RequestException] | None = None,
+    json_value: str | None = None,
+    content_type: ValidAcceptHeaders = ValidAcceptHeaders.PLAIN_TEXT,
 ):
-    mock_response = MagicMock()
-    mock_response.json.return_value = json_value
-    mock_response.status_code = status_code
+    r = Response(
+        json=json_value,
+        status_code=status_code,
+        headers={"content-type": content_type},
+        content=content,
+    )
+    r.raise_for_status = MagicMock()
+
     if raise_exc:
-        mock_response.raise_for_status.side_effect = raise_exc
+        r.raise_for_status.side_effect = raise_exc
     else:
-        mock_response.raise_for_status.return_value = None
-    return mock_response
+        r.raise_for_status.return_value = None
+    return r
 
 
 @patch("daq_config_server.client.requests.get")
-def test_read_unformatted_file(mock_request: MagicMock):
-    """Test that read_unformatted_file calls the correct endpoint and
-    returns the expected result."""
-    mock_request.return_value = make_mock_response({"key": "value"}, status.HTTP_200_OK)
-    file_path = "test"
-    url = "url"
-    server = ConfigServer(url)
-    result = server.read_unformatted_file(file_path)
-    assert result == {"key": "value"}
-    mock_request.assert_called_once_with(url + ENDPOINTS.CONFIG + "/" + file_path)
-
-
-@patch("daq_config_server.client.requests.get")
-def test_read_unformatted_file_reading_cache(mock_request: MagicMock):
-    """Test cache behavior for read_unformatted_file."""
-    mock_request.side_effect = [
-        make_mock_response("1st_read", status.HTTP_200_OK),
-        make_mock_response("2nd_read", status.HTTP_200_OK),
-        make_mock_response("3rd_read", status.HTTP_200_OK),
-    ]
-    file_path = "test"
-    url = "url"
-    server = ConfigServer(url)
-    assert server.read_unformatted_file(file_path) == "1st_read"
-    assert server.read_unformatted_file(file_path) == "1st_read"  # Cached
-    assert (
-        server.read_unformatted_file(file_path, reset_cached_result=True) == "2nd_read"
+def test_get_file_contents_default_header(mock_request: MagicMock):
+    mock_request.return_value = Response(
+        status_code=status.HTTP_200_OK,
+        content="test",
     )
-    assert server.read_unformatted_file(file_path) == "2nd_read"  # Cached
-    assert (
-        server.read_unformatted_file(file_path, reset_cached_result=True) == "3rd_read"
+    mock_request.return_value = make_test_response("test")
+    url = "url"
+    server = ConfigServer(url)
+    assert server.get_file_contents(test_path) == "test"
+    mock_request.assert_called_once_with(
+        url + ENDPOINTS.CONFIG + "/" + str(test_path),
+        headers={"Accept": RequestedResponseFormats.DECODED_STRING},
     )
 
 
 @patch("daq_config_server.client.requests.get")
-def test_read_unformatted_file_reading_reset_cached_result_true_without_cache(
+def test_get_file_contents_with_bytes(mock_request: MagicMock):
+    test_str = "test"
+    mock_request.return_value = make_test_response(
+        test_str, content_type=ValidAcceptHeaders.RAW_BYTES
+    )
+    url = "url"
+    server = ConfigServer(url)
+    assert (
+        server.get_file_contents(
+            test_path, requested_response_format=RequestedResponseFormats.DICT
+        )
+        == test_str.encode()
+    )
+
+
+@patch("daq_config_server.client.requests.get")
+def test_get_file_contents_warns_and_gives_bytes_on_invalid_json(
     mock_request: MagicMock,
 ):
-    """Test repeated reset_cached_result=False disables cache for each call."""
-    mock_request.side_effect = [
-        make_mock_response("1st_read", status.HTTP_200_OK),
-    ]
-    file_path = "test"
+    content_type = ValidAcceptHeaders.JSON
+    bad_json = "bad_dict}"
+    mock_request.return_value = make_test_response(
+        bad_json, content_type=content_type, json_value=bad_json
+    )
     url = "url"
     server = ConfigServer(url)
+    server._log.warning = MagicMock()
     assert (
-        server.read_unformatted_file(file_path, reset_cached_result=True) == "1st_read"
+        server.get_file_contents(
+            test_path, requested_response_format=RequestedResponseFormats.DICT
+        )
+        == bad_json.encode()
     )
+    assert (
+        f"Failed trying to convert to content-type {content_type} due to "
+        in server._log.warning.call_args[0][0]
+    )
+
+
+@patch("daq_config_server.client.requests.get")
+def test_get_file_contents_caching(
+    mock_request: MagicMock,
+):
+    """Test reset_cached_result=False and reset_cached_result=True."""
+    mock_request.side_effect = [
+        make_test_response("1st_read"),
+        make_test_response("2nd_read"),
+        make_test_response("3rd_read"),
+    ]
+    url = "url"
+    server = ConfigServer(url)
+    assert server.get_file_contents(test_path, reset_cached_result=True) == "1st_read"
+    assert server.get_file_contents(test_path, reset_cached_result=True) == "2nd_read"
+    assert server.get_file_contents(test_path, reset_cached_result=False) == "2nd_read"
 
 
 @patch("daq_config_server.client.requests.get")
 def test_read_unformatted_file_reading_not_OK(mock_request: MagicMock):
     """Test that a non-200 response raises a RequestException."""
-    mock_request.return_value = make_mock_response(
+    mock_request.return_value = make_test_response(
         "1st_read", status.HTTP_204_NO_CONTENT, raise_exc=requests.exceptions.HTTPError
     )
-    file_path = "test"
     url = "url"
     server = ConfigServer(url)
     with pytest.raises(requests.exceptions.HTTPError):
-        server.read_unformatted_file(file_path)
-
-
-@patch("daq_config_server.client.requests.get")
-def test_read_unformatted_file_reading_cache_custom_size(mock_request: MagicMock):
-    mock_request.side_effect = [
-        make_mock_response("1st_read", status.HTTP_200_OK),
-        make_mock_response("2nd_read", status.HTTP_200_OK),
-        make_mock_response("3rd_read", status.HTTP_200_OK),
-    ]
-    file_path = "test"
-    url = "url"
-    server = ConfigServer(url=url, cache_size=1)
-    assert server.read_unformatted_file(file_path) == "1st_read"
-    assert server.read_unformatted_file(file_path + "1") == "2nd_read"
-    assert server.read_unformatted_file(file_path) == "3rd_read"
-
-
-@patch("daq_config_server.client.requests.get")
-def test_read_unformatted_file_cache_custom_lifetime(mock_request: MagicMock):
-    mock_request.side_effect = [
-        make_mock_response("1st_read", status.HTTP_200_OK),
-        make_mock_response("2nd_read", status.HTTP_200_OK),
-        make_mock_response("3rd_read", status.HTTP_200_OK),
-    ]
-    file_path = "test"
-    url = "url"
-    server = ConfigServer(url=url, cache_lifetime_s=0.1)  # type: ignore
-    assert server.read_unformatted_file(file_path) == "1st_read"
-    assert server.read_unformatted_file(file_path) == "1st_read"
-    sleep(0.1)
-    assert server.read_unformatted_file(file_path) == "2nd_read"
+        server.get_file_contents(test_path)
