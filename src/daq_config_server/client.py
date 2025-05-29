@@ -166,8 +166,3 @@ class ConfigServer:
                 reset_cached_result=reset_cached_result,
             )
         )
-
-
-# thing = ConfigServer("url")
-# h = thing.get_file_contents("path", dict)
-# print(h)
