@@ -4,7 +4,17 @@ DEV=0
 PUSH=1
 RUN_CONTAINER=0
 REBUILD_CONTAINER=0
+
+
+
+cd -- "$( dirname -- "$BASH_SOURCE[0]" )"
+cd ..
 # make dockerignore from .gitignore
+if [ ! -f .gitignore ]; then
+    echo "No .gitignore file found, exiting."
+    exit 1
+fi
+
 cp .gitignore .dockerignore
 for option in "$@"; do
     case $option in
@@ -29,6 +39,9 @@ for option in "$@"; do
             echo " "
             echo "  -d, --dev       Creates -dev:latest tagged containers for testing on argus."
             echo "  -n, --no-push   Don't push containers to GCR."
+            echo "  -r, --run       Run the container after building it."
+            echo "  -b, --rebuild   Rebuild the container even if it already exists."
+            echo "  --help, --info, -h  Show this help message."    
             echo " "
             exit 0
             ;;
@@ -71,13 +84,18 @@ if [ -z "$(podman images -q $MAIN_CONTAINER_NAME 2> /dev/null)" ] || [ $REBUILD_
     podman build -t $MAIN_CONTAINER_NAME .
 else
     echo "Local image found, using existing image."
-  
 fi
+rm .dockerignore
 if [ $PUSH -gt 0 ]; then
     podman tag $MAIN_CONTAINER_NAME $MAIN_CONTAINER_TAG
     podman push $MAIN_CONTAINER_NAME $MAIN_CONTAINER_TAG
 fi
 if [ $RUN_CONTAINER -gt 0 ]; then
     echo "Running container ${MAIN_CONTAINER_NAME}..."
-    podman run -d --replace --name $MAIN_CONTAINER_NAME -p 8555:8555 $MAIN_CONTAINER_NAME
+    # if the container is already running, stop it first
+    if podman ps -q --filter "name=$MAIN_CONTAINER_NAME" > /dev/null; then
+        echo "Container $MAIN_CONTAINER_NAME is already running, stopping it first..."
+        podman stop $MAIN_CONTAINER_NAME
+    fi
+    podman run -d -v /dls_sw/:/dls_sw/ -v ./tests/test_data:/tests/test_data:z --replace --name $MAIN_CONTAINER_NAME -p 8555:8555 $MAIN_CONTAINER_NAME
 fi
