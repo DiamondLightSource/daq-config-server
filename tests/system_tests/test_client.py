@@ -1,5 +1,6 @@
 import json
 import os
+from typing import Any
 from unittest.mock import MagicMock
 
 import pytest
@@ -67,7 +68,7 @@ def test_read_good_json_as_dict(server: ConfigServer):
     assert (
         server.get_file_contents(
             file_path,
-            dict,
+            dict[Any, Any],
         )
         == expected_response
     )
@@ -86,6 +87,6 @@ def test_bad_json_gives_http_error_with_details(server: ConfigServer):
     with pytest.raises(requests.exceptions.HTTPError):
         server.get_file_contents(
             file_path,
-            dict,
+            dict[Any, Any],
         )
     server._log.error.assert_called_once_with(expected_detail)

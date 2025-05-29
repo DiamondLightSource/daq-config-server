@@ -2,7 +2,7 @@ import operator
 from collections import defaultdict
 from logging import Logger, getLogger
 from pathlib import Path
-from typing import TypeVar
+from typing import Any, TypeVar
 
 import requests
 from cachetools import TTLCache, cachedmethod
@@ -14,13 +14,13 @@ from daq_config_server.app import ValidAcceptHeaders
 
 from .constants import ENDPOINTS
 
-T = TypeVar("T", str, bytes, dict)  # type: ignore - to allow any type of dict
+T = TypeVar("T", str, bytes, dict[Any, Any])
 
 
 return_type_to_mime_type: dict[type, ValidAcceptHeaders] = defaultdict(
     lambda: ValidAcceptHeaders.PLAIN_TEXT,
     {
-        dict: ValidAcceptHeaders.JSON,
+        dict[Any, Any]: ValidAcceptHeaders.JSON,
         str: ValidAcceptHeaders.PLAIN_TEXT,
         bytes: ValidAcceptHeaders.RAW_BYTES,
     },
@@ -135,7 +135,7 @@ class ConfigServer:
 
     def get_file_contents(
         self,
-        file_path: Path,
+        file_path: Path | str,
         desired_return_type: type[T] = str,
         reset_cached_result: bool = False,
     ) -> T:
@@ -155,7 +155,7 @@ class ConfigServer:
         Returns:
             The file contents, in the format specified.
         """
-
+        file_path = Path(file_path)
         accept_header = return_type_to_mime_type[desired_return_type]
 
         return TypeAdapter(desired_return_type).validate_python(  # type: ignore - to allow any dict
@@ -166,3 +166,8 @@ class ConfigServer:
                 reset_cached_result=reset_cached_result,
             )
         )
+
+
+# thing = ConfigServer("url")
+# h = thing.get_file_contents("path", dict)
+# print(h)
