@@ -1,0 +1,33 @@
+image:
+  registry: ghcr.io
+  repository: diamondlightsource/daq-config-server
+  tag: v0.2.0
+  pullPolicy: IfNotPresent
+
+deployment:
+  create: true
+  port: 8555
+  replicas: 1
+  commandOverride: []
+  annotations: []
+  podAnnotations: []
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+    limits:
+      cpu: 1000m
+      memory: 1Gi
+  nodeSelector: {}
+  affinity: {}
+  tolerations: []
+
+service:
+  create: true
+  annotations: []
+  type: ClusterIP
+
+ingress:
+  create: true
+  host: daq-config.diamond.ac.uk
+  hostSecret: letsencrypt-daq-config-diamond-ac-uk
