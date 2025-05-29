@@ -128,7 +128,6 @@ def test_bad_responses_with_details_raises_error(mock_request: MagicMock):
     mock_request.return_value.json = MagicMock(return_value={"detail": detail})
     server = ConfigServer("url")
     server._log.error = MagicMock()
-    exception = requests.exceptions.HTTPError
-    with pytest.raises(exception):
+    with pytest.raises(requests.exceptions.HTTPError):
         server.get_file_contents(test_path)
     server._log.error.assert_called_once_with(detail)

@@ -75,7 +75,7 @@ class ConfigServer:
         request_url = self._url + endpoint + (f"/{file_path}")
         r = requests.get(request_url, headers={"Accept": accept_header})
         # Intercept http exceptions from server so that the client
-        # can include the response `detail` server side
+        # can include the response `detail` sent by the server
         try:
             r.raise_for_status()
         except requests.exceptions.HTTPError as err:
