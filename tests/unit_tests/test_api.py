@@ -125,3 +125,9 @@ async def test_get_configuration_warns_and_uses_raw_bytes_on_failed_utf_8_encodi
         accept_header={"Accept": ValidAcceptHeaders.PLAIN_TEXT},
     )
     mock_warn.assert_called_once()
+
+
+async def test_health_check_returns_code_200(
+    mock_app: TestClient,
+):
+    assert mock_app.get(ENDPOINTS.HEALTH).status_code == status.HTTP_200_OK
