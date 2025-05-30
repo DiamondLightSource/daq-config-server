@@ -113,3 +113,10 @@ async def test_get_configuration_gives_http_422_on_failed_conversion(
         f"{ENDPOINTS.CONFIG}/{file_path}", headers=ACCEPT_HEADER_DEFAULT
     )
     assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+
+
+async def test_health_check_returns_code_200(
+    mock_app: TestClient,
+):
+    assert mock_app.get(ENDPOINTS.HEALTH).status_code == status.HTTP_200_OK
+
