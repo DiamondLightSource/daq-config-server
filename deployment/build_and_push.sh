@@ -1,5 +1,5 @@
 #!/bin/bash
-TAG="latest"
+TAG="dev"
 PUSH=0
 RUN_CONTAINER=0
 REBUILD_CONTAINER=0
@@ -92,5 +92,5 @@ if [ $RUN_CONTAINER -gt 0 ]; then
         echo "Container $MAIN_CONTAINER_NAME is already running, stopping it first..."
         podman stop $MAIN_CONTAINER_NAME
     fi
-    podman run -d -v /dls_sw/:/dls_sw/ -v ./tests/test_data:/tests/test_data:z --replace --name $MAIN_CONTAINER_NAME -p 8555:8555 "${MAIN_CONTAINER_NAME}:${TAG}"
+    podman run -d -v ./tests/test_data:/tests/test_data:z --replace --name $MAIN_CONTAINER_NAME -p 8555:8555 "${MAIN_CONTAINER_NAME}:${TAG}"
 fi
