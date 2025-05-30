@@ -149,7 +149,7 @@ class ConfigServer:
         Args:
             file_path: Path to the file.
             requested_response_format: Specify how to parse the response.
-            reset_cached_result: If true, make a request and store response in cache,
+            desired_return_type: If true, make a request and store response in cache,
                                 otherwise look for cached response before making
                                 new request
         Returns:
