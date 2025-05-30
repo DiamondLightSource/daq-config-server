@@ -7,9 +7,9 @@ import uvicorn
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse, Response
+from starlette import status
 
 from daq_config_server.constants import ENDPOINTS
-from daq_config_server.log import LOGGER
 
 app = FastAPI(
     title="DAQ config server",
@@ -71,7 +71,10 @@ def get_configuration(
     Read a file and return its contents in a format specified by the accept header.
     """
     if not file_path.is_file():
-        raise HTTPException(status_code=404, detail=f"File {file_path} cannot be found")
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"File {file_path} cannot be found",
+        )
 
     file_name = os.path.basename(file_path)
     accept = request.headers.get("accept", ValidAcceptHeaders.PLAIN_TEXT)
@@ -89,15 +92,16 @@ def get_configuration(
                     content = f.read()
                 return Response(content=content, media_type=accept)
             case _:
-                pass
+                with file_path.open("rb") as f:
+                    content = f.read()
     except Exception as e:
-        LOGGER.warning(
-            f"Failed to convert {file_name} to {accept} and caught \
-            exception: {e} \nSending file as raw bytes instead"
-        )
-
-    with file_path.open("rb") as f:
-        content = f.read()
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail=(
+                f"Failed to convert {file_name} to {accept}. "
+                "Try requesting this file as a different type."
+            ),
+        ) from e
 
     return Response(content=content, media_type=ValidAcceptHeaders.RAW_BYTES)
 

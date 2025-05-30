@@ -1,4 +1,5 @@
 from pathlib import Path
+from typing import Any
 from unittest.mock import MagicMock, patch
 
 import pytest
@@ -8,7 +9,7 @@ from httpx import Response
 from requests import RequestException
 
 from daq_config_server.app import ValidAcceptHeaders
-from daq_config_server.client import ConfigServer, RequestedResponseFormats
+from daq_config_server.client import ConfigServer, TypeConversionException
 from daq_config_server.constants import ENDPOINTS
 
 test_path = Path("test")
@@ -48,7 +49,7 @@ def test_get_file_contents_default_header(mock_request: MagicMock):
     assert server.get_file_contents(test_path) == "test"
     mock_request.assert_called_once_with(
         url + ENDPOINTS.CONFIG + "/" + str(test_path),
-        headers={"Accept": RequestedResponseFormats.DECODED_STRING},
+        headers={"Accept": ValidAcceptHeaders.PLAIN_TEXT},
     )
 
 
@@ -61,15 +62,13 @@ def test_get_file_contents_with_bytes(mock_request: MagicMock):
     url = "url"
     server = ConfigServer(url)
     assert (
-        server.get_file_contents(
-            test_path, requested_response_format=RequestedResponseFormats.DICT
-        )
+        server.get_file_contents(test_path, desired_return_type=bytes)
         == test_str.encode()
     )
 
 
 @patch("daq_config_server.client.requests.get")
-def test_get_file_contents_warns_and_gives_bytes_on_invalid_json(
+def test_get_file_contents_gives_exception_on_invalid_json(
     mock_request: MagicMock,
 ):
     content_type = ValidAcceptHeaders.JSON
@@ -79,17 +78,8 @@ def test_get_file_contents_warns_and_gives_bytes_on_invalid_json(
     )
     url = "url"
     server = ConfigServer(url)
-    server._log.warning = MagicMock()
-    assert (
-        server.get_file_contents(
-            test_path, requested_response_format=RequestedResponseFormats.DICT
-        )
-        == bad_json.encode()
-    )
-    assert (
-        f"Failed trying to convert to content-type {content_type} due to "
-        in server._log.warning.call_args[0][0]
-    )
+    with pytest.raises(TypeConversionException):
+        server.get_file_contents(test_path, desired_return_type=dict[Any, Any])
 
 
 @patch("daq_config_server.client.requests.get")
@@ -110,12 +100,34 @@ def test_get_file_contents_caching(
 
 
 @patch("daq_config_server.client.requests.get")
-def test_read_unformatted_file_reading_not_OK(mock_request: MagicMock):
+def test_bad_responses_no_details_raises_error(mock_request: MagicMock):
     """Test that a non-200 response raises a RequestException."""
     mock_request.return_value = make_test_response(
         "1st_read", status.HTTP_204_NO_CONTENT, raise_exc=requests.exceptions.HTTPError
     )
-    url = "url"
-    server = ConfigServer(url)
+    server = ConfigServer("url")
+    server._log.error = MagicMock()
     with pytest.raises(requests.exceptions.HTTPError):
         server.get_file_contents(test_path)
+    server._log.error.assert_called_once_with(
+        "Response raised HTTP error but no details provided"
+    )
+
+
+@patch("daq_config_server.client.requests.get")
+def test_bad_responses_with_details_raises_error(mock_request: MagicMock):
+    """Test that a non-200 response raises a RequestException."""
+
+    detail = "test detail"
+    mock_request.return_value = make_test_response(
+        "1st_read",
+        status.HTTP_204_NO_CONTENT,
+        raise_exc=requests.exceptions.HTTPError,
+        json_value="test",
+    )
+    mock_request.return_value.json = MagicMock(return_value={"detail": detail})
+    server = ConfigServer("url")
+    server._log.error = MagicMock()
+    with pytest.raises(requests.exceptions.HTTPError):
+        server.get_file_contents(test_path)
+    server._log.error.assert_called_once_with(detail)
