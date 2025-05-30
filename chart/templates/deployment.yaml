@@ -24,6 +24,11 @@ spec:
       labels:
         {{- include "common.labels.matchLabels" $ | nindent 8 }}
     spec:
+      volumes:
+      - name: whitelist-config
+        configMap:
+          name: {{ include "common.names.fullname" . }}-whitelist
+
       containers:
         - name: daq-config-server
           image: {{ include "common.images.image" ( dict "imageRoot" $.Values.image "global" $.Values.global "chart" $.Chart ) }}
@@ -67,4 +72,7 @@ spec:
             periodSeconds: 20
             timeoutSeconds: 5
             failureThreshold: 5
+          volumeMounts:
+          - name: whitelist-config
+            mountPath: /etc/whitelist
 {{- end}}
