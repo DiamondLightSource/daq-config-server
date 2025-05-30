@@ -119,4 +119,3 @@ async def test_health_check_returns_code_200(
     mock_app: TestClient,
 ):
     assert mock_app.get(ENDPOINTS.HEALTH).status_code == status.HTTP_200_OK
-
