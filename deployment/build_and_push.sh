@@ -41,7 +41,8 @@ for option in "$@"; do
             echo "gcr.io/diamond-privreg/daq-config-server/<container-name>."
             echo " "
             echo "  -t, --tag <tag>       Specify the tag for the container. Default is 'dev'."
-            echo "  -p, --push            Push the container to GCR."
+            echo "  -p, --push            Push the container to GCR. Requires a GitHub token, followed by"
+            echo "                        podman login ghcr.io --username <your gh login> --password-stdin"
             echo "  -r, --run             Run the container after building it."
             echo "  -b, --rebuild         Rebuild the container even if it already exists."
             echo "  -h, --help, --info    Show this help message."    
@@ -61,10 +62,9 @@ done
 BASE_CONTAINER_NAME="daq-config-server"
 BASE_REPO_ADDR="gcr.io/diamond-privreg/daq-config-server/"
 
-echo "Building prod-mode containers..."
+
 MAIN_CONTAINER_NAME="${BASE_CONTAINER_NAME}"
 
-echo " "
 
 MAIN_CONTAINER_TAG="${BASE_REPO_ADDR}${MAIN_CONTAINER_NAME}:${TAG}"
 
@@ -74,7 +74,7 @@ if [ -z "$(podman images -q $MAIN_CONTAINER_NAME:$TAG 2> /dev/null)" ] || [ $REB
     echo "====           Building              ===="
     echo "========================================="
     echo " "
-    echo "Building ${MAIN_CONTAINER_NAME}"
+    echo "Building ${MAIN_CONTAINER_NAME}:${TAG}"
     echo " "
     podman build -t "${MAIN_CONTAINER_NAME}:${TAG}" .
 else
@@ -83,7 +83,7 @@ fi
 rm .dockerignore
 if [ $PUSH -gt 0 ]; then
     podman tag $MAIN_CONTAINER_NAME $MAIN_CONTAINER_TAG
-    podman push $MAIN_CONTAINER_NAME $MAIN_CONTAINER_TAG
+    podman push $MAIN_CONTAINER_TAG $BASE_REPO_ADDR:$MAIN_CONTAINER_TAG
 fi
 if [ $RUN_CONTAINER -gt 0 ]; then
     echo "Running container ${MAIN_CONTAINER_NAME}:${TAG}..."
