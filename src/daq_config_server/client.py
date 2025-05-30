@@ -128,7 +128,7 @@ class ConfigServer:
                     content = r.content
         except Exception as e:
             raise TypeConversionException(
-                f"Failed trying to convert to content-type {content_type})"
+                f"Failed trying to convert to content-type {content_type}."
             ) from e
 
         return content
