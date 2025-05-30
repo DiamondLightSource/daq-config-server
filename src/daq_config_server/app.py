@@ -102,5 +102,13 @@ def get_configuration(
     return Response(content=content, media_type=ValidAcceptHeaders.RAW_BYTES)
 
 
+@app.get("/healthz")
+def health_check():
+    """
+    Kubernetes health check
+    """
+    return Response()
+
+
 def main():
     uvicorn.run(app="daq_config_server.app:app", host="0.0.0.0", port=8555)
