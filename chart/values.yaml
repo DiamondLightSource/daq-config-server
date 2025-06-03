@@ -21,6 +21,10 @@ deployment:
   nodeSelector: {}
   affinity: {}
   tolerations: []
+  securityContext:
+    runAsUser: 36082
+    runAsGroup: 36082
+
 
 service:
   create: true

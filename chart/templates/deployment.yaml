@@ -72,6 +72,10 @@ spec:
             periodSeconds: 20
             timeoutSeconds: 5
             failureThreshold: 5
+          {{- with .Values.deployment.securityContext }}
+          securityContext:
+            {{- . | toYaml | nindent 12 }}
+          {{- end}}
           volumeMounts:
           - name: whitelist-config
             mountPath: /etc/whitelist
