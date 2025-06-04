@@ -1,0 +1,22 @@
+# The deployed config server will check requests against the whitelist from the MAIN branch of the repo. 
+# It will check for updates of this file every 10 minutes - no new releases or restarts are required.
+# To add a file or directory to the whitelist, please adjust this file and create a PR
+
+
+#For long-term configuration files
+whitelist_files:
+#For testing inside the dev container
+- /workspaces/daq-config-server/tests/test_data/beamline_parameters.txt
+- /workspaces/daq-config-server/tests/test_data/test_good_json.json
+- /workspaces/daq-config-server/tests/test_data/test_bad_json.json
+
+#For testing inside the application container
+- /tests/test_data/beamline_parameters.txt
+- /tests/test_data/test_good_json.json
+- /tests/test_data/test_bad_json.json
+
+
+#For long-term directories with frequently changing files
+whitelist_dirs:
+- dir
+#TODO test this bit too
