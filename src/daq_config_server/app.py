@@ -9,7 +9,10 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse, Response
 from starlette import status
 
-from daq_config_server.constants import ENDPOINTS
+from daq_config_server.constants import (
+    ENDPOINTS,
+)
+from daq_config_server.whitelist import Whitelist, get_whitelist
 
 app = FastAPI(
     title="DAQ config server",
@@ -31,6 +34,20 @@ class ValidAcceptHeaders(StrEnum):
     JSON = "application/json"
     PLAIN_TEXT = "text/plain"
     RAW_BYTES = "application/octet-stream"
+
+
+def _validate_path_against_whitelist(file_path: Path):
+    whitelist = get_whitelist()
+    if file_path in whitelist.whitelist_files:
+        return
+    for dir in whitelist.whitelist_dirs:
+        if file_path in dir.parents:
+            return
+    raise HTTPException(
+        status_code=status.HTTP_403_FORBIDDEN,
+        detail=f"{file_path} is not a whitelisted file. Please make sure it exists in\
+        https://raw.githubusercontent.com/DiamondLightSource/daq-config-server/refs/heads/main/whitelist.yaml",
+    )
 
 
 @app.get(
@@ -69,7 +86,12 @@ def get_configuration(
 ):
     """
     Read a file and return its contents in a format specified by the accept header.
+
+    Check the file against the whitelist on the current main branch on GitHub.
     """
+
+    _validate_path_against_whitelist(file_path)
+
     if not file_path.is_file():
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
@@ -112,6 +134,15 @@ def health_check():
     Kubernetes health check
     """
     return Response()
+
+
+# Get whitelist from github and refresh every 10 minutes in the background
+whitelist = None
+
+
+def initialise_whitelist():
+    global whitelist
+    whitelist = Whitelist()
 
 
 def main():
