@@ -12,7 +12,7 @@ from starlette import status
 from daq_config_server.constants import (
     ENDPOINTS,
 )
-from daq_config_server.whitelist import WhitelistFetcher, get_whitelist
+from daq_config_server.whitelist import get_whitelist
 
 app = FastAPI(
     title="DAQ config server",
@@ -134,11 +134,6 @@ def health_check():
     Kubernetes health check
     """
     return Response()
-
-
-def initialise_whitelist():
-    global whitelist
-    whitelist = WhitelistFetcher()
 
 
 def main():

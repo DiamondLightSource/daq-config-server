@@ -23,7 +23,6 @@ whitelist_files:
   - {TEST_GOOD_JSON_PATH}
   - {TEST_BAD_JSON_PATH}
   - {TEST_BEAMLINE_PARAMETERS_PATH}
-  - {TEST_FILE_IN_GOOD_DIR}
   - {TEST_INVALID_FILE_PATH}
 
 whitelist_dirs:
