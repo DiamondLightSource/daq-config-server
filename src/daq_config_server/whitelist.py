@@ -13,7 +13,7 @@ from daq_config_server.constants import (
 from daq_config_server.log import LOGGER
 
 
-class Whitelist:
+class WhitelistFetcher:
     """Read the whitelist from the main branch of this repo from github, and check for
     updates every 10 minutes. This lets the deployed server see updates to the whitelist
     without requiring a new release or a restart"""
@@ -30,8 +30,8 @@ class Whitelist:
         response = requests.get(WHITELIST_URL)
         response.raise_for_status()
         data = yaml.safe_load(response.text)
-        self.whitelist_files = {Path(p) for p in data.get("whitelist_files", [])}
-        self.whitelist_dirs = {Path(p) for p in data.get("whitelist_dirs", [])}
+        self.whitelist_files = {Path(p) for p in data.get("whitelist_files")}
+        self.whitelist_dirs = {Path(p) for p in data.get("whitelist_dirs")}
 
     def _initial_load(self):
         try:
@@ -55,12 +55,12 @@ class Whitelist:
         self.update_in_background_thread.join(timeout=1)
 
 
-_whitelist_instance: Whitelist | None = None
+_whitelist_instance: WhitelistFetcher | None = None
 
 
-def get_whitelist() -> Whitelist:
+def get_whitelist() -> WhitelistFetcher:
     global _whitelist_instance
     if not _whitelist_instance:
-        _whitelist_instance = Whitelist()
+        _whitelist_instance = WhitelistFetcher()
         atexit.register(_whitelist_instance.stop)
     return _whitelist_instance

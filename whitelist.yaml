@@ -9,14 +9,16 @@ whitelist_files:
 - /workspaces/daq-config-server/tests/test_data/beamline_parameters.txt
 - /workspaces/daq-config-server/tests/test_data/test_good_json.json
 - /workspaces/daq-config-server/tests/test_data/test_bad_json.json
+- /workspaces/daq-config-server/tests/test_data/invalid_file
 
 #For testing inside the application container
 - /tests/test_data/beamline_parameters.txt
 - /tests/test_data/test_good_json.json
 - /tests/test_data/test_bad_json.json
+- /tests/test_data/invalid_file.json
 
 
 #For long-term directories with frequently changing files
 whitelist_dirs:
-- dir
-#TODO test this bit too
+- /workspaces/daq-config-server/tests/test_data/good_dir
+- /tests/test_data/good_dir

@@ -12,7 +12,7 @@ from starlette import status
 from daq_config_server.constants import (
     ENDPOINTS,
 )
-from daq_config_server.whitelist import Whitelist, get_whitelist
+from daq_config_server.whitelist import WhitelistFetcher, get_whitelist
 
 app = FastAPI(
     title="DAQ config server",
@@ -41,7 +41,7 @@ def _validate_path_against_whitelist(file_path: Path):
     if file_path in whitelist.whitelist_files:
         return
     for dir in whitelist.whitelist_dirs:
-        if file_path in dir.parents:
+        if file_path.is_relative_to(dir):
             return
     raise HTTPException(
         status_code=status.HTTP_403_FORBIDDEN,
@@ -136,13 +136,9 @@ def health_check():
     return Response()
 
 
-# Get whitelist from github and refresh every 10 minutes in the background
-whitelist = None
-
-
 def initialise_whitelist():
     global whitelist
-    whitelist = Whitelist()
+    whitelist = WhitelistFetcher()
 
 
 def main():
