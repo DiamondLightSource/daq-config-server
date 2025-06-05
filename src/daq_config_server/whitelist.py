@@ -15,7 +15,7 @@ from daq_config_server.log import LOGGER
 
 class WhitelistFetcher:
     """Read the whitelist from the main branch of this repo from github, and check for
-    updates every 10 minutes. This lets the deployed server see updates to the whitelist
+    updates every 5 minutes. This lets the deployed server see updates to the whitelist
     without requiring a new release or a restart"""
 
     def __init__(self):
