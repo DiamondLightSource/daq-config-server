@@ -6,48 +6,34 @@
 
 # DAQ Config Server
 
-IMPORTANT: This repository is currently under a rework, none of the features are production-ready yet.
-
-A service to read files on Diamond's filesystem from a BlueAPI container.
-
-Comprises a FastAPI backend 
-
-Currently the scope is JUST reading files on /dls_sw/
+A service to read files on Diamond's filesystem from a BlueAPI container. Currently this service is only able to read files on `/dls_sw/`. Writing to configuration files will come in a future release.
 
 |  Source  |     <https://github.com/DiamondLightSource/daq-config-server>      |
 | :------: | :----------------------------------------------------------------: |
 |  Docker  |  `docker run ghcr.io/DiamondLightSource/daq-config-server:latest`  |
 | Releases | <https://github.com/DiamondLightSource/daq-config-server/releases> |
 
-Currently the server application always needs to be run with the `--dev` flag, as it cannot yet look at the DLS
-filesystem to find the real beamline parameter files.
-
-To use the config values in an experimental application (e.g. Hyperion) you can do:
+Here is a minimal example to read a file from the centrally hosted service after installing this package
 
 ```python
 from daq_config_server.client import ConfigServer
 
-config_server = ConfigServer("<service ip address>", <port>)
+config_server = ConfigServer("https://daq-config.diamond.ac.uk")
 
-use_stub_offsets: bool = config_server.best_effort_get_feature_flag("use_stub_offsets")
+file_contents = config_server.get_file_contents({ABSOLUTE_PATH_TO_CONFIG_FILE}, desired_return_type=str)
 
 ```
+The output will come out as a raw string - you should format it as required in your own code. You may also request that the file contents is returned as a `dict` or in `bytes` - this will raise an http exception if the file cannot be converted to that type. To be able to read a file, you must first add it to the whitelist [TODO link to whitelist]
+
 
 ## Testing and deployment
 
 
-There is a convenient script in `./deployment/build_and_push.sh`, which takes
-a `--dev` option to push containers with `-dev` appended to their names and a `--no-push` option for local
-development. This ensures that environment variables for dev or prod builds are included in the built container. To push to
-the registry you must have identified to gcloud by having loaded a kubernetes module and running `gcloud auth login.`
+There is a convenient script in `./deployment/build_and_push.sh` which can be used to easily build and run the container locally for testing, and optionally push the container to ghcr. To push to the registry you must first get a github token and login using `podman login ghcr.io --username <your gh login> --password-stdin`
 
-To deploy a live version, you can run the above script with no arguments and then while logged in to
-argus, in the `daq-config-server` namespace, run `kubectl rollout restart deployment`. If it is not
-currently deployed it you can deploy it with `helm install daq-config ./helmchart`.
+To run system tests, you open the repo in a dev container and run `daq-config-server` on one terminal, then `pytest .` in another terminal, from the `/workspaces/daq-config-server` location 
 
-To test locally, you can build with `./deployment/build_and_push.sh --dev --no-push` and then
-run the container `daq-config-server-dev` (with the command `daq-config-server --dev`), `daq-config-server-db-dev`,
-and `daq-config-server-gui-dev`, all with the `--net host` option.
+[TODO wait for helmchart to be merged in before adding this bit]
 
 To test on argus, log in to argus in your namespace and run:
 
