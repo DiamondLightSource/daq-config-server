@@ -1,56 +1,78 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: daq-config-server
+  name: {{ include "helmchart.fullname" . }}
+  labels:
+    {{- include "helmchart.labels" . | nindent 4 }}
 spec:
-  replicas: 1
+  {{- if not .Values.autoscaling.enabled }}
+  replicas: {{ .Values.replicaCount }}
+  {{- end }}
   selector:
     matchLabels:
-      app: daq-config-server
+      {{- include "helmchart.selectorLabels" . | nindent 6 }}
   template:
     metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
       labels:
-        app: daq-config-server
+        {{- include "helmchart.labels" . | nindent 8 }}
+        {{- with .Values.podLabels }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
     spec:
-      volumes:
-        - name: daq-config-server-db-volume
-          persistentVolumeClaim:
-            claimName: daq-config-server-db-volume
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "helmchart.serviceAccountName" . }}
+      {{- with .Values.podSecurityContext }}
+      securityContext:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
       containers:
-        - name: daq-config-server-main
-          image: {{.Values.imageNames.main}}
-          imagePullPolicy: Always
-          command: ["daq-config-server"]
-          args: ["--dev"]
-          ports:
-            - name: cs-rest
-              containerPort: 8555
-              protocol: TCP
-          resources:
-            limits:
-              cpu: "1"
-              memory: 300M
-        - name: daq-config-server-db
-          image: {{.Values.imageNames.db}}
-          command: []
-          args: ["valkey.conf"]
-          ports: []
-          volumeMounts:
-            - mountPath: "/persistent_data/"
-              name: daq-config-server-db-volume
-          resources:
-            limits:
-              cpu: "1"
-              memory: 300M
-        - name: daq-config-server-gui
-          image: {{.Values.imageNames.gui}}
-          imagePullPolicy: Always
-          command: []
+        - name: {{ .Chart.Name }}
+          {{- with .Values.securityContext }}
+          securityContext:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
             - name: http
-              containerPort: 8080
+              containerPort: {{ .Values.service.port }}
               protocol: TCP
+          {{- with .Values.livenessProbe }}
+          livenessProbe:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with .Values.readinessProbe }}
+          readinessProbe:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with .Values.resources }}
           resources:
-            limits:
-              cpu: "1"
-              memory: 200M
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with .Values.volumeMounts }}
+          volumeMounts:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+      {{- with .Values.volumes }}
+      volumes:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
