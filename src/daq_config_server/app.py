@@ -9,7 +9,10 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse, Response
 from starlette import status
 
-from daq_config_server.constants import ENDPOINTS
+from daq_config_server.constants import (
+    ENDPOINTS,
+)
+from daq_config_server.whitelist import get_whitelist
 
 app = FastAPI(
     title="DAQ config server",
@@ -31,6 +34,13 @@ class ValidAcceptHeaders(StrEnum):
     JSON = "application/json"
     PLAIN_TEXT = "text/plain"
     RAW_BYTES = "application/octet-stream"
+
+
+def path_is_whitelisted(file_path: Path) -> bool:
+    whitelist = get_whitelist()
+    return file_path in whitelist.whitelist_files or any(
+        file_path.is_relative_to(dir) for dir in whitelist.whitelist_dirs
+    )
 
 
 @app.get(
@@ -69,7 +79,24 @@ def get_configuration(
 ):
     """
     Read a file and return its contents in a format specified by the accept header.
+
+    Check the file against the whitelist on the current main branch on GitHub.
     """
+
+    if not file_path.is_absolute():
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail=(f"Requested filepath {file_path} must be an absolute path"),
+        )
+
+    if not path_is_whitelisted(file_path):
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail=f"{file_path} is not a whitelisted file. Please make sure it \
+            exists in https://raw.githubusercontent.com/DiamondLightSource/\
+            daq-config-server/refs/heads/main/whitelist.yaml",
+        )
+
     if not file_path.is_file():
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
