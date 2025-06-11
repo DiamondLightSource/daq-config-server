@@ -36,18 +36,9 @@ class ValidAcceptHeaders(StrEnum):
     RAW_BYTES = "application/octet-stream"
 
 
-def _validate_path_against_whitelist(file_path: Path):
+def path_is_whitelisted(file_path: Path) -> bool:
     whitelist = get_whitelist()
-    if file_path in whitelist.whitelist_files:
-        return
-    for dir in whitelist.whitelist_dirs:
-        if file_path.is_relative_to(dir):
-            return
-    raise HTTPException(
-        status_code=status.HTTP_403_FORBIDDEN,
-        detail=f"{file_path} is not a whitelisted file. Please make sure it exists in\
-        https://raw.githubusercontent.com/DiamondLightSource/daq-config-server/refs/heads/main/whitelist.yaml",
-    )
+    return file_path in whitelist.whitelist_files or any([file_path.is_relative_to(dir) for dir in whitelist.whitelist_dirs])
 
 
 @app.get(
@@ -90,7 +81,12 @@ def get_configuration(
     Check the file against the whitelist on the current main branch on GitHub.
     """
 
-    _validate_path_against_whitelist(file_path)
+   if not path_is_whitelisted(file_path):
+       raise HTTPException(
+           status_code=status.HTTP_403_FORBIDDEN,
+           detail=f"{file_path} is not a whitelisted file. Please make sure it exists in\
+           https://raw.githubusercontent.com/DiamondLightSource/daq-config-server/refs/heads/main/whitelist.yaml",
+    )
 
     if not file_path.is_file():
         raise HTTPException(
