@@ -5,7 +5,7 @@ repos:
       - id: check-added-large-files
       - id: check-yaml
         args: [--allow-multiple-documents]
-        exclude: ^helmchart/
+        exclude: ^helm/
       - id: check-merge-conflict
       - id: end-of-file-fixer
 

@@ -2,9 +2,9 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: {{ include "helmchart.fullname" . }}
+  name: {{ include "daq-config-server.fullname" . }}
   labels:
-    {{- include "helmchart.labels" . | nindent 4 }}
+    {{- include "daq-config-server.labels" . | nindent 4 }}
   {{- with .Values.ingress.annotations }}
   annotations:
     {{- toYaml . | nindent 4 }}
@@ -35,7 +35,7 @@ spec:
             {{- end }}
             backend:
               service:
-                name: {{ include "helmchart.fullname" $ }}
+                name: {{ include "daq-config-server.fullname" $ }}
                 port:
                   number: {{ $.Values.service.port }}
           {{- end }}
