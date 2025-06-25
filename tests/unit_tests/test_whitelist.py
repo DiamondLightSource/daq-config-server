@@ -1,4 +1,4 @@
-# TODO system tests which actually try to make the request
+import threading
 from pathlib import Path
 from time import sleep
 from unittest.mock import MagicMock, patch
@@ -70,9 +70,15 @@ def test_periodically_update_whitelist_on_failed_update(
 def test_periodically_update_whitelist_on_successful_update(
     mock_request: MagicMock, mock_log: MagicMock
 ):
+    logging_event = threading.Event()
     WhitelistFetcher._initial_load = MagicMock()
     WhitelistFetcher._fetch_and_update = MagicMock()
+
+    def complete_logging_event_on_current_message(msg: str):
+        if msg == "Whitelist updated successfully.":
+            logging_event.set()
+
+    mock_log.info.side_effect = complete_logging_event_on_current_message
     get_whitelist()
-    sleep(0.01)
+    assert logging_event.wait(timeout=0.1)
     mock_log.error.assert_not_called()
-    mock_log.info.assert_called_with("Whitelist updated successfully.")
