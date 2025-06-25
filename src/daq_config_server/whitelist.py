@@ -55,12 +55,6 @@ class WhitelistFetcher:
         self.update_in_background_thread.join(timeout=1)
 
 
-_whitelist_instance: WhitelistFetcher | None = None
-
-
+@cache
 def get_whitelist() -> WhitelistFetcher:
-    global _whitelist_instance
-    if not _whitelist_instance:
-        _whitelist_instance = WhitelistFetcher()
-        atexit.register(_whitelist_instance.stop)
-    return _whitelist_instance
+    return WhitelistFetcher()
