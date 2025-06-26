@@ -66,10 +66,13 @@ addopts = """
     """
 markers = """
     requires_local_server: mark a test which requires locally hosting the config server
+    use_threading: mark a test which will kickoff the background thread in WhitelistFetcher
 """
 
 # https://iscinumpy.gitlab.io/post/bound-version-constraints/#watch-for-warnings
-filterwarnings = "error"
+filterwarnings = ["error",
+"ignore:Exception ignored in.*sqlite3.Connection:pytest.PytestUnraisableExceptionWarning"] #See https://github.com/pytest-dev/pytest-cov/issues/694
+
 # Doctest python code in docs, python code in src docstrings, test functions in tests
 testpaths = "docs src tests"
 

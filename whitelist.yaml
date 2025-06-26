@@ -1,0 +1,12 @@
+# The deployed config server will check requests against the whitelist from the MAIN branch of the repo. 
+# It will check for updates of this file every 10 minutes - no new releases or restarts are required.
+# To add a file or directory to the whitelist, please adjust this file and create a PR
+
+
+#For long-term configuration files
+whitelist_files:
+- /tests/test_data/beamline_parameters.txt
+
+#For long-term directories with frequently changing files
+whitelist_dirs:
+- /tests/test_data/
