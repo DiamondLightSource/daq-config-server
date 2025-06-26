@@ -1,9 +1,9 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ include "helmchart.fullname" . }}
+  name: {{ include "daq-config-server.fullname" . }}
   labels:
-    {{- include "helmchart.labels" . | nindent 4 }}
+    {{- include "daq-config-server.labels" . | nindent 4 }}
 spec:
   type: {{ .Values.service.type }}
   ports:
@@ -12,4 +12,4 @@ spec:
       protocol: TCP
       name: http
   selector:
-    {{- include "helmchart.selectorLabels" . | nindent 4 }}
+    {{- include "daq-config-server.selectorLabels" . | nindent 4 }}

@@ -1,5 +1,6 @@
 import json
 from pathlib import Path
+from unittest.mock import MagicMock, patch
 
 import pytest
 from fastapi import status
@@ -11,7 +12,11 @@ from daq_config_server.app import ValidAcceptHeaders
 from daq_config_server.constants import ENDPOINTS
 from tests.constants import (
     TEST_BEAMLINE_PARAMETERS_PATH,
+    TEST_FILE_IN_BAD_DIR,
+    TEST_FILE_IN_GOOD_DIR,
+    TEST_FILE_NOT_ON_WHITELIST_PATH,
     TEST_GOOD_JSON_PATH,
+    TEST_INVALID_FILE_PATH,
 )
 
 
@@ -78,7 +83,7 @@ async def test_get_configuration_raw_bytes(mock_app: TestClient):
 
 
 def test_get_configuration_exception_on_invalid_file(mock_app: TestClient):
-    file_path = Path("/nonexistent_file.yaml")
+    file_path = TEST_INVALID_FILE_PATH
     response = mock_app.get(
         f"{ENDPOINTS.CONFIG}/{file_path}", headers=ACCEPT_HEADER_DEFAULT
     )
@@ -103,8 +108,9 @@ async def test_get_configuration_on_json_file(mock_app: TestClient):
     )
 
 
+@patch("daq_config_server.app.path_is_whitelisted")
 async def test_get_configuration_gives_http_422_on_failed_conversion(
-    mock_app: TestClient, tmpdir: Path
+    mock_validate: MagicMock, mock_app: TestClient, tmpdir: Path
 ):
     file_path = Path(f"{tmpdir}/test_bad_utf_8.txt")
     with open(file_path, "wb") as f:
@@ -119,3 +125,33 @@ async def test_health_check_returns_code_200(
     mock_app: TestClient,
 ):
     assert mock_app.get(ENDPOINTS.HEALTH).status_code == status.HTTP_200_OK
+
+
+def test_validate_path_against_whitelist_on_valid_file(mock_app: TestClient):
+    file_path = TEST_BEAMLINE_PARAMETERS_PATH
+    response = mock_app.get(f"{ENDPOINTS.CONFIG}/{file_path}")
+    assert response.status_code == status.HTTP_200_OK
+
+
+def test_validate_path_against_whitelist_on_invalid_file(mock_app: TestClient):
+    file_path = TEST_FILE_NOT_ON_WHITELIST_PATH
+    response = mock_app.get(f"{ENDPOINTS.CONFIG}/{file_path}")
+    assert response.status_code == status.HTTP_403_FORBIDDEN
+
+
+def test_validate_path_against_whitelist_on_file_in_invalid_dir(mock_app: TestClient):
+    file_path = TEST_FILE_IN_BAD_DIR
+    response = mock_app.get(f"{ENDPOINTS.CONFIG}/{file_path}")
+    assert response.status_code == status.HTTP_403_FORBIDDEN
+
+
+def test_validate_path_against_whitelist_on_file_in_valid_dir(mock_app: TestClient):
+    file_path = TEST_FILE_IN_GOOD_DIR
+    response = mock_app.get(f"{ENDPOINTS.CONFIG}/{file_path}")
+    assert response.status_code == status.HTTP_200_OK
+
+
+def test_get_configuration_on_non_absolute_filepath(mock_app: TestClient):
+    file_path = "relative_path"
+    response = mock_app.get(f"{ENDPOINTS.CONFIG}/{file_path}")
+    assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
