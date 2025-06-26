@@ -41,6 +41,7 @@ dev = [
     "cachetools",
     "fastapi",
     "uvicorn",
+    "graypy"
 ]
 
 [project.scripts]
