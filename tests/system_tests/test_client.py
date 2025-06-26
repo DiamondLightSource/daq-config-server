@@ -8,9 +8,8 @@ import requests
 
 from daq_config_server.client import ConfigServer
 from tests.constants import (
-    TEST_BAD_JSON_PATH,
-    TEST_BEAMLINE_PARAMETERS_PATH,
-    TEST_GOOD_JSON_PATH,
+    ServerFilePaths,
+    TestDataPaths,
 )
 
 SERVER_ADDRESS = "http://0.0.0.0:8555"
@@ -32,13 +31,12 @@ def server():
 
 @pytest.mark.requires_local_server
 def test_read_unformatted_file_as_plain_text(server: ConfigServer):
-    file_path = TEST_BEAMLINE_PARAMETERS_PATH
-    with open(file_path) as f:
+    with open(TestDataPaths.TEST_BEAMLINE_PARAMETERS_PATH) as f:
         expected_response = f.read()
 
     assert (
         server.get_file_contents(
-            file_path,
+            ServerFilePaths.BEAMLINE_PARAMETERS,
         )
         == expected_response
     )
@@ -46,13 +44,12 @@ def test_read_unformatted_file_as_plain_text(server: ConfigServer):
 
 @pytest.mark.requires_local_server
 def test_read_file_as_bytes(server: ConfigServer):
-    file_path = TEST_BEAMLINE_PARAMETERS_PATH
-    with open(file_path, "rb") as f:
+    with open(TestDataPaths.TEST_BEAMLINE_PARAMETERS_PATH, "rb") as f:
         expected_response = f.read()
 
     assert (
         server.get_file_contents(
-            file_path,
+            ServerFilePaths.BEAMLINE_PARAMETERS,
             bytes,
         )
         == expected_response
@@ -61,13 +58,12 @@ def test_read_file_as_bytes(server: ConfigServer):
 
 @pytest.mark.requires_local_server
 def test_read_good_json_as_dict(server: ConfigServer):
-    file_path = TEST_GOOD_JSON_PATH
-    with open(file_path) as f:
+    with open(TestDataPaths.TEST_GOOD_JSON_PATH) as f:
         expected_response = json.loads(f.read())
 
     assert (
         server.get_file_contents(
-            file_path,
+            ServerFilePaths.GOOD_JSON_FILE,
             dict[Any, Any],
         )
         == expected_response
@@ -76,7 +72,7 @@ def test_read_good_json_as_dict(server: ConfigServer):
 
 @pytest.mark.requires_local_server
 def test_bad_json_gives_http_error_with_details(server: ConfigServer):
-    file_path = TEST_BAD_JSON_PATH
+    file_path = ServerFilePaths.BAD_JSON_FILE
     file_name = os.path.basename(file_path)
     expected_detail = (
         f"Failed to convert {file_name} to application/json. "
