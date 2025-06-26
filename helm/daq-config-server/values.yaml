@@ -1,0 +1,56 @@
+replicaCount: 1
+
+image:
+  repository: ghcr.io/diamondlightsource/daq-config-server
+  pullPolicy: Always
+  tag: ""
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+
+podAnnotations: {}
+podLabels: {}
+
+podSecurityContext: {}
+
+securityContext:
+  runAsUser: 36082
+  runAsGroup: 36082
+
+service:
+  type: ClusterIP
+  port: 8555
+
+ingress:
+  enabled: true
+  className: "nginx"
+  annotations: {}
+  hosts:
+    - host: daq-config.diamond.ac.uk
+      paths:
+        - path: /
+          pathType: Prefix
+  tls:
+   - secretName: letsencrypt-daq-config-diamond-ac-uk
+     hosts:
+       - daq-config.diamond.ac.uk
+
+resources: {}
+
+livenessProbe:
+  httpGet:
+    path: /healthz
+    port: http
+readinessProbe:
+  httpGet:
+    path: /healthz
+    port: http
+
+volumes: []
+
+volumeMounts: []
+nodeSelector: {}
+tolerations: []
+affinity: {}
