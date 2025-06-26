@@ -70,3 +70,6 @@ lockfiles/
 # ruff cache
 .ruff_cache/
 node_modules
+
+# Chart bundles
+chart/charts/*
