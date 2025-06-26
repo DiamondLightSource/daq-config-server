@@ -1,6 +1,6 @@
 # Guide to using the config-server
 
-The server is centrally hosted on argus and accessible anywhere within the Diamond network. You can quickly get a feel for it using FastAPI's generated Swagger UI at https://daq-config.diamond.ac.uk/docs
+The server is centrally hosted on argus and is accessible anywhere within the Diamond network. You can quickly get a feel for it using FastAPI's generated Swagger UI at https://daq-config.diamond.ac.uk/docs
 
 
 This library provides a python client to easily make requests from Bluesky code. The client can use caching to prevent needlessly making time-consuming requests on data which won't have changed. You can choose the maximum number of items it can hold as well as the lifetime of an item upon instantiation.
