@@ -3,6 +3,7 @@ from unittest.mock import patch
 import pytest
 from pytest import FixtureRequest
 
+from daq_config_server.log import GraylogConfig, LoggingConfig, set_up_logging
 from daq_config_server.testing._utils import make_test_response
 from daq_config_server.whitelist import get_whitelist
 from tests.constants import TEST_WHITELIST_RESPONSE
@@ -27,3 +28,12 @@ def test_friendly_whitelist(request: FixtureRequest):
                 yield
 
     get_whitelist.cache_clear()
+
+
+TestLogConfig = LoggingConfig(graylog=GraylogConfig(enabled=False))
+
+
+@pytest.fixture(autouse=True)
+def test_friendly_logger():
+    # Make sure we don't post to Graylog when running tests
+    set_up_logging(TestLogConfig)

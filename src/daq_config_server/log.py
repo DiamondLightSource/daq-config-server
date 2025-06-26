@@ -68,5 +68,7 @@ def set_up_logging(logging_config: LoggingConfig) -> None:
 
     logger.setLevel(logging_config.level)
 
+    set_up_stream_handler(logger, logging_config)
+
     if logging_config.graylog.enabled:
         set_up_graylog_handler(logger, logging_config)
