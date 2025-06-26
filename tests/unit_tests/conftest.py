@@ -26,6 +26,4 @@ def test_friendly_whitelist(request: FixtureRequest):
             ):
                 yield
 
-    from daq_config_server import whitelist
-
-    whitelist._whitelist_instance = None
+    get_whitelist.cache_clear()
