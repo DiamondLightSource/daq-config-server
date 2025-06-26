@@ -1,6 +1,8 @@
 import logging
 
 
+# See https://github.com/DiamondLightSource/daq-config-server/issues/73
+# for making the logging configurable
 def get_default_logger(name: str = __name__) -> logging.Logger:
     logger = logging.getLogger(name)
     logger.setLevel(logging.INFO)
