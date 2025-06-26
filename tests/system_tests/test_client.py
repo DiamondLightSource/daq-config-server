@@ -88,25 +88,12 @@ def test_bad_json_gives_http_error_with_details(server: ConfigServer):
     server._log.error.assert_called_once_with(expected_detail)
 
 
-# See https://github.com/DiamondLightSource/daq-config-server/issues/96 for writing
-# these tests
-
-
-@pytest.mark.xfail
 @pytest.mark.requires_local_server
-def test_request_with_file_not_on_whitelist(): ...
-
-
-@pytest.mark.xfail
-@pytest.mark.requires_local_server
-def test_request_with_file_on_whitelist(): ...
-
-
-@pytest.mark.xfail
-@pytest.mark.requires_local_server
-def test_request_with_file_in_whitelist_dirs(): ...
-
-
-@pytest.mark.xfail
-@pytest.mark.requires_local_server
-def test_request_with_file_not_in_whitelist_dirs(): ...
+def test_request_with_file_not_on_whitelist(server: ConfigServer):
+    file_path = "/not_allowed_file_location"
+    with pytest.raises(
+        requests.exceptions.HTTPError, match=f"{file_path} is not a whitelisted file."
+    ):
+        server.get_file_contents(
+            file_path,
+        )

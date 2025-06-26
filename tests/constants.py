@@ -33,6 +33,7 @@ class ServerFilePaths:
     BEAMLINE_PARAMETERS = Path("/tests/test_data/beamline_parameters.txt")
     GOOD_JSON_FILE = Path("/tests/test_data/test_good_json.json")
     BAD_JSON_FILE = Path("/tests/test_data/test_bad_json")
+    FILE_IN_GOOD_DIR = Path("/tests/test_data/test_bad_json")
 
 
 TEST_WHITELIST_RESPONSE = f"""\
