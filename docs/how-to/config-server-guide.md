@@ -19,7 +19,7 @@ By default, this will return the file's raw string output - which includes thing
 
 # Adding files to the whitelist
 
-For [security reasons](../explanations/whitelist_info.md), only files existing on the whitelist [TODO link to whitelist.yaml] can be read. Please make a PR to add a file to the whitelist. If unsure, please ask in the #daq-config-server slack channel or create a GitHub issue. To make the config-server as quick to use as possible, the server will check any requests against the `whitelist.yaml` file on **the main branch of the repository**, rather than the whitelist in the latest release. The server will check for updates every 5 minutes.
+For [security reasons](../explanations/whitelist_info.md), only files existing on the [whitelist](https://github.com/DiamondLightSource/daq-config-server/blob/main/whitelist.yaml) can be read. Please make a PR to add a file to the whitelist. If unsure, please ask in the #daq-config-server slack channel or create a GitHub issue. To make the config-server as quick to use as possible, the server will check any requests against the `whitelist.yaml` file on **the main branch of the repository**, rather than the whitelist in the latest release. The server will check for updates every 5 minutes.
 
 # Reading sensitive information
 

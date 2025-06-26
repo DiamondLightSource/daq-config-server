@@ -23,17 +23,16 @@ config_server = ConfigServer("https://daq-config.diamond.ac.uk")
 file_contents = config_server.get_file_contents({ABSOLUTE_PATH_TO_CONFIG_FILE}, desired_return_type=str)
 
 ```
-The output will come out as a raw string - you should format it as required in your own code. You may also request that the file contents is returned as a `dict` or in `bytes` - this will raise an http exception if the file cannot be converted to that type. To be able to read a file, you must first add it to the whitelist [TODO link to whitelist]
+The output will come out as a raw string - you should format it as required in your own code. You may also request that the file contents is returned as a `dict` or in `bytes` - this will raise an http exception if the file cannot be converted to that type. To be able to read a file, you must first add it to the [whitelist](https://github.com/DiamondLightSource/daq-config-server/blob/main/whitelist.yaml).
 
 
 ## Testing and deployment
 
+To run unit tests, type `tox -e unit_tests` from within the dev container
 
-There is a convenient script in `./deployment/build_and_push.sh` which can be used to easily build and run the container locally for testing, and optionally push the container to ghcr. To push to the registry you must first get a github token and login using `podman login ghcr.io --username <your gh login> --password-stdin`
+There is a convenient script in `./deployment/build_and_push.sh` which can be used to easily build and run the container locally for testing, and optionally push the container to ghcr. In general we should rely on the CI to be pushing new containers - it should only be done manually for urgent debugging.
 
-To run system tests, you open the repo in a dev container and run `daq-config-server` on one terminal, then `pytest .` in another terminal, from the `/workspaces/daq-config-server` location 
-
-[TODO wait for helmchart to be merged in before adding this bit]
+To run system tests, start a local container by running `./deployment/build_and_push.sh -r -b`. Then, in the dev container, forward port 8555. There are instructions on port forwarding within vscode [here](https://code.visualstudio.com/docs/debugtest/port-forwarding). Next, in a terminal in the devcontainer, run `pytest .` from the `daq-config-server` directory.
 
 To test on argus, log in to argus in your namespace and run:
 
