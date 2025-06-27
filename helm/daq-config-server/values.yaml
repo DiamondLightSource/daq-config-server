@@ -48,9 +48,18 @@ readinessProbe:
     path: /healthz
     port: http
 
-volumes: []
+volumes:
+  - name: dls_sw
+    hostPath:
+      mountPath: /dls_sw
+      type: Directory
 
-volumeMounts: []
+volumeMounts:
+  - name: dls_sw
+    mountPath: /dls_sw
+    readOnly: True
+    mountPropagation: HostToContainer
+
 nodeSelector: {}
 tolerations: []
 affinity: {}
