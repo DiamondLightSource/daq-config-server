@@ -10,7 +10,7 @@ LogLevel = Literal["NOTSET", "DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"]
 class GraylogConfig(BaseModel):
     enabled: bool = False
     level: LogLevel = "INFO"
-    url: HttpUrl = HttpUrl("http://localhost:5555")
+    url: AnyUrl = HttpUrl("tcp://localhost:5555")
 
 
 class LoggingConfig(BaseModel):
