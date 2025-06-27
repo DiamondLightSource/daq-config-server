@@ -19,7 +19,7 @@ readme = "README.md"
 requires-python = ">=3.11"
 
 [project.optional-dependencies]
-server = ["pyyaml", "fastapi", "uvicorn", "redis", "hiredis", "cachetools", "graypy"]
+server = ["pyyaml", "fastapi", "uvicorn", "redis", "hiredis", "cachetools", "graypy", "pydantic"]
 dev = [
     "copier",
     "httpx",
@@ -43,6 +43,7 @@ dev = [
     "uvicorn",
     "graypy",
     "pyyaml",
+    "pydantic",
 ]
 
 [project.scripts]
