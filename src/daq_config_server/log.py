@@ -50,6 +50,12 @@ def set_up_graylog_handler(
     )
     graylog_handler.setLevel(logging_config.level)
 
+    prefix_formatter = logging.Formatter(
+        "[CONFIG-SERVER] %(asctime)s - %(levelname)s - %(message)s"
+    )
+
+    graylog_handler.setFormatter(prefix_formatter)
+
     logger.addHandler(graylog_handler)
     return graylog_handler
 
