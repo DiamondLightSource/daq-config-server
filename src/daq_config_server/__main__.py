@@ -6,6 +6,7 @@ from . import __version__
 
 __all__ = ["main"]
 
+
 INSUFFICIENT_DEPENDENCIES_MESSAGE = "To do anything other than print the version and be\
     available for importing the client, you must install this package with [server]\
     optional dependencies"
@@ -14,6 +15,7 @@ INSUFFICIENT_DEPENDENCIES_MESSAGE = "To do anything other than print the version
 def check_server_dependencies():
     try:
         import uvicorn  # type: ignore  # noqa: F401
+        import yaml  # type: ignore # noqa
         from fastapi import FastAPI  # type: ignore # noqa
 
         return True
