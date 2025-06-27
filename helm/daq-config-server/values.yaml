@@ -56,23 +56,16 @@ logging_config:
     level: "INFO"
 
 volumes:
-  - name: config-volume
-    configMap:
-      name: {{ include "daq-config-server.fullname" . }}-config
   - name: dls_sw
     hostPath:
       mountPath: /dls_sw
       type: Directory
 
 volumeMounts:
-  - name: config-volume
-    mountPath: /etc/config/config.yaml
-    subPath: config.yaml
   - name: dls_sw
     mountPath: /dls_sw
     readOnly: True
 
-volumeMounts: []
 nodeSelector: {}
 tolerations: []
 affinity: {}
