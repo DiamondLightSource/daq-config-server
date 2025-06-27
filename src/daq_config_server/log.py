@@ -2,7 +2,7 @@ import logging
 from typing import Literal, TextIO
 
 from graypy import GELFTCPHandler
-from pydantic import BaseModel, HttpUrl
+from pydantic import AnyUrl, BaseModel, HttpUrl
 
 LogLevel = Literal["NOTSET", "DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"]
 
