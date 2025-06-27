@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Architectural Decision Records &#8212; daq-config-server 0.2.1.dev6+g29d8714 documentation</title>
+    <title>Whitelist Security &#8212; daq-config-server 0.2.1.dev6+g29d8714 documentation</title>
   
   
   
@@ -47,7 +47,7 @@
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../_static/copybutton.js?v=30646c52"></script>
     <script src="../_static/design-tabs.js?v=f930bc37"></script>
-    <script>DOCUMENTATION_OPTIONS.pagename = 'explanations/decisions';</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'explanations/whitelist_info';</script>
     <script>
         DOCUMENTATION_OPTIONS.theme_version = '0.16.1';
         DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://DiamondLightSource.github.io/daq-config-server/switcher.json';
@@ -58,8 +58,8 @@
     <link rel="icon" href="../_static/dls-logo.svg"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="1. Record architecture decisions" href="decisions/0001-record-architecture-decisions.html" />
-    <link rel="prev" title="Explanations" href="../explanations.html" />
+    <link rel="next" title="Reference" href="../reference.html" />
+    <link rel="prev" title="2. Adopt python-copier-template for project structure" href="decisions/0002-switched-to-python-copier-template.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="main" />
@@ -397,12 +397,12 @@
      aria-label="Section Navigation">
   <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
   <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
-<li class="toctree-l1 current active has-children"><a class="current reference internal" href="#">Architectural Decision Records</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="decisions.html">Architectural Decision Records</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="decisions/0001-record-architecture-decisions.html">1. Record architecture decisions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="decisions/0002-switched-to-python-copier-template.html">2. Adopt python-copier-template for project structure</a></li>
 </ul>
 </details></li>
-<li class="toctree-l1"><a class="reference internal" href="whitelist_info.html">Whitelist Security</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Whitelist Security</a></li>
 </ul>
 </div>
 </nav></div>
@@ -446,7 +446,7 @@
     
     <li class="breadcrumb-item"><a href="../explanations.html" class="nav-link">Explanations</a></li>
     
-    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Architectural Decision Records</span></li>
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Whitelist Security</span></li>
   </ul>
 </nav>
 </div>
@@ -463,16 +463,11 @@
 <div id="searchbox"></div>
                 <article class="bd-article">
                   
-  <section id="architectural-decision-records">
-<h1>Architectural Decision Records<a class="headerlink" href="#architectural-decision-records" title="Link to this heading">#</a></h1>
-<p>Architectural decisions are made throughout a project’s lifetime. As a way of keeping track of these decisions, we record these decisions in Architecture Decision Records (ADRs) listed below.</p>
-<div class="toctree-wrapper compound">
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="decisions/0001-record-architecture-decisions.html">1. Record architecture decisions</a></li>
-<li class="toctree-l1"><a class="reference internal" href="decisions/0002-switched-to-python-copier-template.html">2. Adopt python-copier-template for project structure</a></li>
-</ul>
-</div>
-<p>For more information on ADRs see this <a class="reference external" href="http://thinkrelevance.com/blog/2011/11/15/documenting-architecture-decisions">blog by Michael Nygard</a>.</p>
+  <section id="whitelist-security">
+<h1>Whitelist Security<a class="headerlink" href="#whitelist-security" title="Link to this heading">#</a></h1>
+<p>The centrally-hosted config server is running with the same permissions as the <code class="docutils literal notranslate"><span class="pre">dls-dasc</span></code> group. Since this service currently doesn’t have authentication and has <code class="docutils literal notranslate"><span class="pre">/dls_sw</span></code> mounted, we have introduced a whitelist to ensure that nothing sensitve gets read. Most importantly, <strong>nothing confidential should be added to the whitelist</strong>. This includes any experimental data and files containing credentials.</p>
+<p>This service was designed primarily to read beamline configuration files, like lookup tables and key-value variables. However, as long the file is safe for <strong>anyone</strong> to read, it can be safely added to the whitelist.</p>
+<p>See the <a class="reference internal" href="../how-to/config-server-guide.html"><span class="std std-doc">general guide</span></a> if you need to read sensitive information in your Bluesky plans.</p>
 </section>
 
 
@@ -486,20 +481,20 @@
                   
 <div class="prev-next-area">
     <a class="left-prev"
-       href="../explanations.html"
+       href="decisions/0002-switched-to-python-copier-template.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">Explanations</p>
+        <p class="prev-next-title">2. Adopt python-copier-template for project structure</p>
       </div>
     </a>
     <a class="right-next"
-       href="decisions/0001-record-architecture-decisions.html"
+       href="../reference.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">1. Record architecture decisions</p>
+        <p class="prev-next-title">Reference</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
@@ -518,7 +513,7 @@
 
   
   <div class="tocsection editthispage">
-    <a href="https://github.com/DiamondLightSource/daq-config-server/edit/main/docs/explanations/decisions.md">
+    <a href="https://github.com/DiamondLightSource/daq-config-server/edit/main/docs/explanations/whitelist_info.md">
       <i class="fa-solid fa-pencil"></i>
       
       
@@ -534,7 +529,7 @@
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
     <ul class="this-page-menu">
-      <li><a href="../_sources/explanations/decisions.md.txt"
+      <li><a href="../_sources/explanations/whitelist_info.md.txt"
             rel="nofollow">Show Source</a></li>
     </ul>
    </div></div>

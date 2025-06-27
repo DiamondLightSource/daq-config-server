@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Architectural Decision Records &#8212; daq-config-server 0.2.1.dev6+g29d8714 documentation</title>
+    <title>Guide to using the config-server &#8212; daq-config-server 0.2.1.dev6+g29d8714 documentation</title>
   
   
   
@@ -47,7 +47,7 @@
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../_static/copybutton.js?v=30646c52"></script>
     <script src="../_static/design-tabs.js?v=f930bc37"></script>
-    <script>DOCUMENTATION_OPTIONS.pagename = 'explanations/decisions';</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'how-to/config-server-guide';</script>
     <script>
         DOCUMENTATION_OPTIONS.theme_version = '0.16.1';
         DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://DiamondLightSource.github.io/daq-config-server/switcher.json';
@@ -58,8 +58,8 @@
     <link rel="icon" href="../_static/dls-logo.svg"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="1. Record architecture decisions" href="decisions/0001-record-architecture-decisions.html" />
-    <link rel="prev" title="Explanations" href="../explanations.html" />
+    <link rel="next" title="Contribute to the project" href="contribute.html" />
+    <link rel="prev" title="How-to Guides" href="../how-to.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="main" />
@@ -153,14 +153,14 @@
 </li>
 
 
-<li class="nav-item ">
+<li class="nav-item current active">
   <a class="nav-link nav-internal" href="../how-to.html">
     How-to Guides
   </a>
 </li>
 
 
-<li class="nav-item current active">
+<li class="nav-item ">
   <a class="nav-link nav-internal" href="../explanations.html">
     Explanations
   </a>
@@ -301,14 +301,14 @@
 </li>
 
 
-<li class="nav-item ">
+<li class="nav-item current active">
   <a class="nav-link nav-internal" href="../how-to.html">
     How-to Guides
   </a>
 </li>
 
 
-<li class="nav-item current active">
+<li class="nav-item ">
   <a class="nav-link nav-internal" href="../explanations.html">
     Explanations
   </a>
@@ -397,12 +397,11 @@
      aria-label="Section Navigation">
   <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
   <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
-<li class="toctree-l1 current active has-children"><a class="current reference internal" href="#">Architectural Decision Records</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l2"><a class="reference internal" href="decisions/0001-record-architecture-decisions.html">1. Record architecture decisions</a></li>
-<li class="toctree-l2"><a class="reference internal" href="decisions/0002-switched-to-python-copier-template.html">2. Adopt python-copier-template for project structure</a></li>
-</ul>
-</details></li>
-<li class="toctree-l1"><a class="reference internal" href="whitelist_info.html">Whitelist Security</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Guide to using the config-server</a></li>
+
+
+<li class="toctree-l1"><a class="reference internal" href="contribute.html">Contribute to the project</a></li>
+<li class="toctree-l1"><a class="reference internal" href="run-container.html">Run in a container</a></li>
 </ul>
 </div>
 </nav></div>
@@ -444,9 +443,9 @@
       </a>
     </li>
     
-    <li class="breadcrumb-item"><a href="../explanations.html" class="nav-link">Explanations</a></li>
+    <li class="breadcrumb-item"><a href="../how-to.html" class="nav-link">How-to Guides</a></li>
     
-    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Architectural Decision Records</span></li>
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Guide to using the config-server</span></li>
   </ul>
 </nav>
 </div>
@@ -463,16 +462,28 @@
 <div id="searchbox"></div>
                 <article class="bd-article">
                   
-  <section id="architectural-decision-records">
-<h1>Architectural Decision Records<a class="headerlink" href="#architectural-decision-records" title="Link to this heading">#</a></h1>
-<p>Architectural decisions are made throughout a project’s lifetime. As a way of keeping track of these decisions, we record these decisions in Architecture Decision Records (ADRs) listed below.</p>
-<div class="toctree-wrapper compound">
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="decisions/0001-record-architecture-decisions.html">1. Record architecture decisions</a></li>
-<li class="toctree-l1"><a class="reference internal" href="decisions/0002-switched-to-python-copier-template.html">2. Adopt python-copier-template for project structure</a></li>
-</ul>
+  <section id="guide-to-using-the-config-server">
+<h1>Guide to using the config-server<a class="headerlink" href="#guide-to-using-the-config-server" title="Link to this heading">#</a></h1>
+<p>The server is centrally hosted on argus and is accessible anywhere within the Diamond network. You can quickly get a feel for it using FastAPI’s generated Swagger UI at https://daq-config.diamond.ac.uk/docs</p>
+<p>This library provides a python client to easily make requests from Bluesky code. The client can use caching to prevent needlessly making time-consuming requests on data which won’t have changed. You can choose the maximum number of items it can hold as well as the lifetime of an item upon instantiation.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">daq_config_server.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">ConfigServer</span>
+
+<span class="n">config_server</span> <span class="o">=</span> <span class="n">ConfigServer</span><span class="p">(</span><span class="s2">&quot;https://daq-config.diamond.ac.uk&quot;</span><span class="p">,</span> <span class="n">cache_size</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span> <span class="n">cache_lifetime_s</span> <span class="o">=</span> <span class="mi">3600</span><span class="p">)</span>
+</pre></div>
 </div>
-<p>For more information on ADRs see this <a class="reference external" href="http://thinkrelevance.com/blog/2011/11/15/documenting-architecture-decisions">blog by Michael Nygard</a>.</p>
+<p>You can then make a request through this client through its <code class="docutils literal notranslate"><span class="pre">get_file_contents</span></code> function. If you are reading a file which may have changed since the client last read it, you should set the appropriate flag to reset the cache for that result - this forces a new request and stores that new result in the cache.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">config_server</span><span class="o">.</span><span class="n">get_file_contents</span><span class="p">(</span><span class="n">FILE_PATH</span><span class="p">,</span><span class="n">reset_cached_result</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>By default, this will return the file’s raw string output - which includes things like linebreaks. It is up to you to format this output - using <code class="docutils literal notranslate"><span class="pre">splitlines()</span></code> will get you a list where each item is a line in the file. <code class="docutils literal notranslate"><span class="pre">get_file_contents</span></code> has a <code class="docutils literal notranslate"><span class="pre">desired_return_type</span></code> parameter where you can instead ask for a <code class="docutils literal notranslate"><span class="pre">dict</span></code> or <code class="docutils literal notranslate"><span class="pre">bytes</span></code>. The server will try and do the conversion, and respond with an HTTP error if the requested file is incompatible with that type.</p>
+</section>
+<section id="adding-files-to-the-whitelist">
+<h1>Adding files to the whitelist<a class="headerlink" href="#adding-files-to-the-whitelist" title="Link to this heading">#</a></h1>
+<p>For <a class="reference internal" href="../explanations/whitelist_info.html"><span class="std std-doc">security reasons</span></a>, only files existing on the <a class="reference external" href="https://github.com/DiamondLightSource/daq-config-server/blob/main/whitelist.yaml">whitelist</a> can be read. Please make a PR to add a file to the whitelist. If unsure, please ask in the #daq-config-server slack channel or create a GitHub issue. To make the config-server as quick to use as possible, the server will check any requests against the <code class="docutils literal notranslate"><span class="pre">whitelist.yaml</span></code> file on <strong>the main branch of the repository</strong>, rather than the whitelist in the latest release. The server will check for updates every 5 minutes.</p>
+</section>
+<section id="reading-sensitive-information">
+<h1>Reading sensitive information<a class="headerlink" href="#reading-sensitive-information" title="Link to this heading">#</a></h1>
+<p>If you need to read a file which contains sensitive information, or <code class="docutils literal notranslate"><span class="pre">dls-dasc</span></code> doesn’t have the permissions to read your file, you should encrypt this file as a <a class="reference external" href="https://github.com/bitnami-labs/sealed-secrets">sealed secret</a> on your beamline cluster, and mount this in your BlueAPI service.</p>
 </section>
 
 
@@ -486,20 +497,20 @@
                   
 <div class="prev-next-area">
     <a class="left-prev"
-       href="../explanations.html"
+       href="../how-to.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">Explanations</p>
+        <p class="prev-next-title">How-to Guides</p>
       </div>
     </a>
     <a class="right-next"
-       href="decisions/0001-record-architecture-decisions.html"
+       href="contribute.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">1. Record architecture decisions</p>
+        <p class="prev-next-title">Contribute to the project</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
@@ -515,10 +526,25 @@
 
 
   <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#">Guide to using the config-server</a></li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#adding-files-to-the-whitelist">Adding files to the whitelist</a></li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#reading-sensitive-information">Reading sensitive information</a></li>
+</ul>
+
+  </nav></div>
+
+  <div class="sidebar-secondary-item">
 
   
   <div class="tocsection editthispage">
-    <a href="https://github.com/DiamondLightSource/daq-config-server/edit/main/docs/explanations/decisions.md">
+    <a href="https://github.com/DiamondLightSource/daq-config-server/edit/main/docs/how-to/config-server-guide.md">
       <i class="fa-solid fa-pencil"></i>
       
       
@@ -534,7 +560,7 @@
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
     <ul class="this-page-menu">
-      <li><a href="../_sources/explanations/decisions.md.txt"
+      <li><a href="../_sources/how-to/config-server-guide.md.txt"
             rel="nofollow">Show Source</a></li>
     </ul>
    </div></div>

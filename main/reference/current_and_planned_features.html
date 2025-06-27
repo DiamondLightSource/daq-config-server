@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Architectural Decision Records &#8212; daq-config-server 0.2.1.dev6+g29d8714 documentation</title>
+    <title>Current and future features &#8212; daq-config-server 0.2.1.dev6+g29d8714 documentation</title>
   
   
   
@@ -47,7 +47,7 @@
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../_static/copybutton.js?v=30646c52"></script>
     <script src="../_static/design-tabs.js?v=f930bc37"></script>
-    <script>DOCUMENTATION_OPTIONS.pagename = 'explanations/decisions';</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'reference/current_and_planned_features';</script>
     <script>
         DOCUMENTATION_OPTIONS.theme_version = '0.16.1';
         DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://DiamondLightSource.github.io/daq-config-server/switcher.json';
@@ -58,8 +58,8 @@
     <link rel="icon" href="../_static/dls-logo.svg"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="1. Record architecture decisions" href="decisions/0001-record-architecture-decisions.html" />
-    <link rel="prev" title="Explanations" href="../explanations.html" />
+    <link rel="next" title="daq_config_server" href="../_api/daq_config_server.html" />
+    <link rel="prev" title="Reference" href="../reference.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="main" />
@@ -160,14 +160,14 @@
 </li>
 
 
-<li class="nav-item current active">
+<li class="nav-item ">
   <a class="nav-link nav-internal" href="../explanations.html">
     Explanations
   </a>
 </li>
 
 
-<li class="nav-item ">
+<li class="nav-item current active">
   <a class="nav-link nav-internal" href="../reference.html">
     Reference
   </a>
@@ -308,14 +308,14 @@
 </li>
 
 
-<li class="nav-item current active">
+<li class="nav-item ">
   <a class="nav-link nav-internal" href="../explanations.html">
     Explanations
   </a>
 </li>
 
 
-<li class="nav-item ">
+<li class="nav-item current active">
   <a class="nav-link nav-internal" href="../reference.html">
     Reference
   </a>
@@ -397,12 +397,10 @@
      aria-label="Section Navigation">
   <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
   <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
-<li class="toctree-l1 current active has-children"><a class="current reference internal" href="#">Architectural Decision Records</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l2"><a class="reference internal" href="decisions/0001-record-architecture-decisions.html">1. Record architecture decisions</a></li>
-<li class="toctree-l2"><a class="reference internal" href="decisions/0002-switched-to-python-copier-template.html">2. Adopt python-copier-template for project structure</a></li>
-</ul>
-</details></li>
-<li class="toctree-l1"><a class="reference internal" href="whitelist_info.html">Whitelist Security</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Current and future features</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../_api/daq_config_server.html">API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../genindex.html">Index</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/DiamondLightSource/daq-config-server/releases">Release Notes</a></li>
 </ul>
 </div>
 </nav></div>
@@ -444,9 +442,9 @@
       </a>
     </li>
     
-    <li class="breadcrumb-item"><a href="../explanations.html" class="nav-link">Explanations</a></li>
+    <li class="breadcrumb-item"><a href="../reference.html" class="nav-link">Reference</a></li>
     
-    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Architectural Decision Records</span></li>
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Current and future features</span></li>
   </ul>
 </nav>
 </div>
@@ -463,16 +461,27 @@
 <div id="searchbox"></div>
                 <article class="bd-article">
                   
-  <section id="architectural-decision-records">
-<h1>Architectural Decision Records<a class="headerlink" href="#architectural-decision-records" title="Link to this heading">#</a></h1>
-<p>Architectural decisions are made throughout a project’s lifetime. As a way of keeping track of these decisions, we record these decisions in Architecture Decision Records (ADRs) listed below.</p>
-<div class="toctree-wrapper compound">
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="decisions/0001-record-architecture-decisions.html">1. Record architecture decisions</a></li>
-<li class="toctree-l1"><a class="reference internal" href="decisions/0002-switched-to-python-copier-template.html">2. Adopt python-copier-template for project structure</a></li>
+  <section id="current-and-future-features">
+<h1>Current and future features<a class="headerlink" href="#current-and-future-features" title="Link to this heading">#</a></h1>
+<section id="current-features">
+<h2>Current features<a class="headerlink" href="#current-features" title="Link to this heading">#</a></h2>
+<ul class="simple">
+<li><p>Provide an endpoint to read any whitelisted file on diamond’s shared filesystem, with static typing support.</p></li>
+<li><p>Periodically check the main branch’s to update the whitelist.</p></li>
+<li><p>Provide a client module for users to easily communicate with the server, with caching.</p></li>
+<li><p>Have this service hosted on diamond’s central argus cluster - with url <code class="docutils literal notranslate"><span class="pre">https://daq-config-server.diamond.ac.uk</span></code></p></li>
 </ul>
-</div>
-<p>For more information on ADRs see this <a class="reference external" href="http://thinkrelevance.com/blog/2011/11/15/documenting-architecture-decisions">blog by Michael Nygard</a>.</p>
+</section>
+<section id="future-features">
+<h2>Future features<a class="headerlink" href="#future-features" title="Link to this heading">#</a></h2>
+<p>Note that this is not actively ongoing work, but features that we are aware will be needed in the future.</p>
+<ul class="simple">
+<li><p>Provide server-side formatting for commonly used configuration files - eg <code class="docutils literal notranslate"><span class="pre">beamline_parameters.txt</span></code> should be returned as a dictionary.</p></li>
+<li><p>Remove absolute filepath as a user dependancy. For example, once we have a good picture of which files are being read, the client should be able to request the beamline parameters with something like <code class="docutils literal notranslate"><span class="pre">client.get_file_contents(SUPPORTED_CONFIG_FILES.BeamlineParameters,</span> <span class="pre">beamline=i03)</span></code></p></li>
+<li><p>Add authorisation + authentication. This is a pre-requisite for file-writing.</p></li>
+<li><p>Add endpoints for configuration file-writing. At this point, we can begin to remove any configuration from the filesystem. The config-server will use a redis database to store these values, and we can have a simple web-interface to change the values.</p></li>
+</ul>
+</section>
 </section>
 
 
@@ -486,20 +495,20 @@
                   
 <div class="prev-next-area">
     <a class="left-prev"
-       href="../explanations.html"
+       href="../reference.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">Explanations</p>
+        <p class="prev-next-title">Reference</p>
       </div>
     </a>
     <a class="right-next"
-       href="decisions/0001-record-architecture-decisions.html"
+       href="../_api/daq_config_server.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">1. Record architecture decisions</p>
+        <p class="prev-next-title"><code class="docutils literal notranslate"><span class="pre">daq_config_server</span></code></p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
@@ -515,10 +524,23 @@
 
 
   <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#current-features">Current features</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#future-features">Future features</a></li>
+</ul>
+  </nav></div>
+
+  <div class="sidebar-secondary-item">
 
   
   <div class="tocsection editthispage">
-    <a href="https://github.com/DiamondLightSource/daq-config-server/edit/main/docs/explanations/decisions.md">
+    <a href="https://github.com/DiamondLightSource/daq-config-server/edit/main/docs/reference/current_and_planned_features.md">
       <i class="fa-solid fa-pencil"></i>
       
       
@@ -534,7 +556,7 @@
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
     <ul class="this-page-menu">
-      <li><a href="../_sources/explanations/decisions.md.txt"
+      <li><a href="../_sources/reference/current_and_planned_features.md.txt"
             rel="nofollow">Show Source</a></li>
     </ul>
    </div></div>
