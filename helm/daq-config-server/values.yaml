@@ -48,7 +48,29 @@ readinessProbe:
     path: /healthz
     port: http
 
-volumes: []
+# Send logs to the dodal graylog stream for now until a more suitable stream exists
+logging_config:
+  graylog:
+    enabled: true
+    url: http://graylog-log-target.diamond.ac.uk:12232/
+    level: "INFO"
+
+volumes:
+  - name: config-volume
+    configMap:
+      name: {{ include "daq-config-server.fullname" . }}-config
+  - name: dls_sw
+    hostPath:
+      mountPath: /dls_sw
+      type: Directory
+
+volumeMounts:
+  - name: config-volume
+    mountPath: /etc/config/config.yaml
+    subPath: config.yaml
+  - name: dls_sw
+    mountPath: /dls_sw
+    readOnly: True
 
 volumeMounts: []
 nodeSelector: {}
