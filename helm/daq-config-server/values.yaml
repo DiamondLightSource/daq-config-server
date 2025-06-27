@@ -58,6 +58,7 @@ volumeMounts:
   - name: dls_sw
     mountPath: /dls_sw
     readOnly: True
+    mountPropagation: HostToContainer
 
 nodeSelector: {}
 tolerations: []
