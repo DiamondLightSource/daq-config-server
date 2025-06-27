@@ -11,6 +11,7 @@ from daq_config_server.__main__ import (
     main,
 )
 from daq_config_server.app import log_request_details
+from daq_config_server.app import main as main_app
 from tests.constants import TEST_LOGGING_CONFIG_PATH
 
 
@@ -40,25 +41,23 @@ def test_main_runs_with_correct_dependencies(
     mock_main.assert_called_once()
 
 
-@patch("daq_config_server.app.main")
-@patch("daq_config_server.__main__.ArgumentParser.parse_args")
+@patch("daq_config_server.app.uvicorn.run")
 @patch("daq_config_server.log.set_up_graylog_handler")
 def test_logging_with_mounted_config(
-    mock_graylog_setup: MagicMock, mock_parse_args: MagicMock, mock_main: MagicMock
+    mock_graylog_setup: MagicMock, mock_run: MagicMock
 ):
-    with patch("daq_config_server.__main__.CONFIG_PATH", new=TEST_LOGGING_CONFIG_PATH):
-        main()
+    with patch("daq_config_server.app.CONFIG_PATH", new=TEST_LOGGING_CONFIG_PATH):
+        main_app()
     mock_graylog_setup.assert_called_once()
 
 
-@patch("daq_config_server.app.main")
-@patch("daq_config_server.__main__.ArgumentParser.parse_args")
+@patch("daq_config_server.app.uvicorn.run")
 @patch("daq_config_server.log.set_up_graylog_handler")
 def test_logging_with_no_mounted_config(
-    mock_graylog_setup: MagicMock, mock_parse_args: MagicMock, mock_main: MagicMock
+    mock_graylog_setup: MagicMock, mock_run: MagicMock
 ):
     # If config file doesn't exist, graylog option is disabled by default
-    main()
+    main_app()
     mock_graylog_setup.assert_not_called()
 
 

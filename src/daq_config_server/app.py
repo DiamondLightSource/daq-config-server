@@ -6,6 +6,7 @@ from enum import StrEnum
 from pathlib import Path
 
 import uvicorn
+import yaml
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse, Response
@@ -14,7 +15,10 @@ from starlette import status
 from daq_config_server.constants import (
     ENDPOINTS,
 )
+from daq_config_server.log import LoggingConfig, set_up_logging
 from daq_config_server.whitelist import get_whitelist
+
+CONFIG_PATH = "/etc/config/config.yaml"
 
 LOGGER = logging.getLogger(__name__)
 
@@ -158,4 +162,14 @@ def health_check():
 
 
 def main():
+    # Set up logging with defaults, or using config.yaml if it exists
+    if os.path.isfile(CONFIG_PATH):
+        with open(CONFIG_PATH) as f:
+            data = yaml.safe_load(f)
+            logging_config = LoggingConfig(**data)
+    else:
+        logging_config = LoggingConfig()
+
+    set_up_logging(logging_config)
+
     uvicorn.run(app="daq_config_server.app:app", host="0.0.0.0", port=8555)
