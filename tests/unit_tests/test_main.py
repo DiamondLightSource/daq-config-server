@@ -2,11 +2,15 @@ import subprocess
 import sys
 from unittest.mock import MagicMock, patch
 
+from fastapi import FastAPI
+from fastapi.testclient import TestClient
+
 from daq_config_server.__main__ import (
     INSUFFICIENT_DEPENDENCIES_MESSAGE,
     __version__,
     main,
 )
+from daq_config_server.app import log_request_details
 from tests.constants import TEST_LOGGING_CONFIG_PATH
 
 
@@ -56,3 +60,21 @@ def test_logging_with_no_mounted_config(
     # If config file doesn't exist, graylog option is disabled by default
     main()
     mock_graylog_setup.assert_not_called()
+
+
+async def test_log_request_details():
+    with patch("daq_config_server.app.LOGGER") as logger:
+        app = FastAPI()
+        app.middleware("http")(log_request_details)
+
+        @app.get("/")
+        async def root():  # type: ignore
+            return {"message": "Hello World"}
+
+        client = TestClient(app)
+        response = client.get("/")
+
+        assert response.status_code == 200
+        logger.debug.assert_called_once_with(
+            "method: GET url: http://testserver/ body: b''"
+        )

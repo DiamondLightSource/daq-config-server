@@ -1,5 +1,7 @@
 import json
+import logging
 import os
+from collections.abc import Awaitable, Callable
 from enum import StrEnum
 from pathlib import Path
 
@@ -14,11 +16,25 @@ from daq_config_server.constants import (
 )
 from daq_config_server.whitelist import get_whitelist
 
+LOGGER = logging.getLogger(__name__)
+
+
+async def log_request_details(
+    request: Request, call_next: Callable[[Request], Awaitable[Response]]
+) -> Response:
+    LOGGER.debug(
+        f"method: {request.method} url: {request.url} body: {await request.body()}",
+    )
+    response = await call_next(request)
+    return response
+
+
 app = FastAPI(
     title="DAQ config server",
     description="""For reading files stored on /dls_sw from another container""",
 )
 origins = ["*"]
+app.middleware("http")(log_request_details)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
