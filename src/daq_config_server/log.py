@@ -9,11 +9,11 @@ LogLevel = Literal["NOTSET", "DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"]
 
 class GraylogConfig(BaseModel):
     enabled: bool = False
+    level: LogLevel = "INFO"
     url: HttpUrl = HttpUrl("http://localhost:5555")
 
 
 class LoggingConfig(BaseModel):
-    level: LogLevel = "INFO"
     graylog: GraylogConfig = GraylogConfig()
 
 
@@ -48,7 +48,7 @@ def set_up_graylog_handler(
         logging_config.graylog.url.host,
         logging_config.graylog.url.port,
     )
-    graylog_handler.setLevel(logging_config.level)
+    graylog_handler.setLevel(logging_config.graylog.level)
 
     prefix_formatter = logging.Formatter(
         "[CONFIG-SERVER] %(asctime)s - %(levelname)s - %(message)s"
@@ -72,7 +72,7 @@ def set_up_logging(logging_config: LoggingConfig) -> None:
 
     logger = logging.getLogger()
 
-    logger.setLevel(logging_config.level)
+    logger.setLevel(logging_config.graylog.level)
 
     set_up_stream_handler(logger, logging_config)
 

@@ -50,10 +50,10 @@ readinessProbe:
 
 # Send logs to the dodal graylog stream for now until a more suitable stream exists
 logging_config:
-  level: "INFO"
   graylog:
     enabled: true
     url: http://graylog-log-target.diamond.ac.uk:12232/
+    level: "INFO"
 
 volumes:
   - name: config-volume
