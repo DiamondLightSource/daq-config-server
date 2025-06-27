@@ -2,7 +2,7 @@ import logging
 from typing import Literal, TextIO
 
 from graypy import GELFTCPHandler
-from pydantic import AnyUrl, BaseModel, HttpUrl
+from pydantic import AnyUrl, BaseModel
 
 LogLevel = Literal["NOTSET", "DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"]
 
@@ -10,7 +10,7 @@ LogLevel = Literal["NOTSET", "DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"]
 class GraylogConfig(BaseModel):
     enabled: bool = False
     level: LogLevel = "INFO"
-    url: AnyUrl = HttpUrl("tcp://localhost:5555")
+    url: AnyUrl = AnyUrl("tcp://localhost:5555")
 
 
 class LoggingConfig(BaseModel):
