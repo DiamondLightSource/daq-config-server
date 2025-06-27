@@ -18,6 +18,8 @@ from daq_config_server.constants import (
 from daq_config_server.log import LoggingConfig, set_up_logging
 from daq_config_server.whitelist import get_whitelist
 
+# See https://github.com/DiamondLightSource/daq-config-server/issues/105
+# to make this path configurable
 CONFIG_PATH = "/etc/config/config.yaml"
 
 LOGGER = logging.getLogger(__name__)
