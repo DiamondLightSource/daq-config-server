@@ -55,16 +55,8 @@ logging_config:
     url: http://graylog-log-target.diamond.ac.uk:12232/
     level: "INFO"
 
-volumes:
-  - name: config-volume
-    configMap:
-      name: {{ include "daq-config-server.fullname" . }}-config
-
-volumeMounts:
-  - name: config-volume
-    mountPath: /etc/config/config.yaml
-    subPath: config.yaml
-
+volumeMounts: []
+volumes: []
 nodeSelector: {}
 tolerations: []
 affinity: {}
