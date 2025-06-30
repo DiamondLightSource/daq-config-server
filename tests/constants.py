@@ -36,6 +36,8 @@ class ServerFilePaths:
     FILE_IN_GOOD_DIR = Path("/tests/test_data/test_bad_json")
 
 
+TEST_CONFIG_PATH = TEST_DATA_DIR_PATH.joinpath("test_config.yaml")
+
 TEST_WHITELIST_RESPONSE = f"""\
 whitelist_files:
   - {TestDataPaths.TEST_GOOD_JSON_PATH}

@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "daq-config-server.fullname" . }}-config
+data:
+  config.yaml: |-
+    {{- toYaml .Values.config | nindent 4 }}

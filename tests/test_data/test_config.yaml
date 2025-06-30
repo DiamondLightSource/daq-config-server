@@ -1,0 +1,8 @@
+logging_config:
+  graylog:
+    enabled: true
+    level: "INFO"
+    url: http://localhost:5555
+  stream_log:
+    enabled: true
+    level: "DEBUG"

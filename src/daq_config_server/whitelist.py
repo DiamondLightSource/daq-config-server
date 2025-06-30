@@ -1,4 +1,5 @@
 import atexit
+import logging
 import time
 from functools import cache
 from pathlib import Path
@@ -11,7 +12,8 @@ from daq_config_server.constants import (
     WHITELIST_REFRESH_RATE_S,
     WHITELIST_URL,
 )
-from daq_config_server.log import LOGGER
+
+LOGGER = logging.getLogger(__name__)
 
 
 class WhitelistFetcher:
