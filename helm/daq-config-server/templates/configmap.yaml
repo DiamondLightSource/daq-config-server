@@ -4,4 +4,4 @@ metadata:
   name: {{ include "daq-config-server.fullname" . }}-config
 data:
   config.yaml: |-
-    {{- toYaml .Values.config.logging_config | nindent 4 }}
+    {{- toYaml .Values.config | nindent 4 }}

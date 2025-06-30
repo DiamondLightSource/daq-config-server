@@ -1,4 +1,0 @@
-level: "INFO"
-graylog:
-  enabled: true
-  url: http://localhost:5555

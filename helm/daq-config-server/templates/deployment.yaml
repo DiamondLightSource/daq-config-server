@@ -57,8 +57,11 @@ spec:
           - name: config-volume
             mountPath: "/etc/config"
             subPath: config.yaml
-      {{- with .Values.volumes }}
+          {{- with .Values.volumeMounts }}
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
       volumes:
+      {{- with .Values.volumes }}
         {{- toYaml . | nindent 8 }}
       {{- end }}
         - name: config-volume

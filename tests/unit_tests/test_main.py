@@ -12,7 +12,7 @@ from daq_config_server.__main__ import (
 )
 from daq_config_server.app import log_request_details
 from daq_config_server.app import main as main_app
-from tests.constants import TEST_LOGGING_CONFIG_PATH
+from tests.constants import TEST_CONFIG_PATH
 
 
 def test_cli_version():
@@ -46,7 +46,7 @@ def test_main_runs_with_correct_dependencies(
 def test_logging_with_mounted_config(
     mock_graylog_setup: MagicMock, mock_run: MagicMock
 ):
-    with patch("daq_config_server.app.CONFIG_PATH", new=TEST_LOGGING_CONFIG_PATH):
+    with patch("daq_config_server.app.CONFIG_PATH", new=TEST_CONFIG_PATH):
         main_app()
     mock_graylog_setup.assert_called_once()
 

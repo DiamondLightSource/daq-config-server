@@ -18,7 +18,7 @@ TEST_FILE_IN_BAD_DIR = TEST_DATA_DIR_PATH.joinpath("bad_dir/test_file")
 
 TEST_INVALID_FILE_PATH = TEST_DATA_DIR_PATH.joinpath("invalid_file")
 
-TEST_LOGGING_CONFIG_PATH = TEST_DATA_DIR_PATH.joinpath("test_logging_config.yaml")
+TEST_CONFIG_PATH = TEST_DATA_DIR_PATH.joinpath("test_config.yaml")
 
 TEST_WHITELIST_RESPONSE = f"""\
 whitelist_files:

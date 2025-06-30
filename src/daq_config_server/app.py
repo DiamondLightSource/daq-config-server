@@ -12,10 +12,11 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse, Response
 from starlette import status
 
+from daq_config_server.config import Config
 from daq_config_server.constants import (
     ENDPOINTS,
 )
-from daq_config_server.log import LoggingConfig, set_up_logging
+from daq_config_server.log import set_up_logging
 from daq_config_server.whitelist import get_whitelist
 
 # See https://github.com/DiamondLightSource/daq-config-server/issues/105
@@ -168,10 +169,10 @@ def main():
     if os.path.isfile(CONFIG_PATH):
         with open(CONFIG_PATH) as f:
             data = yaml.safe_load(f)
-            logging_config = LoggingConfig(**data)
+            config = Config(**data)
     else:
-        logging_config = LoggingConfig()
+        config = Config()
 
-    set_up_logging(logging_config)
+    set_up_logging(config.logging_config)
 
     uvicorn.run(app="daq_config_server.app:app", host="0.0.0.0", port=8555)
