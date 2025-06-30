@@ -59,18 +59,8 @@ config:
       enabled: true
       level: "DEBUG"
 
-volumes:
-  - name: dls_sw
-    hostPath:
-      mountPath: /dls_sw
-      type: Directory
-
-volumeMounts:
-  - name: dls_sw
-    mountPath: /dls_sw
-    readOnly: True
-    mountPropagation: HostToContainer
-
+volumes: []
+volumeMounts: []
 nodeSelector: {}
 tolerations: []
 affinity: {}
