@@ -4,6 +4,10 @@
     "url": "https://DiamondLightSource.github.io/daq-config-server/main/"
   },
   {
+    "version": "v1.0.0-rc.1",
+    "url": "https://DiamondLightSource.github.io/daq-config-server/v1.0.0-rc.1/"
+  },
+  {
     "version": "v0.2.0",
     "url": "https://DiamondLightSource.github.io/daq-config-server/v0.2.0/"
   }
