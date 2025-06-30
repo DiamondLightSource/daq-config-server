@@ -59,8 +59,8 @@ config:
       enabled: true
       level: "DEBUG"
 
-volumes: []
 volumeMounts: []
+volumes: []
 nodeSelector: {}
 tolerations: []
 affinity: {}
