@@ -59,7 +59,6 @@ config:
       enabled: true
       level: "DEBUG"
 
-
 volumeMounts: []
 volumes: []
 nodeSelector: {}
