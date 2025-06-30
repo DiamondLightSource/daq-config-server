@@ -10,14 +10,7 @@ from fastapi.testclient import TestClient
 from daq_config_server import app
 from daq_config_server.app import ValidAcceptHeaders
 from daq_config_server.constants import ENDPOINTS
-from tests.constants import (
-    TEST_BEAMLINE_PARAMETERS_PATH,
-    TEST_FILE_IN_BAD_DIR,
-    TEST_FILE_IN_GOOD_DIR,
-    TEST_FILE_NOT_ON_WHITELIST_PATH,
-    TEST_GOOD_JSON_PATH,
-    TEST_INVALID_FILE_PATH,
-)
+from tests.constants import TestDataPaths
 
 
 @pytest.fixture
@@ -46,7 +39,7 @@ async def _assert_get_and_response(
 
 
 async def test_get_configuration_on_plain_text_file(mock_app: TestClient):
-    file_path = TEST_BEAMLINE_PARAMETERS_PATH
+    file_path = TestDataPaths.TEST_BEAMLINE_PARAMETERS_PATH
     with open(file_path) as f:
         expected_contents = f.read()
 
@@ -64,7 +57,7 @@ async def test_get_configuration_on_plain_text_file(mock_app: TestClient):
 
 
 async def test_get_configuration_raw_bytes(mock_app: TestClient):
-    file_path = TEST_BEAMLINE_PARAMETERS_PATH
+    file_path = TestDataPaths.TEST_BEAMLINE_PARAMETERS_PATH
     with open(file_path, "rb") as f:
         expected_contents = f.read()
     expected_type = ValidAcceptHeaders.RAW_BYTES
@@ -83,7 +76,7 @@ async def test_get_configuration_raw_bytes(mock_app: TestClient):
 
 
 def test_get_configuration_exception_on_invalid_file(mock_app: TestClient):
-    file_path = TEST_INVALID_FILE_PATH
+    file_path = TestDataPaths.TEST_INVALID_FILE_PATH
     response = mock_app.get(
         f"{ENDPOINTS.CONFIG}/{file_path}", headers=ACCEPT_HEADER_DEFAULT
     )
@@ -91,7 +84,7 @@ def test_get_configuration_exception_on_invalid_file(mock_app: TestClient):
 
 
 async def test_get_configuration_on_json_file(mock_app: TestClient):
-    file_path = TEST_GOOD_JSON_PATH
+    file_path = TestDataPaths.TEST_GOOD_JSON_PATH
     with open(file_path) as f:
         expected_contents = json.load(f)
     expected_type = ValidAcceptHeaders.JSON
@@ -128,25 +121,25 @@ async def test_health_check_returns_code_200(
 
 
 def test_validate_path_against_whitelist_on_valid_file(mock_app: TestClient):
-    file_path = TEST_BEAMLINE_PARAMETERS_PATH
+    file_path = TestDataPaths.TEST_BEAMLINE_PARAMETERS_PATH
     response = mock_app.get(f"{ENDPOINTS.CONFIG}/{file_path}")
     assert response.status_code == status.HTTP_200_OK
 
 
 def test_validate_path_against_whitelist_on_invalid_file(mock_app: TestClient):
-    file_path = TEST_FILE_NOT_ON_WHITELIST_PATH
+    file_path = TestDataPaths.TEST_FILE_NOT_ON_WHITELIST_PATH
     response = mock_app.get(f"{ENDPOINTS.CONFIG}/{file_path}")
     assert response.status_code == status.HTTP_403_FORBIDDEN
 
 
 def test_validate_path_against_whitelist_on_file_in_invalid_dir(mock_app: TestClient):
-    file_path = TEST_FILE_IN_BAD_DIR
+    file_path = TestDataPaths.TEST_FILE_IN_BAD_DIR
     response = mock_app.get(f"{ENDPOINTS.CONFIG}/{file_path}")
     assert response.status_code == status.HTTP_403_FORBIDDEN
 
 
 def test_validate_path_against_whitelist_on_file_in_valid_dir(mock_app: TestClient):
-    file_path = TEST_FILE_IN_GOOD_DIR
+    file_path = TestDataPaths.TEST_FILE_IN_GOOD_DIR
     response = mock_app.get(f"{ENDPOINTS.CONFIG}/{file_path}")
     assert response.status_code == status.HTTP_200_OK
 
