@@ -5,9 +5,7 @@ from unittest.mock import MagicMock, patch
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
 
-from daq_config_server.__main__ import (
-    __version__,
-)
+from daq_config_server.__main__ import __version__, main
 from daq_config_server.app import log_request_details
 from daq_config_server.app import main as main_app
 from tests.constants import TEST_CONFIG_PATH
@@ -26,6 +24,13 @@ def test_logging_with_mounted_config(
     with patch("daq_config_server.app.CONFIG_PATH", new=TEST_CONFIG_PATH):
         main_app()
     mock_graylog_setup.assert_called_once()
+
+
+@patch("daq_config_server.__main__.main_app")
+@patch("daq_config_server.__main__.ArgumentParser.parse_args")
+def test_main(mock_parse_args: MagicMock, mock_main: MagicMock):
+    main()
+    mock_main.assert_called_once()
 
 
 @patch("daq_config_server.app.uvicorn.run")
