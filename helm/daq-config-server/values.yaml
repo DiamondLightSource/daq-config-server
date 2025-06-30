@@ -48,6 +48,17 @@ readinessProbe:
     path: /healthz
     port: http
 
+# Send logs to the dodal graylog stream for now until a more suitable stream exists
+config:
+  logging_config:
+    graylog:
+      enabled: true
+      url: http://graylog-log-target.diamond.ac.uk:12231/
+      level: "INFO"
+    stream:
+      enabled: true
+      level: "DEBUG"
+
 volumes:
   - name: dls_sw
     hostPath:

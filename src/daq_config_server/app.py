@@ -1,24 +1,47 @@
 import json
+import logging
 import os
+from collections.abc import Awaitable, Callable
 from enum import StrEnum
 from pathlib import Path
 
 import uvicorn
+import yaml
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse, Response
 from starlette import status
 
+from daq_config_server.config import Config
 from daq_config_server.constants import (
     ENDPOINTS,
 )
+from daq_config_server.log import set_up_logging
 from daq_config_server.whitelist import get_whitelist
+
+# See https://github.com/DiamondLightSource/daq-config-server/issues/105
+# to make this path configurable
+CONFIG_PATH = "/etc/config/config.yaml"
+
+LOGGER = logging.getLogger(__name__)
+
+
+async def log_request_details(
+    request: Request, call_next: Callable[[Request], Awaitable[Response]]
+) -> Response:
+    LOGGER.debug(
+        f"method: {request.method} url: {request.url} body: {await request.body()}",
+    )
+    response = await call_next(request)
+    return response
+
 
 app = FastAPI(
     title="DAQ config server",
     description="""For reading files stored on /dls_sw from another container""",
 )
 origins = ["*"]
+app.middleware("http")(log_request_details)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
@@ -142,4 +165,14 @@ def health_check():
 
 
 def main():
+    # Set up logging with defaults, or using config.yaml if it exists
+    if os.path.isfile(CONFIG_PATH):
+        with open(CONFIG_PATH) as f:
+            data = yaml.safe_load(f)
+            config = Config(**data)
+    else:
+        config = Config()
+
+    set_up_logging(config.logging_config)
+
     uvicorn.run(app="daq_config_server.app:app", host="0.0.0.0", port=8555)
