@@ -10,3 +10,8 @@ whitelist_files:
 #For long-term directories with frequently changing files
 whitelist_dirs:
 - /tests/test_data/
+- /dls_sw/i02-1/software/daq_configuration/
+- /dls_sw/i03/software/daq_configuration/
+- /dls_sw/i04/software/daq_configuration/
+- /dls_sw/i19-1/software/daq_configuration/
+- /dls_sw/i19-2/software/daq_configuration/
