@@ -114,8 +114,8 @@ class ConfigServer:
 
         if content_type != accept_header:
             self._log.warning(
-                f"Server failed to parse the file as requested. Requested \
-                {accept_header} but response came as content-type {content_type}"
+                f"Server failed to parse the file as requested. Requested "
+                f"{accept_header} but response came as content-type {content_type}"
             )
 
         try:
