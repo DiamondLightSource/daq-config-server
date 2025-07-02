@@ -115,9 +115,11 @@ def get_configuration(
     if not path_is_whitelisted(file_path):
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
-            detail=f"{file_path} is not a whitelisted file. Please make sure it \
-            exists in https://raw.githubusercontent.com/DiamondLightSource/\
-            daq-config-server/refs/heads/main/whitelist.yaml",
+            detail=(
+                f"{file_path} is not a whitelisted file. Please make sure it "
+                "exists in https://raw.githubusercontent.com/DiamondLightSource/"
+                "daq-config-server/refs/heads/main/whitelist.yaml"
+            ),
         )
 
     if not file_path.is_file():
