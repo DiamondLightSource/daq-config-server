@@ -8,10 +8,11 @@
 
 A service to read files on Diamond's filesystem from a BlueAPI container. Currently this service is only able to read files on `/dls_sw/`. Writing to configuration files will come in a future release.
 
-|  Source  |     <https://github.com/DiamondLightSource/daq-config-server>      |
-| :------: | :----------------------------------------------------------------: |
-|  Docker  |  `docker run ghcr.io/DiamondLightSource/daq-config-server:latest`  |
-| Releases | <https://github.com/DiamondLightSource/daq-config-server/releases> |
+|    Source     |     <https://github.com/DiamondLightSource/daq-config-server>      |
+| :-----------: | :----------------------------------------------------------------: |
+|    Docker     |  `docker run ghcr.io/DiamondLightSource/daq-config-server:latest`  |
+|   Releases    | <https://github.com/DiamondLightSource/daq-config-server/releases> |
+| Documentation |       https://DiamondLightSource.github.io/daq-config-server       |
 
 Here is a minimal example to read a file from the centrally hosted service after installing this package
 
@@ -23,8 +24,8 @@ config_server = ConfigServer("https://daq-config.diamond.ac.uk")
 file_contents = config_server.get_file_contents({ABSOLUTE_PATH_TO_CONFIG_FILE}, desired_return_type=str)
 
 ```
-The output will come out as a raw string - you should format it as required in your own code. You may also request that the file contents is returned as a `dict` or in `bytes` - this will raise an http exception if the file cannot be converted to that type. To be able to read a file, you must first add it to the [whitelist](https://github.com/DiamondLightSource/daq-config-server/blob/main/whitelist.yaml).
 
+The output will come out as a raw string - you should format it as required in your own code. You may also request that the file contents is returned as a `dict` or in `bytes` - this will raise an http exception if the file cannot be converted to that type. To be able to read a file, you must first add it to the [whitelist](https://github.com/DiamondLightSource/daq-config-server/blob/main/whitelist.yaml).
 
 ## Testing and deployment
 
@@ -47,5 +48,7 @@ kubectl port-forward service/daq-config-server-svc 8555
 ```
 
 after which you should be able to access the API on `http://localhost:8555/docs`
+
+See https://DiamondLightSource.github.io/daq-config-server for more detailed documentation.
 
 <!-- README only content. Anything below this line won't be included in index.md -->
