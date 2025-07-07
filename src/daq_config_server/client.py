@@ -1,8 +1,7 @@
 import operator
-from collections import defaultdict
 from logging import Logger, getLogger
 from pathlib import Path
-from typing import Any, TypeVar
+from typing import Any, TypeVar, get_origin
 
 import requests
 from cachetools import TTLCache, cachedmethod
@@ -17,17 +16,16 @@ from .constants import ENDPOINTS
 T = TypeVar("T", str, bytes, dict[Any, Any])
 
 
-return_type_to_mime_type: dict[type, ValidAcceptHeaders] = defaultdict(
-    lambda: ValidAcceptHeaders.PLAIN_TEXT,
-    {
-        dict[Any, Any]: ValidAcceptHeaders.JSON,
-        str: ValidAcceptHeaders.PLAIN_TEXT,
-        bytes: ValidAcceptHeaders.RAW_BYTES,
-    },
-)
-
-
 class TypeConversionException(Exception): ...
+
+
+def _get_mime_type(requested_return_type: type[T]) -> ValidAcceptHeaders:
+    # Get correct mapping for typed dict or plain dict
+    if get_origin(requested_return_type) is dict or requested_return_type is dict:
+        return ValidAcceptHeaders.JSON
+    elif requested_return_type is bytes:
+        return ValidAcceptHeaders.RAW_BYTES
+    return ValidAcceptHeaders.PLAIN_TEXT
 
 
 class ConfigServer:
@@ -143,22 +141,24 @@ class ConfigServer:
         Get contents of a file from the config server in the format specified.
         Optionally look for cached result before making request.
 
-        Current supported return types are: str, bytes, dict[str, str]. This option will
-        determine how the server attempts to decode the file
+        Current supported return types are: str, bytes, dict. This option will
+        determine how the server attempts to decode the file. Note that only untyped
+        dictionaries are currently supported
 
         Args:
             file_path: Path to the file.
-            requested_response_format: Specify how to parse the response.
-            desired_return_type: If true, make a request and store response in cache,
+            desired_return_type: Specify how to parse the response.
+            reset_cached_result: If true, make a request and store response in cache,
                                 otherwise look for cached response before making
                                 new request
         Returns:
             The file contents, in the format specified.
         """
         file_path = Path(file_path)
-        accept_header = return_type_to_mime_type[desired_return_type]
 
-        return TypeAdapter(desired_return_type).validate_python(  # type: ignore - to allow any dict
+        accept_header = _get_mime_type(desired_return_type)
+
+        return TypeAdapter(desired_return_type).validate_python(
             self._get(
                 ENDPOINTS.CONFIG,
                 accept_header,
