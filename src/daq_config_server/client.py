@@ -1,8 +1,7 @@
 import operator
-from collections import defaultdict
 from logging import Logger, getLogger
 from pathlib import Path
-from typing import Any, TypeVar
+from typing import Any, TypeVar, get_origin
 
 import requests
 from cachetools import TTLCache, cachedmethod
@@ -17,17 +16,16 @@ from .constants import ENDPOINTS
 T = TypeVar("T", str, bytes, dict[Any, Any])
 
 
-return_type_to_mime_type: dict[type, ValidAcceptHeaders] = defaultdict(
-    lambda: ValidAcceptHeaders.PLAIN_TEXT,
-    {
-        dict[Any, Any]: ValidAcceptHeaders.JSON,
-        str: ValidAcceptHeaders.PLAIN_TEXT,
-        bytes: ValidAcceptHeaders.RAW_BYTES,
-    },
-)
-
-
 class TypeConversionException(Exception): ...
+
+
+def _get_mime_type(requested_return_type: type[T]) -> ValidAcceptHeaders:
+    # Get correct mapping for typed dict or plain dict
+    if get_origin(requested_return_type) is dict or requested_return_type is dict:
+        return ValidAcceptHeaders.JSON
+    elif requested_return_type is bytes:
+        return ValidAcceptHeaders.RAW_BYTES
+    return ValidAcceptHeaders.PLAIN_TEXT
 
 
 class ConfigServer:
@@ -143,7 +141,7 @@ class ConfigServer:
         Get contents of a file from the config server in the format specified.
         Optionally look for cached result before making request.
 
-        Current supported return types are: str, bytes, dict[Any, Any]. This option will
+        Current supported return types are: str, bytes, dict. This option will
         determine how the server attempts to decode the file. Note that only untyped
         dictionaries are currently supported
 
@@ -158,15 +156,9 @@ class ConfigServer:
         """
         file_path = Path(file_path)
 
-        # TypeAdapter requires a fully specified type, which can't be enforced by type
-        # checker, so convert here
-        corrected_desired_return_type = (
-            dict[Any, Any] if desired_return_type is dict else desired_return_type
-        )
+        accept_header = _get_mime_type(desired_return_type)
 
-        accept_header = return_type_to_mime_type[corrected_desired_return_type]
-
-        return TypeAdapter(corrected_desired_return_type).validate_python(  # type: ignore - to allow any dict
+        return TypeAdapter(desired_return_type).validate_python(
             self._get(
                 ENDPOINTS.CONFIG,
                 accept_header,

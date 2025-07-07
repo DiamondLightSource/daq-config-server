@@ -8,7 +8,12 @@ from fastapi import status
 from httpx import Response
 
 from daq_config_server.app import ValidAcceptHeaders
-from daq_config_server.client import ConfigServer, TypeConversionException
+from daq_config_server.client import (
+    ConfigServer,
+    T,
+    TypeConversionException,
+    _get_mime_type,
+)
 from daq_config_server.constants import ENDPOINTS
 from daq_config_server.testing import make_test_response
 
@@ -123,3 +128,17 @@ def test_get_file_contents_with_untyped_dict(mock_request: MagicMock):
     assert server.get_file_contents(test_path, desired_return_type=dict) == {
         "good_dict": "test"
     }
+
+
+@pytest.mark.parametrize(
+    "input, expected",
+    [
+        (dict, ValidAcceptHeaders.JSON),
+        (dict[str, bytes], ValidAcceptHeaders.JSON),
+        (dict[Any, Any], ValidAcceptHeaders.JSON),
+        (str, ValidAcceptHeaders.PLAIN_TEXT),
+        (bytes, ValidAcceptHeaders.RAW_BYTES),
+    ],
+)
+def test_get_mime_type(input: type[T], expected: ValidAcceptHeaders):
+    assert _get_mime_type(input) == expected
