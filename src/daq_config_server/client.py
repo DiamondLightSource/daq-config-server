@@ -143,22 +143,30 @@ class ConfigServer:
         Get contents of a file from the config server in the format specified.
         Optionally look for cached result before making request.
 
-        Current supported return types are: str, bytes, dict[str, str]. This option will
-        determine how the server attempts to decode the file
+        Current supported return types are: str, bytes, dict[Any, Any]. This option will
+        determine how the server attempts to decode the file. Note that only untyped
+        dictionaries are currently supported
 
         Args:
             file_path: Path to the file.
-            requested_response_format: Specify how to parse the response.
-            desired_return_type: If true, make a request and store response in cache,
+            desired_return_type: Specify how to parse the response.
+            reset_cached_result: If true, make a request and store response in cache,
                                 otherwise look for cached response before making
                                 new request
         Returns:
             The file contents, in the format specified.
         """
         file_path = Path(file_path)
-        accept_header = return_type_to_mime_type[desired_return_type]
 
-        return TypeAdapter(desired_return_type).validate_python(  # type: ignore - to allow any dict
+        # TypeAdapter requires a fully specified type, which can't be enforced by type
+        # checker, so convert here
+        corrected_desired_return_type = (
+            dict[Any, Any] if desired_return_type is dict else desired_return_type
+        )
+
+        accept_header = return_type_to_mime_type[corrected_desired_return_type]
+
+        return TypeAdapter(corrected_desired_return_type).validate_python(  # type: ignore - to allow any dict
             self._get(
                 ENDPOINTS.CONFIG,
                 accept_header,

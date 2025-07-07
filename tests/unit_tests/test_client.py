@@ -109,3 +109,17 @@ def test_bad_responses_with_details_raises_error(mock_request: MagicMock):
     with pytest.raises(requests.exceptions.HTTPError):
         server.get_file_contents(test_path)
     server._log.error.assert_called_once_with(detail)
+
+
+@patch("daq_config_server.client.requests.get")
+def test_get_file_contents_with_untyped_dict(mock_request: MagicMock):
+    content_type = ValidAcceptHeaders.JSON
+    good_json = '{"good_dict":"test"}'
+    mock_request.return_value = make_test_response(
+        good_json, content_type=content_type, json_value=good_json
+    )
+    url = "url"
+    server = ConfigServer(url)
+    assert server.get_file_contents(test_path, desired_return_type=dict) == {
+        "good_dict": "test"
+    }
