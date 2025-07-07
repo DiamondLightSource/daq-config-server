@@ -64,20 +64,6 @@ def test_read_good_json_as_dict(server: ConfigServer):
 
 
 @pytest.mark.requires_local_server
-def test_read_good_json_as_untyped_dict(server: ConfigServer):
-    with open(TestDataPaths.TEST_GOOD_JSON_PATH) as f:
-        expected_response = json.loads(f.read())
-
-    assert (
-        server.get_file_contents(
-            ServerFilePaths.GOOD_JSON_FILE,
-            dict,
-        )
-        == expected_response
-    )
-
-
-@pytest.mark.requires_local_server
 def test_bad_json_gives_http_error_with_details(server: ConfigServer):
     file_path = ServerFilePaths.BAD_JSON_FILE
     file_name = os.path.basename(file_path)
