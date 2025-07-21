@@ -31,7 +31,7 @@ def _get_mime_type(requested_return_type: type[T]) -> ValidAcceptHeaders:
 class ConfigServer:
     def __init__(
         self,
-        url: str,
+        url: str = "https://daq-config.diamond.ac.uk",
         log: Logger | None = None,
         cache_size: int = 10,
         cache_lifetime_s: int = 3600,
