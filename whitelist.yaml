@@ -18,3 +18,4 @@ whitelist_dirs:
 - /dls_sw/i23/software/daq_configuration/
 - /dls_sw/i24/software/daq_configuration/
 - /dls_sw/i04-1/software/daq_configuration/
+- /dls_sw/i10/software/gda/workspace_git/gda-diamond.git/configurations/i10-shared/
