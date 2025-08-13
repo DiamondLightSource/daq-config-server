@@ -3,8 +3,30 @@ kind: Component
 metadata:
   name: daq-config-server
   title: daq-config-server
-  description: A service to read files on dls_sw from a blueapi container
+  description: Service to read DAQ configuration from a blueapi container
+  annotations:
+    github.com/project-slug: DiamondLightSource/daq-config-server
+    diamond.ac.uk/viewdocs-url: https://diamondlightsource.github.io/daq-config-server
 spec:
   type: service
-  lifecycle: experimental
-  owner: group:default/data-acquisition
+  lifecycle: production
+  owner: group:data-acquisition
+  system: athena
+  providesApis:
+    - daqConfigControl
+---
+apiVersion: backstage.io/v1alpha1
+kind: API
+metadata:
+  name: daqConfigControl
+  title: Athena DAQ Config Control
+  description: REST API for getting configuration from the service
+  annotations:
+    github.com/project-slug: DiamondLightSource/blueapi
+spec:
+  type: openapi
+  lifecycle: production
+  owner: group:data-acquisition
+  definition:
+    $text: ./docs/reference/openapi.yaml
+---
