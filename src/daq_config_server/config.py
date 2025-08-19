@@ -21,5 +21,10 @@ class LoggingConfig(BaseModel):
     stream_log: StreamLogConfig = StreamLogConfig()
 
 
+class UvicornConfig(BaseModel):
+    workers: int = 2
+
+
 class Config(BaseModel):
     logging_config: LoggingConfig = LoggingConfig()
+    uvicorn_config: UvicornConfig = UvicornConfig()

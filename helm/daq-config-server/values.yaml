@@ -50,6 +50,8 @@ readinessProbe:
 
 # Send logs to the dodal graylog stream for now until a more suitable stream exists
 config:
+  uvicorn_config:
+    workers: 2
   logging_config:
     graylog:
       enabled: true
