@@ -18,10 +18,10 @@ readme = "README.md"
 requires-python = ">=3.11"
 
 dependencies = [
-    "pyyaml",      
+    "pyyaml",
     "fastapi",
     "uvicorn",
-    "redis", 
+    "redis",
     "hiredis",
     "cachetools",
     "graypy",
@@ -78,8 +78,10 @@ markers = """
 """
 
 # https://iscinumpy.gitlab.io/post/bound-version-constraints/#watch-for-warnings
-filterwarnings = ["error",
-"ignore:Exception ignored in.*sqlite3.Connection:pytest.PytestUnraisableExceptionWarning"] #See https://github.com/pytest-dev/pytest-cov/issues/694
+filterwarnings = [
+    "error",
+    "ignore:Exception ignored in.*sqlite3.Connection:pytest.PytestUnraisableExceptionWarning",
+] #See https://github.com/pytest-dev/pytest-cov/issues/694
 
 # Doctest python code in docs, python code in src docstrings, test functions in tests
 testpaths = "docs src tests"
@@ -98,7 +100,7 @@ legacy_tox_ini = """
 [tox]
 skipsdist=True
 
-[testenv:{pre-commit,type-checking,unit_tests,docs}]
+[testenv:{pre-commit,type-checking,unit_tests,docs,system_tests}]
 # Don't create a virtualenv for the command, requires tox-direct plugin
 direct = True
 passenv = *
