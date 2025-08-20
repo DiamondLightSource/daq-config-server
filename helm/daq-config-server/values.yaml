@@ -1,4 +1,4 @@
-replicaCount: 1
+replicaCount: 2
 
 image:
   repository: ghcr.io/diamondlightsource/daq-config-server
@@ -37,7 +37,13 @@ ingress:
      hosts:
        - daq-config.diamond.ac.uk
 
-resources: {}
+resources:
+  limits:
+    cpu: 1
+    memory: 2Gi
+  requests:
+    cpu: 500m
+    memory: 1Gi
 
 livenessProbe:
   httpGet:
@@ -50,6 +56,8 @@ readinessProbe:
 
 # Send logs to the dodal graylog stream for now until a more suitable stream exists
 config:
+  uvicorn_config:
+    workers: 2
   logging_config:
     graylog:
       enabled: true
@@ -63,4 +71,3 @@ volumeMounts: []
 volumes: []
 nodeSelector: {}
 tolerations: []
-affinity: {}

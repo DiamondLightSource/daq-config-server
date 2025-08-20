@@ -177,4 +177,9 @@ def main():
 
     set_up_logging(config.logging_config)
 
-    uvicorn.run(app="daq_config_server.app:app", host="0.0.0.0", port=8555)
+    uvicorn.run(
+        app="daq_config_server.app:app",
+        host="0.0.0.0",
+        port=8555,
+        workers=config.uvicorn_config.workers,
+    )
