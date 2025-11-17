@@ -6,6 +6,15 @@
 #For long-term configuration files
 whitelist_files:
 - /tests/test_data/beamline_parameters.txt
+# The following filepaths should be un-whitelisted and the files moved to **/daq_configuration/
+- /dls_sw/i03/software/gda/configurations/i03-config/xml/jCameraManZoomLevels.xml
+- /dls_sw/i04/software/bluesky/scratch/jCameraManZoomLevels.xml
+- /dls_sw/i19-1/software/gda_versions/gda/config/xml/jCameraManZoomLevels.xml
+- /dls_sw/i24/software/gda_versions/gda/config/xml/jCameraManZoomLevels.xml
+- /dls_sw/i03/software/gda_versions/var/display.configurations
+- /dls_sw/i04/software/bluesky/scratch/display.configuration
+- /dls_sw/i19-1/software/daq_configuration/domain/display.configuration
+- /dls_sw/i24/software/gda_versions/var/display.configuration
 
 #For long-term directories with frequently changing files
 whitelist_dirs:
