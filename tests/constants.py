@@ -26,6 +26,14 @@ class TestDataPaths:
 
     TEST_INVALID_FILE_PATH = TEST_DATA_DIR_PATH.joinpath("invalid_file")
 
+    TEST_GOOD_LUT_PATH = TEST_DATA_DIR_PATH.joinpath("test_good_lut.txt")
+
+    TEST_BAD_LUT_PATH = TEST_DATA_DIR_PATH.joinpath("test_bad_lut.txt")
+
+    TEST_GOOD_DISPLAY_CONFIG_PATH = TEST_DATA_DIR_PATH.joinpath(
+        "test_display.configuration"
+    )
+
 
 # These are the file locations accessible from the server running in a container
 @dataclass
