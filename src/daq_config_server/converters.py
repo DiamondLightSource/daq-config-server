@@ -138,7 +138,6 @@ FILE_TO_CONVERTER_MAP: dict[str, Callable[[str], Any]] = {
 def get_converted_file_contents(file_path: Path) -> Any:
     with file_path.open("r", encoding="utf-8") as f:
         raw_contents = f.read()
-    print(str(file_path))
     if (converter := FILE_TO_CONVERTER_MAP.get(str(file_path))) is not None:
         return converter(raw_contents)
     return json.loads(raw_contents)
