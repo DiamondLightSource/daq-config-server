@@ -34,6 +34,8 @@ class TestDataPaths:
         "test_display.configuration"
     )
 
+    TEST_GOOD_XML_PATH = TEST_DATA_DIR_PATH.joinpath("test_xml.xml")
+
 
 # These are the file locations accessible from the server running in a container
 @dataclass
