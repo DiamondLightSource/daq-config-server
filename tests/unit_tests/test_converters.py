@@ -1,3 +1,4 @@
+import json
 from pathlib import Path
 
 import pytest
@@ -5,6 +6,7 @@ from src.daq_config_server.converters import (
     _parse_lut_to_dict,
     display_config_to_dict,
     get_converted_file_contents,
+    xml_to_dict,
 )
 
 from daq_config_server.converters import FILE_TO_CONVERTER_MAP
@@ -18,7 +20,7 @@ def test_all_files_in_dict_can_be_parsed_with_no_errors():
         get_converted_file_contents(Path(filename))
 
 
-def test_parse_lut_to_dict_gives_expected_result():
+def test_parse_lut_to_dict_gives_expected_result_and_can_be_jsonified():
     with open(TestDataPaths.TEST_GOOD_LUT_PATH) as f:
         contents = f.read()
     expected = {
@@ -45,10 +47,9 @@ def test_parse_lut_to_dict_gives_expected_result():
             },
         ],
     }
-    assert (
-        _parse_lut_to_dict(contents, ("energy", "eV", int), ("gap", "mm", float))
-        == expected
-    )
+    result = _parse_lut_to_dict(contents, ("energy", "eV", int), ("gap", "mm", float))
+    assert result == expected
+    json.dumps(result)
 
 
 def test_parsing_bad_lut_causes_error():
@@ -58,7 +59,7 @@ def test_parsing_bad_lut_causes_error():
         _parse_lut_to_dict(contents, ("energy", "eV", int), ("gap", "mm", float))
 
 
-def test_display_config_to_dict_gives_expected_result():
+def test_display_config_to_dict_gives_expected_result_and_can_be_jsonified():
     with open(TestDataPaths.TEST_GOOD_DISPLAY_CONFIG_PATH) as f:
         contents = f.read()
     expected = {
@@ -79,4 +80,35 @@ def test_display_config_to_dict_gives_expected_result():
             "topLeftY": 283,
         },
     }
-    assert display_config_to_dict(contents) == expected
+    result = display_config_to_dict(contents)
+    assert result == expected
+    json.dumps(result)
+
+
+def test_xml_to_dict_gives_expected_result_and_can_be_jsonified():
+    with open(TestDataPaths.TEST_GOOD_XML_PATH) as f:
+        contents = f.read()
+    expected = {
+        "JCameraManSettings": {
+            "levels": {
+                "zoomLevel": [
+                    {
+                        "level": "1.0",
+                        "micronsPerXPixel": "2.432",
+                        "micronsPerYPixel": "2.432",
+                        "position": "0",
+                    },
+                    {
+                        "level": "1.5",
+                        "micronsPerXPixel": "1.888",
+                        "micronsPerYPixel": "1.888",
+                        "position": "16.3",
+                    },
+                ],
+            },
+            "tolerance": "1.0",
+        },
+    }
+    result = xml_to_dict(contents)
+    assert result == expected
+    json.dumps(result)
