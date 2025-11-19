@@ -1,4 +1,3 @@
-import json
 import logging
 import os
 from collections.abc import Awaitable, Callable
@@ -10,6 +9,7 @@ import yaml
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse, Response
+from src.daq_config_server.converters import get_converted_file_contents
 from starlette import status
 
 from daq_config_server.config import Config
@@ -134,8 +134,7 @@ def get_configuration(
     try:
         match accept:
             case ValidAcceptHeaders.JSON:
-                with file_path.open("r", encoding="utf-8") as f:
-                    content = json.loads(f.read())
+                content = get_converted_file_contents(file_path)
                 return JSONResponse(
                     content=content,
                 )
