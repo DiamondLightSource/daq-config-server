@@ -12,6 +12,10 @@ class TestDataPaths:
         "beamline_parameters.txt"
     )
 
+    TEST_BAD_BEAMLINE_PARAMETERS_PATH = TEST_DATA_DIR_PATH.joinpath(
+        "bad_beamline_parameters.txt"
+    )
+
     TEST_BAD_JSON_PATH = TEST_DATA_DIR_PATH.joinpath("test_bad_json")
 
     TEST_GOOD_JSON_PATH = TEST_DATA_DIR_PATH.joinpath("test_good_json.json")
@@ -35,6 +39,10 @@ class TestDataPaths:
     )
 
     TEST_GOOD_XML_PATH = TEST_DATA_DIR_PATH.joinpath("test_xml.xml")
+
+    EXPECTED_BEAMLINE_PARAMETERS_JSON_PATH = TEST_DATA_DIR_PATH.joinpath(
+        "expected_beamline_parameters.json"
+    )
 
 
 # These are the file locations accessible from the server running in a container
