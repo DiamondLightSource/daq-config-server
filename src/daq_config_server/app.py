@@ -108,7 +108,7 @@ def get_configuration(
 
     if not file_path.is_absolute():
         raise HTTPException(
-            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
             detail=(f"Requested filepath {file_path} must be an absolute path"),
         )
 
@@ -148,7 +148,7 @@ def get_configuration(
                     content = f.read()
     except Exception as e:
         raise HTTPException(
-            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
             detail=(
                 f"Failed to convert {file_name} to {accept}. "
                 "Try requesting this file as a different type."

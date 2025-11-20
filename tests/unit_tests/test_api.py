@@ -111,7 +111,7 @@ async def test_get_configuration_gives_http_422_on_failed_conversion(
     response = mock_app.get(
         f"{ENDPOINTS.CONFIG}/{file_path}", headers=ACCEPT_HEADER_DEFAULT
     )
-    assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+    assert response.status_code == status.HTTP_422_UNPROCESSABLE_CONTENT
 
 
 async def test_health_check_returns_code_200(
@@ -147,4 +147,4 @@ def test_validate_path_against_whitelist_on_file_in_valid_dir(mock_app: TestClie
 def test_get_configuration_on_non_absolute_filepath(mock_app: TestClient):
     file_path = "relative_path"
     response = mock_app.get(f"{ENDPOINTS.CONFIG}/{file_path}")
-    assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+    assert response.status_code == status.HTTP_422_UNPROCESSABLE_CONTENT
