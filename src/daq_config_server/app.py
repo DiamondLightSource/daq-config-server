@@ -9,13 +9,13 @@ import yaml
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse, Response
-from src.daq_config_server.converters import get_converted_file_contents
 from starlette import status
 
 from daq_config_server.config import Config
 from daq_config_server.constants import (
     ENDPOINTS,
 )
+from daq_config_server.converters import get_converted_file_contents
 from daq_config_server.log import set_up_logging
 from daq_config_server.whitelist import get_whitelist
 
