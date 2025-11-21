@@ -5,6 +5,7 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
+import daq_config_server.converters._file_converter_map as file_converter_map
 from daq_config_server.converters._converter_utils import (
     parse_lut_to_dict,
     parse_value,
@@ -15,7 +16,6 @@ from daq_config_server.converters._converters import (
     display_config_to_dict,
     xml_to_dict,
 )
-from daq_config_server.converters._file_converter_map import FILE_TO_CONVERTER_MAP
 from daq_config_server.converters.convert import get_converted_file_contents
 from tests.constants import (
     TestDataPaths,
@@ -23,8 +23,20 @@ from tests.constants import (
 
 
 def test_all_files_in_dict_can_be_parsed_with_no_errors():
-    for filename in FILE_TO_CONVERTER_MAP.keys():
+    for filename in file_converter_map.FILE_TO_CONVERTER_MAP.keys():
         get_converted_file_contents(Path(filename))
+
+
+def test_get_converted_file_contents_uses_converter_if_file_in_map():
+    file_to_convert = TestDataPaths.TEST_GOOD_XML_PATH
+    mock_convert_function = MagicMock()
+    with patch(
+        "daq_config_server.converters._file_converter_map.FILE_TO_CONVERTER_MAP",
+        {str(file_to_convert): mock_convert_function},
+    ):
+        get_converted_file_contents(file_to_convert)
+
+    mock_convert_function.assert_called_once()
 
 
 def test_parse_lut_to_dict_gives_expected_result_and_can_be_jsonified():
@@ -135,20 +147,6 @@ def test_bad_beamline_parameters_causes_error_to_be_raised():
         contents = f.read()
     with pytest.raises(ValueError):
         beamline_parameters_to_dict(contents)
-
-
-@patch("daq_config_server.converters._converters.xml_to_dict")
-@patch(
-    "daq_config_server.converters._file_converter_map.FILE_TO_CONVERTER_MAP",
-    {str(TestDataPaths.TEST_GOOD_XML_PATH): xml_to_dict},
-)
-def test_get_converted_file_contents_uses_converter_if_file_in_map(
-    patch_converter: MagicMock,
-):
-    file_path = TestDataPaths.TEST_GOOD_XML_PATH
-    get_converted_file_contents(file_path)
-
-    assert patch_converter.assert_called_once_with(file_path)
 
 
 def test_remove_comments_works_as_expected():
