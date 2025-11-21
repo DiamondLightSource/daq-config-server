@@ -24,3 +24,9 @@ For [security reasons](../explanations/whitelist_info.md), only files existing o
 # Reading sensitive information
 
 If you need to read a file which contains sensitive information, or `dls-dasc` doesn't have the permissions to read your file, you should encrypt this file as a [sealed secret](https://github.com/bitnami-labs/sealed-secrets) on your beamline cluster, and mount this in your BlueAPI service.
+
+# File converters
+
+Converters can be used to turn a file into a standard format server-side, reducing the complexity of reading config files client-side. Available converters exist [here](https://github.com/DiamondLightSource/daq-config-server/blob/main/converters._converters.py) - see if there's a suitable converter you can use before adding your own. [This dictionary](https://github.com/DiamondLightSource/daq-config-server/blob/main/converters._file_converter_map.py) maps files to converters. Add the path of your config file and a suitable converter to this dictionary and it will automatically be used by the config server when a request for that file is made.
+
+A request for `str` or `bytes` will fetch the raw file with no conversion.
