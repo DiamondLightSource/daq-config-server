@@ -26,21 +26,27 @@ def parse_value(value: str, convert_to: type | None = None) -> Any:
 
 def parse_lut_to_dict(
     contents: str,
-    *params: tuple[str, str, type | None],
-) -> dict[str, dict[str, str] | list[dict[str, Any]]]:
-    data: list[dict[str, Any]] = []
+    *params: tuple[str, type | None],
+) -> dict[str, list[str] | list[list[Any]]]:
+    """Converts a lookup table to a dict, containing the names of each column and
+    the rows as a 2D list.
+
+    Any args after the contents should be a tuple of (column name, type | None).
+    If a type is provided, the values in that column will be converted to that type.
+    Otherwise, the type will be inferred. Please include units in the column name.
+    """
+    data: list[list[Any]] = []
+    column_names = [param[0] for param in params]
+    types = [param[1] for param in params]
     data_dict = {
-        "units": {key: unit for param in params for key, unit in [param[:2]]},
+        "column_names": column_names,
         "data": data,
     }
     for line in remove_comments(contents.splitlines()):
         if line.startswith("Units"):
             continue
         data.append(
-            {
-                params[i][0]: parse_value(value, params[i][2])
-                for i, value in enumerate(line.split())
-            }
+            [parse_value(value, types[i]) for i, value in enumerate(line.split())]
         )
     data_dict["data"] = data
     return data_dict

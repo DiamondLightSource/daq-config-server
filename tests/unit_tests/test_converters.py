@@ -43,30 +43,11 @@ def test_parse_lut_to_dict_gives_expected_result_and_can_be_jsonified():
     with open(TestDataPaths.TEST_GOOD_LUT_PATH) as f:
         contents = f.read()
     expected = {
-        "units": {
-            "energy": "eV",
-            "gap": "mm",
-        },
-        "data": [
-            {
-                "energy": 5700,
-                "gap": 5.4606,
-            },
-            {
-                "energy": 5760,
-                "gap": 5.5,
-            },
-            {
-                "energy": 6000,
-                "gap": 5.681,
-            },
-            {
-                "energy": 6500,
-                "gap": 6.045,
-            },
-        ],
+        "column_names": ["energy_eV", "gap_mm"],
+        "data": [[5700, 5.4606], [5760, 5.5], [6000, 5.681], [6500, 6.045]],
     }
-    result = parse_lut_to_dict(contents, ("energy", "eV", int), ("gap", "mm", float))
+    result = parse_lut_to_dict(contents, ("energy_eV", int), ("gap_mm", float))
+    print(result)
     assert result == expected
     json.dumps(result)
 
@@ -75,7 +56,7 @@ def test_parsing_bad_lut_causes_error():
     with open(TestDataPaths.TEST_BAD_LUT_PATH) as f:
         contents = f.read()
     with pytest.raises(IndexError):
-        parse_lut_to_dict(contents, ("energy", "eV", int), ("gap", "mm", float))
+        parse_lut_to_dict(contents, ("energy_eV", int), ("gap_mm", float))
 
 
 def test_display_config_to_dict_gives_expected_result_and_can_be_jsonified():
