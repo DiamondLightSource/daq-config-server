@@ -31,9 +31,10 @@ def parse_lut_to_dict(
     """Converts a lookup table to a dict, containing the names of each column and
     the rows as a 2D list.
 
-    Any args after the contents should be a tuple of (column name, type | None).
+    Any args after the contents provide the column names and optionally, python types
+    for values in a column to be converted to. e.g: (energy_EV, float), (pixels, int).
     If a type is provided, the values in that column will be converted to that type.
-    Otherwise, the type will be inferred. Please include units in the column name.
+    Otherwise, the type will be inferred. Units should be included in the column name.
     """
     data: list[list[Any]] = []
     column_names = [param[0] for param in params]

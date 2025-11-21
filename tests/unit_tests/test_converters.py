@@ -1,7 +1,8 @@
 import json
+from collections.abc import Callable
 from pathlib import Path
 from typing import Any
-from unittest.mock import MagicMock, patch
+from unittest.mock import MagicMock
 
 import pytest
 
@@ -27,14 +28,15 @@ def test_all_files_in_dict_can_be_parsed_with_no_errors():
         get_converted_file_contents(Path(filename))
 
 
-def test_get_converted_file_contents_uses_converter_if_file_in_map():
+def test_get_converted_file_contents_uses_converter_if_file_in_map(
+    mock_file_converter_map: dict[str, Callable[[str], Any]],
+):
     file_to_convert = TestDataPaths.TEST_GOOD_XML_PATH
     mock_convert_function = MagicMock()
-    with patch(
-        "daq_config_server.converters._file_converter_map.FILE_TO_CONVERTER_MAP",
-        {str(file_to_convert): mock_convert_function},
-    ):
-        get_converted_file_contents(file_to_convert)
+    mock_file_converter_map[str(TestDataPaths.TEST_GOOD_XML_PATH)] = (
+        mock_convert_function
+    )
+    get_converted_file_contents(file_to_convert)
 
     mock_convert_function.assert_called_once()
 

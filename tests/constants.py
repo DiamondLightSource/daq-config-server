@@ -52,6 +52,7 @@ class ServerFilePaths:
     GOOD_JSON_FILE = Path("/tests/test_data/test_good_json.json")
     BAD_JSON_FILE = Path("/tests/test_data/test_bad_json")
     FILE_IN_GOOD_DIR = Path("/tests/test_data/test_bad_json")
+    GOOD_LUT = Path("/tests/test_data/test_good_lut.txt")
 
 
 TEST_CONFIG_PATH = TEST_DATA_DIR_PATH.joinpath("test_config.yaml")

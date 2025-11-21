@@ -1,6 +1,8 @@
 from collections.abc import Callable
 from typing import Any
 
+from tests.constants import ServerFilePaths
+
 from daq_config_server.converters._converters import (
     beamline_parameters_to_dict,
     beamline_pitch_lut_to_dict,
@@ -12,6 +14,7 @@ from daq_config_server.converters._converters import (
 )
 
 FILE_TO_CONVERTER_MAP: dict[str, Callable[[str], Any]] = {
+    str(ServerFilePaths.GOOD_LUT): undulator_energy_gap_lut_to_dict,  # For system tests
     "/dls_sw/i23/software/aithre/aithre_display.configuration": display_config_to_dict,
     "/dls_sw/i03/software/gda_versions/var/display.configuration": display_config_to_dict,
     "/dls_sw/i04/software/bluesky/scratch/display.configuration": display_config_to_dict,

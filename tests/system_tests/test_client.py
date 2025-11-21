@@ -6,6 +6,7 @@ from unittest.mock import MagicMock
 import pytest
 import requests
 
+import daq_config_server.converters._file_converter_map as file_converter_map
 from daq_config_server.client import ConfigServer
 from tests.constants import (
     ServerFilePaths,
@@ -104,3 +105,20 @@ def test_request_with_file_not_on_whitelist(server: ConfigServer):
         server.get_file_contents(
             file_path,
         )
+
+
+@pytest.mark.requires_local_server
+def test_request_for_file_with_converter_works(server: ConfigServer):
+    expected = {
+        "column_names": ["energy_eV", "gap_mm"],
+        "data": [[5700, 5.4606], [5760, 5.5], [6000, 5.681], [6500, 6.045]],
+    }
+    result = server.get_file_contents(ServerFilePaths.GOOD_LUT, dict)
+    assert result == expected
+
+
+@pytest.mark.requires_local_server
+def test_all_files_in_file_converter_map_can_be_converted_to_dict(server: ConfigServer):
+    for filename in file_converter_map.FILE_TO_CONVERTER_MAP.keys():
+        result = server.get_file_contents(filename, dict)
+        assert isinstance(result, dict)
