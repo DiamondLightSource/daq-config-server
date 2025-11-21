@@ -1,4 +1,3 @@
-import json
 import logging
 import os
 from collections.abc import Awaitable, Callable
@@ -16,6 +15,7 @@ from daq_config_server.config import Config
 from daq_config_server.constants import (
     ENDPOINTS,
 )
+from daq_config_server.converters import get_converted_file_contents
 from daq_config_server.log import set_up_logging
 from daq_config_server.whitelist import get_whitelist
 
@@ -134,8 +134,7 @@ def get_configuration(
     try:
         match accept:
             case ValidAcceptHeaders.JSON:
-                with file_path.open("r", encoding="utf-8") as f:
-                    content = json.loads(f.read())
+                content = get_converted_file_contents(file_path)
                 return JSONResponse(
                     content=content,
                 )

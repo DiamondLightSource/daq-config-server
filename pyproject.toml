@@ -28,6 +28,7 @@ dependencies = [
     "pydantic",
     "urllib3",
     "requests",
+    "xmltodict",
 ]
 
 [project.optional-dependencies]
