@@ -7,6 +7,9 @@ import pytest
 
 from daq_config_server.whitelist import WhitelistFetcher, get_whitelist
 
+"""The tests in this file will read directly from the whitelist.yaml in the current
+branch"""
+
 
 def test_fetch_and_update_contructs_whitelist_given_yaml():
     whitelist = get_whitelist()
