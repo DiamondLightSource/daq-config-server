@@ -37,3 +37,14 @@ class ServerFilePaths:
 
 
 TEST_CONFIG_PATH = TEST_DATA_DIR_PATH.joinpath("test_config.yaml")
+
+TEST_WHITELIST_RESPONSE = f"""\
+whitelist_files:
+  - {TestDataPaths.TEST_GOOD_JSON_PATH}
+  - {TestDataPaths.TEST_BAD_JSON_PATH}
+  - {TestDataPaths.TEST_BEAMLINE_PARAMETERS_PATH}
+  - {TestDataPaths.TEST_INVALID_FILE_PATH}
+
+whitelist_dirs:
+  - {TEST_DATA_DIR_PATH.joinpath("good_dir")}
+"""
