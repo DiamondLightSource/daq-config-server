@@ -85,23 +85,21 @@ def xml_to_dict(contents: str) -> dict[str, Any]:
 def detector_xy_lut_to_dict(contents: str):
     return parse_lut_to_dict(
         contents,
-        ("detector_distances", "mm", float),
-        ("beam_centre_x", "mm", float),
-        ("beam_centre_y", "mm", float),
+        ("detector_distances_mm", float),
+        ("beam_centre_x_mm", float),
+        ("beam_centre_y_mm", float),
     )
 
 
 def beamline_pitch_lut_to_dict(contents: str):
     return parse_lut_to_dict(
-        contents, ("bragg_angle", "degrees", float), ("pitch", "mrad", float)
+        contents, ("bragg_angle_deg", float), ("pitch_mrad", float)
     )
 
 
 def beamline_roll_lut_to_dict(contents: str):
-    return parse_lut_to_dict(
-        contents, ("bragg_angle", "degrees", float), ("roll", "mrad", float)
-    )
+    return parse_lut_to_dict(contents, ("bragg_angle_deg", float), ("roll_mrad", float))
 
 
 def undulator_energy_gap_lut_to_dict(contents: str):
-    return parse_lut_to_dict(contents, ("energy", "eV", int), ("gap", "mm", float))
+    return parse_lut_to_dict(contents, ("energy_eV", int), ("gap_mm", float))
