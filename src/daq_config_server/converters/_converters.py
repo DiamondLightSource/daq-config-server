@@ -58,9 +58,6 @@ def display_config_to_dict(contents: str) -> dict[str, dict[str, int | float]]:
     zoom_level = None
 
     for line in remove_comments(lines):
-        if line[0] == "#":
-            continue
-
         key, value = (item.strip() for item in line.split("=", 1))
         if key == "zoomLevel":
             zoom_level = value
