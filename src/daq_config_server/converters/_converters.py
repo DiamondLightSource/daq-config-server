@@ -1,4 +1,4 @@
-from typing import Any, cast
+from typing import Any
 
 import xmltodict
 
@@ -15,21 +15,21 @@ def beamline_parameters_to_dict(contents: str) -> dict[str, Any]:
     is in BEAMLINE_PARAMETER_KEYWORDS, it leaves it as a string. Otherwise, it is
     converted to a number or bool."""
     lines = contents.splitlines()
-    config_lines_sep_key_and_value = [
-        line.translate(str.maketrans("", "", " \n\t\r")).split("=")
-        for line in remove_comments(lines)
-    ]
-    config_pairs: list[tuple[str, Any]] = [
-        cast(tuple[str, Any], param)
-        for param in config_lines_sep_key_and_value
-        if len(param) == 2
-    ]
-    for i, (param, value) in enumerate(config_pairs):
+    config_pairs: dict[str, Any] = {}
+
+    # Get list of parameter keys and values
+    for line in remove_comments(lines):
+        splitline = line.split("=")
+        if len(splitline) >= 2:
+            param, value = line.split("=")
+            if param in config_pairs:
+                raise ValueError(f"Repeated key in parameters: {param}")
+            config_pairs[param.strip()] = value.strip()
+
+    # Parse each value
+    for param, value in config_pairs.items():
         if value not in BEAMLINE_PARAMETER_KEYWORDS:
-            config_pairs[i] = (
-                param,
-                parse_value(value),
-            )
+            config_pairs[param] = parse_value(value)
     return dict(config_pairs)
 
 

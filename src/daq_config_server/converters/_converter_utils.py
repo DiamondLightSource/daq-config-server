@@ -16,12 +16,13 @@ def remove_comments(lines: list[str]) -> list[str]:
 
 
 def parse_value(value: str, convert_to: type | None = None) -> Any:
-    """Convert a string value into an appropriate Python type.
-    Optionally provide a type to convert to.
-
+    """Convert a string value into an appropriate Python type. Optionally provide a type
+    to convert to. If not given, the type will be inferred.
     """
-    value = value.replace("Yes", "True").replace("No", "False")
-    return convert_to(value) if convert_to else ast.literal_eval(value)
+    value = ast.literal_eval(value.replace("Yes", "True").replace("No", "False"))
+    if convert_to:
+        value = convert_to(value)
+    return value
 
 
 def parse_lut_to_dict(

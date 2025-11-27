@@ -6,6 +6,7 @@ from unittest.mock import MagicMock
 import pytest
 
 from daq_config_server.converters._converter_utils import (
+    ConverterParseError,
     parse_lut_to_dict,
     parse_value,
     remove_comments,
@@ -26,12 +27,19 @@ def test_get_converted_file_contents_uses_converter_if_file_in_map(
 ):
     file_to_convert = TestDataPaths.TEST_GOOD_XML_PATH
     mock_convert_function = MagicMock()
-    mock_file_converter_map[str(TestDataPaths.TEST_GOOD_XML_PATH)] = (
-        mock_convert_function
-    )
+    mock_file_converter_map[str(file_to_convert)] = mock_convert_function
     get_converted_file_contents(file_to_convert)
 
     mock_convert_function.assert_called_once()
+
+
+def test_error_is_raised_if_file_cant_be_parsed(
+    mock_file_converter_map: dict[str, Callable[[str], Any]],
+):
+    file_to_convert = TestDataPaths.TEST_BAD_BEAMLINE_PARAMETERS_PATH
+    mock_file_converter_map[str(file_to_convert)] = beamline_parameters_to_dict
+    with pytest.raises(ConverterParseError):
+        get_converted_file_contents(file_to_convert)
 
 
 def test_parse_lut_to_dict_gives_expected_result_and_can_be_jsonified():
@@ -42,7 +50,6 @@ def test_parse_lut_to_dict_gives_expected_result_and_can_be_jsonified():
         "data": [[5700, 5.4606], [5760, 5.5], [6000, 5.681], [6500, 6.045]],
     }
     result = parse_lut_to_dict(contents, ("energy_eV", int), ("gap_mm", float))
-    print(result)
     assert result == expected
     json.dumps(result)
 

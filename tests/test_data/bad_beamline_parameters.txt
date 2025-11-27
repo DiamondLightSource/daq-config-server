@@ -39,4 +39,3 @@ in_beam_z_STANDARD = 30.0
 in_beam_x_LOWRES = Error
 in_beam_y_LOWRES = 44.78
 in_beam_z_LOWRES = 48
-
