@@ -1,0 +1,41 @@
+#
+#
+BeamLine BL03I
+
+## BLSE=FB switches between scan alignment and feedback alignment
+## by creating bl energy scannable with beamLineSpecificEnergy_FB
+## after changing you must restart servers or >>> reset_namespace
+BLSE=FB
+
+## BPFB (Beam Position FeedBack)
+## HALF (default) only off during data collection
+## FULL only off for XBPM2 during attenuation optimisation, fluo when trans < 2% and wedged MAD
+## UNAVAILABLE (not default) prevents xbpm_feedback.py trying to access EPICS IOC that may not be running
+BPFB=FULL
+## Note: only beamline scientists control whether feedback is enabled
+## via the XBPM feedback EDM screen in Synoptic
+
+# DCM parameters
+DCM_Perp_Offset_FIXED = 25.6
+#
+# beamstop
+#
+parked_x = 4.49
+parked_y = -50.0
+parked_y_plate = -50.5
+parked_z = -49.5
+parked_z_robot = 30.0
+
+in_beam_z_MIN_START_POS = 60.0
+
+in_beam_x_HIGHRES = 1.52 
+in_beam_y_HIGHRES = 44.78
+in_beam_z_HIGHRES = 30.0
+
+in_beam_x_STANDARD = 1.52
+in_beam_y_STANDARD = 44.78
+in_beam_z_STANDARD = 30.0
+
+in_beam_x_LOWRES = Error
+in_beam_y_LOWRES = 44.78
+in_beam_z_LOWRES = 48

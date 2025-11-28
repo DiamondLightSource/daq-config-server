@@ -12,8 +12,9 @@ whitelist_files:
 - /dls_sw/i04/software/bluesky/scratch/jCameraManZoomLevels.xml
 - /dls_sw/i19-1/software/gda_versions/gda/config/xml/jCameraManZoomLevels.xml
 - /dls_sw/i24/software/gda_versions/gda/config/xml/jCameraManZoomLevels.xml
-- /dls_sw/i03/software/gda_versions/var/display.configurations
+- /dls_sw/i03/software/gda_versions/var/display.configuration
 - /dls_sw/i04/software/bluesky/scratch/display.configuration
+- /dls_sw/i23/software/aithre/aithre_display.configuration
 - /dls_sw/i24/software/gda_versions/var/display.configuration
 
 #For long-term directories with frequently changing files
