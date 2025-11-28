@@ -1,6 +1,8 @@
 import ast
 from typing import Any
 
+from pydantic import BaseModel, model_validator
+
 BEAMLINE_PARAMETER_KEYWORDS = ["FB", "FULL", "deadtime"]
 
 
@@ -25,10 +27,23 @@ def parse_value(value: str, convert_to: type | None = None) -> Any:
     return value
 
 
-def parse_lut_to_dict(
-    contents: str,
-    *params: tuple[str, type | None],
-) -> dict[str, list[str] | list[list[Any]]]:
+class GenericLut(BaseModel):
+    column_names: list[str]
+    rows: list[list[int | float]]
+
+    @model_validator(mode="after")
+    def check_row_length_matches_n_columns(self):
+        n_columns = len(self.column_names)
+        for row in self.rows:
+            if len(row) != n_columns:
+                raise ValueError(
+                    f"Length of row {row} does not match number \
+                    of columns: {self.column_names}"
+                )
+        return self
+
+
+def parse_lut(contents: str, *params: tuple[str, type | None]) -> GenericLut:
     """Converts a lookup table to a dict, containing the names of each column and
     the rows as a 2D list.
 
@@ -37,18 +52,13 @@ def parse_lut_to_dict(
     If a type is provided, the values in that column will be converted to that type.
     Otherwise, the type will be inferred. Units should be included in the column name.
     """
-    data: list[list[Any]] = []
+    rows: list[list[Any]] = []
     column_names = [param[0] for param in params]
     types = [param[1] for param in params]
-    data_dict = {
-        "column_names": column_names,
-        "data": data,
-    }
     for line in remove_comments(contents.splitlines()):
         if line.startswith("Units"):
             continue
-        data.append(
+        rows.append(
             [parse_value(value, types[i]) for i, value in enumerate(line.split())]
         )
-    data_dict["data"] = data
-    return data_dict
+    return GenericLut(column_names=column_names, rows=rows)

@@ -1,10 +1,12 @@
 from typing import Any
 
 import xmltodict
+from pydantic import BaseModel, model_validator
 
 from daq_config_server.converters._converter_utils import (
     BEAMLINE_PARAMETER_KEYWORDS,
-    parse_lut_to_dict,
+    GenericLut,
+    parse_lut,
     parse_value,
     remove_comments,
 )
@@ -33,7 +35,32 @@ def beamline_parameters_to_dict(contents: str) -> dict[str, Any]:
     return dict(config_pairs)
 
 
-def display_config_to_dict(contents: str) -> dict[str, dict[str, int | float]]:
+class DisplayConfigData(BaseModel):
+    crosshairX: int
+    crosshairY: int
+    topLeftX: int
+    topLeftY: int
+    bottomRightX: int
+    bottomRightY: int
+
+
+class DisplayConfig(BaseModel):
+    zoom_levels: dict[float, DisplayConfigData]
+    required_zoom_levels: set[float] | None = None
+
+    @model_validator(mode="after")
+    def check_zoom_levels_match_required(self):
+        if self.required_zoom_levels is not None and self.required_zoom_levels != set(
+            self.zoom_levels.keys()
+        ):
+            raise ValueError(
+                f"Zoom levels {set(self.zoom_levels.keys())} "
+                + "do not match required zoom levels: {self.required_zoom_levels}"
+            )
+        return self
+
+
+def display_config_to_dict(contents: str) -> DisplayConfig:
     """Converts a display config file into a dict. Every zoom level entry in the
     configuration file forms a key in the dict, with value being another dict. This
     inner dict contains all the key value pairs of the rows following each zoom level.
@@ -48,19 +75,15 @@ def display_config_to_dict(contents: str) -> dict[str, dict[str, int | float]]:
     crosshairY = 600
 
     Example output:
-    {
-        1.0: {"crosshairX": 500, "crosshairY": 600},
-        2.0: {"crosshairX": 700, "crosshairY": 800},
-    }
     """
     lines = contents.splitlines()
-    config_dict: dict[str, dict[str, int | float]] = {}
+    config_dict: dict[float, dict[str, int | float]] = {}
     zoom_level = None
 
     for line in remove_comments(lines):
         key, value = (item.strip() for item in line.split("=", 1))
         if key == "zoomLevel":
-            zoom_level = value
+            zoom_level = float(value)
             assert zoom_level not in config_dict.keys(), (
                 f"Multiple instances of zoomLevel {zoom_level}"
             )
@@ -72,15 +95,20 @@ def display_config_to_dict(contents: str) -> dict[str, dict[str, int | float]]:
             "File can't have repeated keys for a given zoom level"
         )
         config_dict[zoom_level][key] = parse_value(value)
-    return config_dict
+    zoom_levels = {
+        key: DisplayConfigData.model_validate(value)
+        for key, value in config_dict.items()
+    }
+
+    return DisplayConfig(zoom_levels=zoom_levels)
 
 
 def xml_to_dict(contents: str) -> dict[str, Any]:
     return xmltodict.parse(contents)
 
 
-def detector_xy_lut_to_dict(contents: str):
-    return parse_lut_to_dict(
+def detector_xy_lut(contents: str) -> GenericLut:
+    return parse_lut(
         contents,
         ("detector_distances_mm", float),
         ("beam_centre_x_mm", float),
@@ -88,15 +116,13 @@ def detector_xy_lut_to_dict(contents: str):
     )
 
 
-def beamline_pitch_lut_to_dict(contents: str):
-    return parse_lut_to_dict(
-        contents, ("bragg_angle_deg", float), ("pitch_mrad", float)
-    )
+def beamline_pitch_lut(contents: str) -> GenericLut:
+    return parse_lut(contents, ("bragg_angle_deg", float), ("pitch_mrad", float))
 
 
-def beamline_roll_lut_to_dict(contents: str):
-    return parse_lut_to_dict(contents, ("bragg_angle_deg", float), ("roll_mrad", float))
+def beamline_roll_lut(contents: str) -> GenericLut:
+    return parse_lut(contents, ("bragg_angle_deg", float), ("roll_mrad", float))
 
 
-def undulator_energy_gap_lut_to_dict(contents: str):
-    return parse_lut_to_dict(contents, ("energy_eV", int), ("gap_mm", float))
+def undulator_energy_gap_lut(contents: str) -> GenericLut:
+    return parse_lut(contents, ("energy_eV", int), ("gap_mm", float))
