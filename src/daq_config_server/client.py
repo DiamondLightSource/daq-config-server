@@ -5,7 +5,7 @@ from typing import Any, TypeVar, get_origin
 
 import requests
 from cachetools import TTLCache, cachedmethod
-from pydantic import TypeAdapter
+from pydantic import BaseModel, TypeAdapter
 from requests import Response
 from requests.exceptions import HTTPError
 
@@ -13,7 +13,7 @@ from daq_config_server.app import ValidAcceptHeaders
 
 from .constants import ENDPOINTS
 
-T = TypeVar("T", str, bytes, dict[Any, Any])
+T = TypeVar("T", str, bytes, dict[Any, Any], BaseModel)
 
 
 class TypeConversionException(Exception): ...
@@ -21,7 +21,11 @@ class TypeConversionException(Exception): ...
 
 def _get_mime_type(requested_return_type: type[T]) -> ValidAcceptHeaders:
     # Get correct mapping for typed dict or plain dict
-    if get_origin(requested_return_type) is dict or requested_return_type is dict:
+    if (
+        get_origin(requested_return_type) is dict
+        or requested_return_type is dict
+        or issubclass(requested_return_type, BaseModel)
+    ):
         return ValidAcceptHeaders.JSON
     elif requested_return_type is bytes:
         return ValidAcceptHeaders.RAW_BYTES
