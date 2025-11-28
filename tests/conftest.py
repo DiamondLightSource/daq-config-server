@@ -7,7 +7,7 @@ import pytest
 from daq_config_server.converters._converters import (
     beamline_parameters_to_dict,
     display_config_to_dict,
-    undulator_energy_gap_lut_to_dict,
+    undulator_energy_gap_lut,
     xml_to_dict,
 )
 from tests.constants import ServerFilePaths, TestDataPaths
@@ -22,9 +22,9 @@ def mock_file_converter_map() -> Generator[dict[str, Callable[[str], Any]], None
             str(
                 TestDataPaths.TEST_BEAMLINE_PARAMETERS_PATH
             ): beamline_parameters_to_dict,
-            str(TestDataPaths.TEST_GOOD_LUT_PATH): undulator_energy_gap_lut_to_dict,
+            str(TestDataPaths.TEST_GOOD_LUT_PATH): undulator_energy_gap_lut,
             str(TestDataPaths.TEST_GOOD_DISPLAY_CONFIG_PATH): display_config_to_dict,
-            str(ServerFilePaths.GOOD_LUT): undulator_energy_gap_lut_to_dict,
+            str(ServerFilePaths.GOOD_LUT): undulator_energy_gap_lut,
         },
     ) as mock_map:
         yield mock_map

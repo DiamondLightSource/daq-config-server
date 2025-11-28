@@ -55,7 +55,7 @@ class DisplayConfig(BaseModel):
         ):
             raise ValueError(
                 f"Zoom levels {set(self.zoom_levels.keys())} "
-                + "do not match required zoom levels: {self.required_zoom_levels}"
+                f"do not match required zoom levels: {self.required_zoom_levels}"
             )
         return self
 

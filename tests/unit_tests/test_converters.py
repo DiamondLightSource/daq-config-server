@@ -7,11 +7,14 @@ import pytest
 
 from daq_config_server.converters._converter_utils import (
     ConverterParseError,
-    parse_lut_to_dict,
+    GenericLut,
+    parse_lut,
     parse_value,
     remove_comments,
 )
 from daq_config_server.converters._converters import (
+    DisplayConfig,
+    DisplayConfigData,
     beamline_parameters_to_dict,
     display_config_to_dict,
     xml_to_dict,
@@ -45,46 +48,48 @@ def test_error_is_raised_if_file_cant_be_parsed(
 def test_parse_lut_to_dict_gives_expected_result_and_can_be_jsonified():
     with open(TestDataPaths.TEST_GOOD_LUT_PATH) as f:
         contents = f.read()
-    expected = {
-        "column_names": ["energy_eV", "gap_mm"],
-        "data": [[5700, 5.4606], [5760, 5.5], [6000, 5.681], [6500, 6.045]],
-    }
-    result = parse_lut_to_dict(contents, ("energy_eV", int), ("gap_mm", float))
+    expected = GenericLut(
+        column_names=["energy_eV", "gap_mm"],
+        rows=[[5700, 5.4606], [5760, 5.5], [6000, 5.681], [6500, 6.045]],
+    )
+    result = parse_lut(contents, ("energy_eV", int), ("gap_mm", float))
     assert result == expected
-    json.dumps(result)
+    result.model_dump_json()
 
 
 def test_parsing_bad_lut_causes_error():
     with open(TestDataPaths.TEST_BAD_LUT_PATH) as f:
         contents = f.read()
     with pytest.raises(IndexError):
-        parse_lut_to_dict(contents, ("energy_eV", int), ("gap_mm", float))
+        parse_lut(contents, ("energy_eV", int), ("gap_mm", float))
 
 
 def test_display_config_to_dict_gives_expected_result_and_can_be_jsonified():
     with open(TestDataPaths.TEST_GOOD_DISPLAY_CONFIG_PATH) as f:
         contents = f.read()
-    expected = {
-        "1.0": {
-            "bottomRightX": 410,
-            "bottomRightY": 278,
-            "crosshairX": 541,
-            "crosshairY": 409,
-            "topLeftX": 383,
-            "topLeftY": 253,
-        },
-        "2.5": {
-            "bottomRightX": 388,
-            "bottomRightY": 322,
-            "crosshairX": 551,
-            "crosshairY": 410,
-            "topLeftX": 340,
-            "topLeftY": 283,
-        },
-    }
+    expected = DisplayConfig(
+        zoom_levels={
+            1.0: DisplayConfigData(
+                bottomRightX=410,
+                bottomRightY=278,
+                crosshairX=541,
+                crosshairY=409,
+                topLeftX=383,
+                topLeftY=253,
+            ),
+            2.5: DisplayConfigData(
+                bottomRightX=388,
+                bottomRightY=322,
+                crosshairX=551,
+                crosshairY=410,
+                topLeftX=340,
+                topLeftY=283,
+            ),
+        }
+    )
     result = display_config_to_dict(contents)
     assert result == expected
-    json.dumps(result)
+    json.dumps(result.model_dump())
 
 
 def test_xml_to_dict_gives_expected_result_and_can_be_jsonified():

@@ -5,9 +5,12 @@ from unittest.mock import MagicMock
 
 import pytest
 import requests
+from pydantic import ValidationError
 
 import daq_config_server.converters._file_converter_map as file_converter_map
 from daq_config_server.client import ConfigServer
+from daq_config_server.converters._converter_utils import GenericLut
+from daq_config_server.converters._converters import DisplayConfig
 from tests.constants import (
     ServerFilePaths,
     TestDataPaths,
@@ -111,10 +114,31 @@ def test_request_with_file_not_on_whitelist(server: ConfigServer):
 def test_request_for_file_with_converter_works(server: ConfigServer):
     expected = {
         "column_names": ["energy_eV", "gap_mm"],
-        "data": [[5700, 5.4606], [5760, 5.5], [6000, 5.681], [6500, 6.045]],
+        "rows": [[5700, 5.4606], [5760, 5.5], [6000, 5.681], [6500, 6.045]],
     }
     result = server.get_file_contents(ServerFilePaths.GOOD_LUT, dict)
     assert result == expected
+
+
+@pytest.mark.requires_local_server
+def test_request_for_file_with_converter_works_with_pydantic_model(
+    server: ConfigServer,
+):
+    expected = GenericLut(
+        column_names=["energy_eV", "gap_mm"],
+        rows=[[5700, 5.4606], [5760, 5.5], [6000, 5.681], [6500, 6.045]],
+    )
+    result = server.get_file_contents(ServerFilePaths.GOOD_LUT, GenericLut)
+    assert isinstance(result, GenericLut)
+    assert result == expected
+
+
+@pytest.mark.requires_local_server
+def test_request_for_file_with_converter_with_wrong_pydantic_model_errors(
+    server: ConfigServer,
+):
+    with pytest.raises(ValidationError):
+        server.get_file_contents(ServerFilePaths.GOOD_LUT, DisplayConfig)
 
 
 @pytest.mark.requires_local_server
