@@ -1,7 +1,7 @@
 import operator
 from logging import Logger, getLogger
 from pathlib import Path
-from typing import Any, TypeVar, get_origin
+from typing import Any, TypeVar, get_origin, overload
 
 import requests
 from cachetools import TTLCache, cachedmethod
@@ -13,13 +13,18 @@ from daq_config_server.app import ValidAcceptHeaders
 
 from .constants import ENDPOINTS
 
-T = TypeVar("T", str, bytes, dict[Any, Any], BaseModel)
+T = TypeVar("T", bound=BaseModel)
 
 
 class TypeConversionException(Exception): ...
 
 
-def _get_mime_type(requested_return_type: type[T]) -> ValidAcceptHeaders:
+def _get_mime_type(
+    requested_return_type: type[str]
+    | type[bytes]
+    | type[dict[str, Any]]
+    | type[BaseModel],
+) -> ValidAcceptHeaders:
     # Get correct mapping for typed dict or plain dict
     if (
         get_origin(requested_return_type) is dict
@@ -135,12 +140,44 @@ class ConfigServer:
 
         return content
 
+    @overload
     def get_file_contents(
         self,
-        file_path: Path | str,
-        desired_return_type: type[T] = str,
+        file_path: str | Path,
+        desired_return_type: type[str] = str,
         reset_cached_result: bool = False,
-    ) -> T:
+    ) -> str: ...
+
+    @overload
+    def get_file_contents(
+        self,
+        file_path: str | Path,
+        desired_return_type: type[bytes],
+        reset_cached_result: bool = False,
+    ) -> bytes: ...
+
+    @overload
+    def get_file_contents(
+        self,
+        file_path: str | Path,
+        desired_return_type: type[dict[str, Any]],
+        reset_cached_result: bool = False,
+    ) -> dict[str, Any]: ...
+
+    @overload
+    def get_file_contents(
+        self,
+        file_path: str | Path,
+        desired_return_type: type[T],
+        reset_cached_result: bool = False,
+    ) -> T: ...
+
+    def get_file_contents(
+        self,
+        file_path: str | Path,
+        desired_return_type: type[Any] = str,
+        reset_cached_result: bool = False,
+    ) -> Any:
         """
         Get contents of a file from the config server in the format specified.
         Optionally look for cached result before making request.
