@@ -1,7 +1,7 @@
 import ast
 from typing import Any
 
-from pydantic import BaseModel, model_validator
+from daq_config_server.converters.models import GenericLut
 
 BEAMLINE_PARAMETER_KEYWORDS = ["FB", "FULL", "deadtime"]
 
@@ -25,22 +25,6 @@ def parse_value(value: str, convert_to: type | None = None) -> Any:
     if convert_to:
         value = convert_to(value)
     return value
-
-
-class GenericLut(BaseModel):
-    column_names: list[str]
-    rows: list[list[int | float]]
-
-    @model_validator(mode="after")
-    def check_row_length_matches_n_columns(self):
-        n_columns = len(self.column_names)
-        for row in self.rows:
-            if len(row) != n_columns:
-                raise ValueError(
-                    f"Length of row {row} does not match number \
-                    of columns: {self.column_names}"
-                )
-        return self
 
 
 def parse_lut(contents: str, *params: tuple[str, type | None]) -> GenericLut:

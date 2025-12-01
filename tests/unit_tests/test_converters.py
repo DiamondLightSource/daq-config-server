@@ -7,14 +7,11 @@ import pytest
 
 from daq_config_server.converters._converter_utils import (
     ConverterParseError,
-    GenericLut,
     parse_lut,
     parse_value,
     remove_comments,
 )
 from daq_config_server.converters._converters import (
-    DisplayConfig,
-    DisplayConfigData,
     beamline_parameters_to_dict,
     beamline_pitch_lut,
     beamline_roll_lut,
@@ -24,6 +21,11 @@ from daq_config_server.converters._converters import (
     xml_to_dict,
 )
 from daq_config_server.converters.convert import get_converted_file_contents
+from daq_config_server.converters.models import (
+    DisplayConfig,
+    DisplayConfigData,
+    GenericLut,
+)
 from tests.constants import (
     TestDataPaths,
 )

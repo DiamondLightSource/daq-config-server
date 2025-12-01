@@ -9,8 +9,7 @@ from pydantic import ValidationError
 
 import daq_config_server.converters._file_converter_map as file_converter_map
 from daq_config_server.client import ConfigServer
-from daq_config_server.converters._converter_utils import GenericLut
-from daq_config_server.converters._converters import DisplayConfig
+from daq_config_server.converters.models import DisplayConfig, GenericLut
 from tests.constants import (
     ServerFilePaths,
     TestDataPaths,
