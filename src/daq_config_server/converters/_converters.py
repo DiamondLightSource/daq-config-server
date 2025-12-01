@@ -19,12 +19,12 @@ def beamline_parameters_to_dict(contents: str) -> dict[str, Any]:
     lines = contents.splitlines()
     config_pairs: dict[str, Any] = {}
 
-    # Get list of parameter keys and values
+    # Get dict of parameter keys and values
     for line in remove_comments(lines):
         splitline = line.split("=")
         if len(splitline) >= 2:
             param, value = line.split("=")
-            if param in config_pairs:
+            if param.strip() in config_pairs:
                 raise ValueError(f"Repeated key in parameters: {param}")
             config_pairs[param.strip()] = value.strip()
 
@@ -50,11 +50,13 @@ class DisplayConfig(BaseModel):
 
     @model_validator(mode="after")
     def check_zoom_levels_match_required(self):
-        if self.required_zoom_levels is not None and self.required_zoom_levels != set(
-            self.zoom_levels.keys()
+        existing_keys = set(self.zoom_levels.keys())
+        if (
+            self.required_zoom_levels is not None
+            and self.required_zoom_levels != existing_keys
         ):
             raise ValueError(
-                f"Zoom levels {set(self.zoom_levels.keys())} "
+                f"Zoom levels {existing_keys} "
                 f"do not match required zoom levels: {self.required_zoom_levels}"
             )
         return self
@@ -72,7 +74,7 @@ def display_config_to_dict(contents: str) -> DisplayConfig:
     crosshairY = 600
     zoomLevel = 2.0
     crosshairX = 700
-    crosshairY = 600
+    crosshairY = 800
 
     Example output:
     """
