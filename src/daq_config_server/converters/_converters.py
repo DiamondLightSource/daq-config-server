@@ -35,22 +35,7 @@ def beamline_parameters_to_dict(contents: str) -> dict[str, Any]:
     return dict(config_pairs)
 
 
-def display_config_to_dict(contents: str) -> DisplayConfig:
-    """Converts a display config file into a dict. Every zoom level entry in the
-    configuration file forms a key in the dict, with value being another dict. This
-    inner dict contains all the key value pairs of the rows following each zoom level.
-
-    Example input:
-
-    zoomLevel = 1.0
-    crosshairX = 500
-    crosshairY = 600
-    zoomLevel = 2.0
-    crosshairX = 700
-    crosshairY = 800
-
-    Example output:
-    """
+def display_config_to_model(contents: str) -> DisplayConfig:
     lines = contents.splitlines()
     config_dict: dict[float, dict[str, int | float]] = {}
     zoom_level = None

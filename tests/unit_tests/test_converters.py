@@ -16,7 +16,7 @@ from daq_config_server.converters._converters import (
     beamline_pitch_lut,
     beamline_roll_lut,
     detector_xy_lut,
-    display_config_to_dict,
+    display_config_to_model,
     undulator_energy_gap_lut,
     xml_to_dict,
 )
@@ -87,7 +87,7 @@ def test_lut_with_different_number_of_row_items_to_column_names_causes_error():
         GenericLut(column_names=["column1", "column2"], rows=[[1, 2], [1, 2, 3]])
 
 
-def test_display_config_to_dict_gives_expected_result_and_can_be_jsonified():
+def test_display_config_to_model_gives_expected_result_and_can_be_jsonified():
     with open(TestDataPaths.TEST_GOOD_DISPLAY_CONFIG_PATH) as f:
         contents = f.read()
     expected = DisplayConfig(
@@ -110,7 +110,7 @@ def test_display_config_to_dict_gives_expected_result_and_can_be_jsonified():
             ),
         }
     )
-    result = display_config_to_dict(contents)
+    result = display_config_to_model(contents)
     assert result == expected
     json.dumps(result.model_dump())
 

@@ -28,8 +28,8 @@ def parse_value(value: str, convert_to: type | None = None) -> Any:
 
 
 def parse_lut(contents: str, *params: tuple[str, type | None]) -> GenericLut:
-    """Converts a lookup table to a dict, containing the names of each column and
-    the rows as a 2D list.
+    """Converts a lookup table to a pydantic model, containing the names of each column
+    and the rows as a 2D list.
 
     Any args after the contents provide the column names and optionally, python types
     for values in a column to be converted to. e.g: (energy_EV, float), (pixels, int).
