@@ -9,7 +9,7 @@ from pydantic import ValidationError
 
 import daq_config_server.converters._file_converter_map as file_converter_map
 from daq_config_server.client import ConfigServer
-from daq_config_server.converters.models import DisplayConfig, GenericLut
+from daq_config_server.converters.models import DisplayConfig, GenericLookupTable
 from tests.constants import (
     ServerFilePaths,
     TestDataPaths,
@@ -123,12 +123,12 @@ def test_request_for_file_with_converter_works(server: ConfigServer):
 def test_request_for_file_with_converter_works_with_pydantic_model(
     server: ConfigServer,
 ):
-    expected = GenericLut(
+    expected = GenericLookupTable(
         column_names=["energy_eV", "gap_mm"],
         rows=[[5700, 5.4606], [5760, 5.5], [6000, 5.681], [6500, 6.045]],
     )
-    result = server.get_file_contents(ServerFilePaths.GOOD_LUT, GenericLut)
-    assert isinstance(result, GenericLut)
+    result = server.get_file_contents(ServerFilePaths.GOOD_LUT, GenericLookupTable)
+    assert isinstance(result, GenericLookupTable)
     assert result == expected
 
 

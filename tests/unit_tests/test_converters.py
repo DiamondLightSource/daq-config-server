@@ -4,6 +4,7 @@ from typing import Any
 from unittest.mock import MagicMock
 
 import pytest
+import xmltodict
 
 from daq_config_server.converters._converter_utils import (
     ConverterParseError,
@@ -18,13 +19,12 @@ from daq_config_server.converters._converters import (
     detector_xy_lut,
     display_config_to_model,
     undulator_energy_gap_lut,
-    xml_to_dict,
 )
 from daq_config_server.converters.convert import get_converted_file_contents
 from daq_config_server.converters.models import (
     DisplayConfig,
     DisplayConfigData,
-    GenericLut,
+    GenericLookupTable,
 )
 from tests.constants import (
     TestDataPaths,
@@ -46,7 +46,9 @@ def test_get_converted_file_contents_converts_pydantic_model_to_dict(
     mock_file_converter_map: dict[str, Callable[[str], Any]],
 ):
     file_to_convert = TestDataPaths.TEST_GOOD_LUT_PATH
-    model = GenericLut(column_names=["column1", "column2"], rows=[[1, 2], [2, 3]])
+    model = GenericLookupTable(
+        column_names=["column1", "column2"], rows=[[1, 2], [2, 3]]
+    )
     mock_convert_function = MagicMock(return_value=model)
     mock_file_converter_map[str(file_to_convert)] = mock_convert_function
     result = get_converted_file_contents(file_to_convert)
@@ -66,7 +68,7 @@ def test_error_is_raised_if_file_cant_be_parsed(
 def test_parse_lut_to_dict_gives_expected_result_and_can_be_jsonified():
     with open(TestDataPaths.TEST_GOOD_LUT_PATH) as f:
         contents = f.read()
-    expected = GenericLut(
+    expected = GenericLookupTable(
         column_names=["energy_eV", "gap_mm"],
         rows=[[5700, 5.4606], [5760, 5.5], [6000, 5.681], [6500, 6.045]],
     )
@@ -84,7 +86,9 @@ def test_parsing_bad_lut_causes_error():
 
 def test_lut_with_different_number_of_row_items_to_column_names_causes_error():
     with pytest.raises(ValueError):
-        GenericLut(column_names=["column1", "column2"], rows=[[1, 2], [1, 2, 3]])
+        GenericLookupTable(
+            column_names=["column1", "column2"], rows=[[1, 2], [1, 2, 3]]
+        )
 
 
 def test_display_config_to_model_gives_expected_result_and_can_be_jsonified():
@@ -162,7 +166,7 @@ def test_xml_to_dict_gives_expected_result_and_can_be_jsonified():
             "tolerance": "1.0",
         },
     }
-    result = xml_to_dict(contents)
+    result = xmltodict.parse(contents)
     assert result == expected
     json.dumps(result)
 
@@ -232,7 +236,7 @@ def test_detector_xy_lut_gives_expected_results():
         "150 152.2 166.26\n"
         "800 152.08 160.96\n"
     )
-    expected = GenericLut(
+    expected = GenericLookupTable(
         column_names=["detector_distances_mm", "beam_centre_x_mm", "beam_centre_y_mm"],
         rows=[[150, 152.2, 166.26], [800, 152.08, 160.96]],
     )
@@ -253,7 +257,7 @@ def test_beam_line_pitch_lut_gives_expected_result():
         "12.69285 -0.61243\n"
         "11.40557 -0.60849\n"
     )
-    expected = GenericLut(
+    expected = GenericLookupTable(
         column_names=["bragg_angle_deg", "pitch_mrad"],
         rows=[
             [16.40956, -0.62681],
@@ -275,7 +279,7 @@ def test_beam_line_roll_lut_gives_expected_result():
         "26.4095 2.6154\n"
         "6.3075  2.6154\n"
     )
-    expected = GenericLut(
+    expected = GenericLookupTable(
         column_names=["bragg_angle_deg", "roll_mrad"],
         rows=[[26.4095, 2.6154], [6.3075, 2.6154]],
     )
@@ -295,7 +299,7 @@ def test_undulator_gap_lut_gives_expected_result():
         "6000		5.681\n"
         "6500		6.045\n"
     )
-    expected = GenericLut(
+    expected = GenericLookupTable(
         column_names=["energy_eV", "gap_mm"],
         rows=[[5700, 5.4606], [5760, 5.5], [6000, 5.681], [6500, 6.045]],
     )

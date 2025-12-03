@@ -1,6 +1,7 @@
 from collections.abc import Callable
 from typing import Any
 
+import xmltodict
 from pydantic import BaseModel
 
 from daq_config_server.converters._converters import (
@@ -10,7 +11,6 @@ from daq_config_server.converters._converters import (
     detector_xy_lut,
     display_config_to_model,
     undulator_energy_gap_lut,
-    xml_to_dict,
 )
 
 FILE_TO_CONVERTER_MAP: dict[str, Callable[[str], BaseModel | dict[str, Any]]] = {  # type: ignore
@@ -20,10 +20,10 @@ FILE_TO_CONVERTER_MAP: dict[str, Callable[[str], BaseModel | dict[str, Any]]] = 
     "/dls_sw/i04/software/bluesky/scratch/display.configuration": display_config_to_model,  # noqa
     "/dls_sw/i19-1/software/daq_configuration/domain/display.configuration": display_config_to_model,  # noqa
     "/dls_sw/i24/software/gda_versions/var/display.configuration": display_config_to_model,  # noqa
-    "/dls_sw/i03/software/gda/configurations/i03-config/xml/jCameraManZoomLevels.xml": xml_to_dict,  # noqa
-    "/dls_sw/i04/software/bluesky/scratch/jCameraManZoomLevels.xml": xml_to_dict,
-    "/dls_sw/i19-1/software/gda_versions/gda/config/xml/jCameraManZoomLevels.xml": xml_to_dict,  # noqa
-    "/dls_sw/i24/software/gda_versions/gda/config/xml/jCameraManZoomLevels.xml": xml_to_dict,  # noqa
+    "/dls_sw/i03/software/gda/configurations/i03-config/xml/jCameraManZoomLevels.xml": xmltodict.parse,  # noqa
+    "/dls_sw/i04/software/bluesky/scratch/jCameraManZoomLevels.xml": xmltodict.parse,
+    "/dls_sw/i19-1/software/gda_versions/gda/config/xml/jCameraManZoomLevels.xml": xmltodict.parse,  # noqa
+    "/dls_sw/i24/software/gda_versions/gda/config/xml/jCameraManZoomLevels.xml": xmltodict.parse,  # noqa
     "/dls_sw/i03/software/daq_configuration/domain/beamlineParameters": beamline_parameters_to_dict,  # noqa
     "/dls_sw/i04/software/daq_configuration/domain/beamlineParameters": beamline_parameters_to_dict,  # noqa
     "/dls_sw/i03/software/daq_configuration/lookup/DetDistToBeamXYConverter.txt": detector_xy_lut,  # noqa

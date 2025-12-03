@@ -3,22 +3,25 @@ from typing import Any
 from unittest.mock import patch
 
 import pytest
+import xmltodict
+from pydantic import BaseModel
 
 from daq_config_server.converters._converters import (
     beamline_parameters_to_dict,
     display_config_to_model,
     undulator_energy_gap_lut,
-    xml_to_dict,
 )
 from tests.constants import ServerFilePaths, TestDataPaths
 
 
 @pytest.fixture
-def mock_file_converter_map() -> Generator[dict[str, Callable[[str], Any]], None, None]:
+def mock_file_converter_map() -> Generator[
+    dict[str, Callable[[str], BaseModel | dict[str, Any]]], None, None
+]:
     with patch(
         "daq_config_server.converters._file_converter_map.FILE_TO_CONVERTER_MAP",
         {
-            str(TestDataPaths.TEST_GOOD_XML_PATH): xml_to_dict,
+            str(TestDataPaths.TEST_GOOD_XML_PATH): xmltodict.parse,
             str(
                 TestDataPaths.TEST_BEAMLINE_PARAMETERS_PATH
             ): beamline_parameters_to_dict,

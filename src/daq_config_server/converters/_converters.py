@@ -1,10 +1,8 @@
 from typing import Any
 
-import xmltodict
-
 from daq_config_server.converters._converter_utils import (
-    BEAMLINE_PARAMETER_KEYWORDS,
-    GenericLut,
+    ALLOWED_BEAMLINE_PARAMETER_STRINGS,
+    GenericLookupTable,
     parse_lut,
     parse_value,
     remove_comments,
@@ -14,7 +12,7 @@ from daq_config_server.converters.models import DisplayConfig, DisplayConfigData
 
 def beamline_parameters_to_dict(contents: str) -> dict[str, Any]:
     """Extracts the key value pairs from a beamline parameters file. If the value
-    is in BEAMLINE_PARAMETER_KEYWORDS, it leaves it as a string. Otherwise, it is
+    is in ALLOWED_BEAMLINE_PARAMETER_STRINGS, it leaves it as a string. Otherwise, it is
     converted to a number or bool."""
     lines = contents.splitlines()
     config_pairs: dict[str, Any] = {}
@@ -30,7 +28,7 @@ def beamline_parameters_to_dict(contents: str) -> dict[str, Any]:
 
     # Parse each value
     for param, value in config_pairs.items():
-        if value not in BEAMLINE_PARAMETER_KEYWORDS:
+        if value not in ALLOWED_BEAMLINE_PARAMETER_STRINGS:
             config_pairs[param] = parse_value(value)
     return dict(config_pairs)
 
@@ -63,11 +61,7 @@ def display_config_to_model(contents: str) -> DisplayConfig:
     return DisplayConfig(zoom_levels=zoom_levels)
 
 
-def xml_to_dict(contents: str) -> dict[str, Any]:
-    return xmltodict.parse(contents)
-
-
-def detector_xy_lut(contents: str) -> GenericLut:
+def detector_xy_lut(contents: str) -> GenericLookupTable:
     return parse_lut(
         contents,
         ("detector_distances_mm", float),
@@ -76,13 +70,13 @@ def detector_xy_lut(contents: str) -> GenericLut:
     )
 
 
-def beamline_pitch_lut(contents: str) -> GenericLut:
+def beamline_pitch_lut(contents: str) -> GenericLookupTable:
     return parse_lut(contents, ("bragg_angle_deg", float), ("pitch_mrad", float))
 
 
-def beamline_roll_lut(contents: str) -> GenericLut:
+def beamline_roll_lut(contents: str) -> GenericLookupTable:
     return parse_lut(contents, ("bragg_angle_deg", float), ("roll_mrad", float))
 
 
-def undulator_energy_gap_lut(contents: str) -> GenericLut:
+def undulator_energy_gap_lut(contents: str) -> GenericLookupTable:
     return parse_lut(contents, ("energy_eV", int), ("gap_mm", float))

@@ -28,7 +28,7 @@ class DisplayConfig(BaseModel):
         return self
 
 
-class GenericLut(BaseModel):
+class GenericLookupTable(BaseModel):
     column_names: list[str]
     rows: list[list[int | float]]
 

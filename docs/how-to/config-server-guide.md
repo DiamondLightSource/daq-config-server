@@ -15,7 +15,7 @@ You can then make a request through this client through its `get_file_contents` 
 ```python
 config_server.get_file_contents(FILE_PATH,reset_cached_result=True)
 ```
-By default, this will return the file's raw string output - which includes things like linebreaks. It is up to you to format this output - using `splitlines()` will get you a list where each item is a line in the file. `get_file_contents` has a `desired_return_type` parameter where you can instead ask for a `dict`, `bytes` or a `pydantic model`. The server will try and do the conversion, and respond with an HTTP error if the requested file is incompatible with that type, or a pydantic validation error if the data cannot be converted to the pydantic model provided. Custom [file converters](#file-converters) can be used to specify how a file should be converted to a dict or pydantic model.
+By default, this will return the file's raw string output - which includes things like linebreaks. It is up to you to format this output - using `splitlines()` will get you a list where each item is a line in the file. `get_file_contents` has a `desired_return_type` parameter where you can instead ask for a `dict`, `bytes` or a one of the `pydantic models` defined in the server. The server will try and do the conversion, and respond with an HTTP error if the requested file is incompatible with that type, or a pydantic validation error if the data cannot be converted to the pydantic model provided. Custom [file converters](#file-converters) can be used to specify how a file should be converted to a dict or pydantic model.
 
 (file-converters)=
 # File converters

@@ -1,9 +1,9 @@
 import ast
 from typing import Any
 
-from daq_config_server.converters.models import GenericLut
+from daq_config_server.converters.models import GenericLookupTable
 
-BEAMLINE_PARAMETER_KEYWORDS = ["FB", "FULL", "deadtime"]
+ALLOWED_BEAMLINE_PARAMETER_STRINGS = ["FB", "FULL", "deadtime"]
 
 
 class ConverterParseError(Exception): ...
@@ -27,7 +27,7 @@ def parse_value(value: str, convert_to: type | None = None) -> Any:
     return value
 
 
-def parse_lut(contents: str, *params: tuple[str, type | None]) -> GenericLut:
+def parse_lut(contents: str, *params: tuple[str, type | None]) -> GenericLookupTable:
     """Converts a lookup table to a pydantic model, containing the names of each column
     and the rows as a 2D list.
 
@@ -45,4 +45,4 @@ def parse_lut(contents: str, *params: tuple[str, type | None]) -> GenericLut:
         rows.append(
             [parse_value(value, types[i]) for i, value in enumerate(line.split())]
         )
-    return GenericLut(column_names=column_names, rows=rows)
+    return GenericLookupTable(column_names=column_names, rows=rows)
