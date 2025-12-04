@@ -190,7 +190,7 @@ def test_bad_beamline_parameters_with_non_keyword_string_value_causes_error():
         beamline_parameters_to_dict(contents)
 
 
-def test_beam_line_parameters_with_repeated_key_causes_error():
+def test_beamline_parameters_with_repeated_key_causes_error():
     input = "thing = 1\nthing = 2"
     with pytest.raises(ValueError, match="Repeated key in parameters: thing"):
         beamline_parameters_to_dict(input)
@@ -245,6 +245,33 @@ def test_detector_xy_lut_gives_expected_results():
     )
     result = detector_xy_lut(input)
     assert result == expected
+
+
+def test_generic_lut_model_get_value_function():
+    my_lut = GenericLookupTable(
+        column_names=["detector_distances_mm", "beam_centre_x_mm", "beam_centre_y_mm"],
+        rows=[[150, 152.2, 166.26], [800, 152.08, 160.96]],
+    )
+    assert my_lut.get_value("detector_distances_mm", 150, "beam_centre_x_mm") == 152.2
+    assert my_lut.get_value("beam_centre_y_mm", 160.96, "detector_distances_mm") == 800
+    with pytest.raises(ValueError):
+        # value doesn't exist
+        my_lut.get_value("beam_centre_y_mm", 160.97, "detector_distances_mm")
+    assert (
+        my_lut.get_value(
+            "beam_centre_x_mm", 153, "beam_centre_y_mm", value_must_exist=False
+        )
+        == 166.26  # get closest value
+    )
+
+
+def test_generic_lut_model_columns_function():
+    my_lut = GenericLookupTable(
+        column_names=["detector_distances_mm", "beam_centre_x_mm", "beam_centre_y_mm"],
+        rows=[[150, 152.2, 166.26], [800, 152.08, 160.96]],
+    )
+    expected_columns = [[150, 800], [152.2, 152.08], [166.26, 160.96]]
+    assert my_lut.columns() == expected_columns
 
 
 def test_beamline_pitch_lut_gives_expected_result():
