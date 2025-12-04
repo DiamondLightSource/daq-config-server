@@ -1,11 +1,11 @@
 import json
 import os
-from typing import Any
+from typing import Any, get_type_hints
 from unittest.mock import MagicMock
 
 import pytest
 import requests
-from pydantic import ValidationError
+from pydantic import BaseModel, ValidationError
 
 import daq_config_server.converters._file_converter_map as file_converter_map
 from daq_config_server.client import ConfigServer
@@ -145,3 +145,17 @@ def test_all_files_in_file_converter_map_can_be_converted_to_dict(server: Config
     for filename in file_converter_map.FILE_TO_CONVERTER_MAP.keys():
         result = server.get_file_contents(filename, dict)
         assert isinstance(result, dict)
+
+
+@pytest.mark.requires_local_server
+def test_all_files_in_file_converter_map_can_be_converted_to_target_type(
+    server: ConfigServer,
+):
+    for filename, converter in file_converter_map.FILE_TO_CONVERTER_MAP.items():
+        try:
+            return_type = get_type_hints(converter)["return"]
+        except KeyError:  # needed for xmltodict.parse()
+            return_type = dict
+        assert return_type is dict or issubclass(return_type, BaseModel)
+        result = server.get_file_contents(filename, return_type)
+        assert isinstance(result, return_type)
