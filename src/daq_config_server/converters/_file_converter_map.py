@@ -2,7 +2,6 @@ from collections.abc import Callable
 from typing import Any
 
 import xmltodict
-from pydantic import BaseModel
 
 from daq_config_server.converters._converters import (
     beamline_parameters_to_dict,
@@ -12,8 +11,9 @@ from daq_config_server.converters._converters import (
     display_config_to_model,
     undulator_energy_gap_lut,
 )
+from daq_config_server.converters.models import ConfigModel
 
-FILE_TO_CONVERTER_MAP: dict[str, Callable[[str], BaseModel | dict[str, Any]]] = {  # type: ignore
+FILE_TO_CONVERTER_MAP: dict[str, Callable[[str], ConfigModel | dict[str, Any]]] = {  # type: ignore
     "/tests/test_data/test_good_lut.txt": undulator_energy_gap_lut,  # For system tests # noqa
     "/dls_sw/i23/software/aithre/aithre_display.configuration": display_config_to_model,
     "/dls_sw/i03/software/gda_versions/var/display.configuration": display_config_to_model,  # noqa

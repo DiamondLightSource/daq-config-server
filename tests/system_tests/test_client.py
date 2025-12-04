@@ -5,11 +5,15 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 import requests
-from pydantic import BaseModel, ValidationError
+from pydantic import ValidationError
 
 import daq_config_server.converters._file_converter_map as file_converter_map
 from daq_config_server.client import ConfigServer
-from daq_config_server.converters.models import DisplayConfig, GenericLookupTable
+from daq_config_server.converters.models import (
+    ConfigModel,
+    DisplayConfig,
+    GenericLookupTable,
+)
 from tests.constants import (
     ServerFilePaths,
     TestDataPaths,
@@ -157,6 +161,6 @@ def test_all_files_in_file_converter_map_can_be_converted_to_target_type(
     ):
         for filename, converter in file_converter_map.FILE_TO_CONVERTER_MAP.items():
             return_type = get_type_hints(converter)["return"]
-            assert return_type is dict or issubclass(return_type, BaseModel)
+            assert return_type is dict or issubclass(return_type, ConfigModel)
             result = server.get_file_contents(filename, return_type)
             assert isinstance(result, return_type)

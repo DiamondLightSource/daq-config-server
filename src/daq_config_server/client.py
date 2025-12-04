@@ -5,15 +5,16 @@ from typing import Any, TypeVar, get_origin, overload
 
 import requests
 from cachetools import TTLCache, cachedmethod
-from pydantic import BaseModel, TypeAdapter
+from pydantic import TypeAdapter
 from requests import Response
 from requests.exceptions import HTTPError
 
 from daq_config_server.app import ValidAcceptHeaders
+from daq_config_server.converters.models import ConfigModel
 
 from .constants import ENDPOINTS
 
-TModel = TypeVar("TModel", bound=BaseModel)
+TModel = TypeVar("TModel", bound=ConfigModel)
 TNonModel = TypeVar("TNonModel", str, bytes, dict[str, Any])
 
 
@@ -27,7 +28,7 @@ def _get_mime_type(
     if (
         get_origin(requested_return_type) is dict
         or requested_return_type is dict
-        or issubclass(requested_return_type, BaseModel)
+        or issubclass(requested_return_type, ConfigModel)
     ):
         return ValidAcceptHeaders.JSON
     elif requested_return_type is bytes:

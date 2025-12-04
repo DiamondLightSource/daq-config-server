@@ -1,7 +1,10 @@
 from pydantic import BaseModel, model_validator
 
 
-class DisplayConfigData(BaseModel):
+class ConfigModel(BaseModel): ...
+
+
+class DisplayConfigData(ConfigModel):
     crosshairX: int
     crosshairY: int
     topLeftX: int
@@ -10,7 +13,7 @@ class DisplayConfigData(BaseModel):
     bottomRightY: int
 
 
-class DisplayConfig(BaseModel):
+class DisplayConfig(ConfigModel):
     zoom_levels: dict[float, DisplayConfigData]
     required_zoom_levels: set[float] | None = None
 
@@ -28,7 +31,7 @@ class DisplayConfig(BaseModel):
         return self
 
 
-class GenericLookupTable(BaseModel):
+class GenericLookupTable(ConfigModel):
     column_names: list[str]
     rows: list[list[int | float]]
 

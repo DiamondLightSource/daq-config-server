@@ -4,19 +4,19 @@ from unittest.mock import patch
 
 import pytest
 import xmltodict
-from pydantic import BaseModel
 
 from daq_config_server.converters._converters import (
     beamline_parameters_to_dict,
     display_config_to_model,
     undulator_energy_gap_lut,
 )
+from daq_config_server.converters.models import ConfigModel
 from tests.constants import ServerFilePaths, TestDataPaths
 
 
 @pytest.fixture
 def mock_file_converter_map() -> Generator[
-    Mapping[str, Callable[[str], BaseModel | dict[str, Any]]], None, None
+    Mapping[str, Callable[[str], ConfigModel | dict[str, Any]]], None, None
 ]:
     with patch(
         "daq_config_server.converters._file_converter_map.FILE_TO_CONVERTER_MAP",
