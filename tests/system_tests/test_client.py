@@ -1,7 +1,7 @@
 import json
 import os
 from typing import Any, get_type_hints
-from unittest.mock import MagicMock
+from unittest.mock import MagicMock, patch
 
 import pytest
 import requests
@@ -151,8 +151,12 @@ def test_all_files_in_file_converter_map_can_be_converted_to_dict(server: Config
 def test_all_files_in_file_converter_map_can_be_converted_to_target_type(
     server: ConfigServer,
 ):
-    for filename, converter in file_converter_map.FILE_TO_CONVERTER_MAP.items():
-        return_type = get_type_hints(converter)["return"]
-        assert return_type is dict or issubclass(return_type, BaseModel)
-        result = server.get_file_contents(filename, return_type)
-        assert isinstance(result, return_type)
+    with patch(
+        "daq_config_server.converters._file_converter_map.xmltodict.parse.__annotations__",
+        {"return": dict},  # Force a return type for xmltodict.parse()
+    ):
+        for filename, converter in file_converter_map.FILE_TO_CONVERTER_MAP.items():
+            return_type = get_type_hints(converter)["return"]
+            assert return_type is dict or issubclass(return_type, BaseModel)
+            result = server.get_file_contents(filename, return_type)
+            assert isinstance(result, return_type)
