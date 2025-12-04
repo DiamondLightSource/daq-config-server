@@ -270,7 +270,7 @@ def test_beamline_pitch_lut_gives_expected_result():
     assert result == expected
 
 
-def test_beam_line_roll_lut_gives_expected_result():
+def test_beamline_roll_lut_gives_expected_result():
     input = (
         "#Bragg angle against roll( absolute number)\n"
         "#reloadLookupTables()\n"
