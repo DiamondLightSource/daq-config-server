@@ -13,17 +13,15 @@ from daq_config_server.app import ValidAcceptHeaders
 
 from .constants import ENDPOINTS
 
-T = TypeVar("T", bound=BaseModel)
+TModel = TypeVar("TModel", bound=BaseModel)
+TNonModel = TypeVar("TNonModel", str, bytes, dict[str, Any])
 
 
 class TypeConversionException(Exception): ...
 
 
 def _get_mime_type(
-    requested_return_type: type[str]
-    | type[bytes]
-    | type[dict[str, Any]]
-    | type[BaseModel],
+    requested_return_type: type[TModel | TNonModel],
 ) -> ValidAcceptHeaders:
     # Get correct mapping for typed dict or plain dict
     if (
@@ -144,33 +142,17 @@ class ConfigServer:
     def get_file_contents(
         self,
         file_path: str | Path,
-        desired_return_type: type[str] = str,
+        desired_return_type: type[TNonModel] = str,
         reset_cached_result: bool = False,
-    ) -> str: ...
+    ) -> TNonModel: ...
 
     @overload
     def get_file_contents(
         self,
         file_path: str | Path,
-        desired_return_type: type[bytes],
+        desired_return_type: type[TModel],
         reset_cached_result: bool = False,
-    ) -> bytes: ...
-
-    @overload
-    def get_file_contents(
-        self,
-        file_path: str | Path,
-        desired_return_type: type[dict[str, Any]],
-        reset_cached_result: bool = False,
-    ) -> dict[str, Any]: ...
-
-    @overload
-    def get_file_contents(
-        self,
-        file_path: str | Path,
-        desired_return_type: type[T],
-        reset_cached_result: bool = False,
-    ) -> T: ...
+    ) -> TModel: ...
 
     def get_file_contents(
         self,

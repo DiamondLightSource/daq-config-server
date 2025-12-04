@@ -38,7 +38,7 @@ class GenericLookupTable(BaseModel):
         for row in self.rows:
             if len(row) != n_columns:
                 raise ValueError(
-                    f"Length of row {row} does not match number \
-                    of columns: {self.column_names}"
+                    f"Length of row {row} does not match number "
+                    f"of columns: {self.column_names}"
                 )
         return self

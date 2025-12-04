@@ -85,7 +85,7 @@ def test_parsing_bad_lut_causes_error():
 
 
 def test_lut_with_different_number_of_row_items_to_column_names_causes_error():
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match=" does not match number of columns:"):
         GenericLookupTable(
             column_names=["column1", "column2"], rows=[[1, 2], [1, 2, 3]]
         )
@@ -138,7 +138,10 @@ def test_display_config_with_wrong_zoom_levels_causes_error():
             topLeftY=283,
         ),
     }
-    with pytest.raises(ValueError):
+    with pytest.raises(
+        ValueError,
+        match="Zoom levels {1.0, 2.5} do not match required zoom levels: {1.0, 3.0}",
+    ):
         DisplayConfig(zoom_levels=zoom_levels, required_zoom_levels=({1.0, 3.0}))
 
 
@@ -183,13 +186,13 @@ def test_beamline_parameters_to_dict_gives_expected_result():
 def test_bad_beamline_parameters_with_non_keyword_string_value_causes_error():
     with open(TestDataPaths.TEST_BAD_BEAMLINE_PARAMETERS_PATH) as f:
         contents = f.read()
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="malformed node or string"):
         beamline_parameters_to_dict(contents)
 
 
 def test_beam_line_parameters_with_repeated_key_causes_error():
     input = "thing = 1\nthing = 2"
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="Repeated key in parameters: thing"):
         beamline_parameters_to_dict(input)
 
 

@@ -10,7 +10,8 @@ from httpx import Response
 from daq_config_server.app import ValidAcceptHeaders
 from daq_config_server.client import (
     ConfigServer,
-    T,
+    TModel,
+    TNonModel,
     TypeConversionException,
     _get_mime_type,
 )
@@ -143,5 +144,5 @@ def test_get_file_contents_with_untyped_dict(mock_request: MagicMock):
         (DisplayConfig, ValidAcceptHeaders.JSON),
     ],
 )
-def test_get_mime_type(input: type[T], expected: ValidAcceptHeaders):
+def test_get_mime_type(input: type[TModel | TNonModel], expected: ValidAcceptHeaders):
     assert _get_mime_type(input) == expected
