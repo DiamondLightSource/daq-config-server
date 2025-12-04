@@ -12,6 +12,10 @@ class TestDataPaths:
         "beamline_parameters.txt"
     )
 
+    TEST_BAD_BEAMLINE_PARAMETERS_PATH = TEST_DATA_DIR_PATH.joinpath(
+        "bad_beamline_parameters.txt"
+    )
+
     TEST_BAD_JSON_PATH = TEST_DATA_DIR_PATH.joinpath("test_bad_json")
 
     TEST_GOOD_JSON_PATH = TEST_DATA_DIR_PATH.joinpath("test_good_json.json")
@@ -26,6 +30,20 @@ class TestDataPaths:
 
     TEST_INVALID_FILE_PATH = TEST_DATA_DIR_PATH.joinpath("invalid_file")
 
+    TEST_GOOD_LUT_PATH = TEST_DATA_DIR_PATH.joinpath("test_good_lut.txt")
+
+    TEST_BAD_LUT_PATH = TEST_DATA_DIR_PATH.joinpath("test_bad_lut.txt")
+
+    TEST_GOOD_DISPLAY_CONFIG_PATH = TEST_DATA_DIR_PATH.joinpath(
+        "test_display.configuration"
+    )
+
+    TEST_GOOD_XML_PATH = TEST_DATA_DIR_PATH.joinpath("test_xml.xml")
+
+    EXPECTED_BEAMLINE_PARAMETERS_JSON_PATH = TEST_DATA_DIR_PATH.joinpath(
+        "expected_beamline_parameters.json"
+    )
+
 
 # These are the file locations accessible from the server running in a container
 @dataclass
@@ -34,6 +52,7 @@ class ServerFilePaths:
     GOOD_JSON_FILE = Path("/tests/test_data/test_good_json.json")
     BAD_JSON_FILE = Path("/tests/test_data/test_bad_json")
     FILE_IN_GOOD_DIR = Path("/tests/test_data/test_bad_json")
+    GOOD_LUT = Path("/tests/test_data/test_good_lut.txt")
 
 
 TEST_CONFIG_PATH = TEST_DATA_DIR_PATH.joinpath("test_config.yaml")

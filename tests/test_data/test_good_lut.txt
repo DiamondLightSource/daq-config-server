@@ -1,0 +1,13 @@
+# Used to convert from energy to gap. Constructed from tables for 3rd, 5th and 7th harmonic.
+# It is important that at the point of change from one harmonic to another that there is
+# point for the same energy from both harmomics to prevent invalid interpolation.
+# run reloadLookupTables() when done
+Units eV mm
+5700		5.4606
+5760		5.5
+6000		5.681
+6500		6.045
+#24500		7.2
+#25000		7.3
+Units anything on this line should be ignored by converter
+# anything on this line should be ignored by converter

@@ -10,11 +10,13 @@ from httpx import Response
 from daq_config_server.app import ValidAcceptHeaders
 from daq_config_server.client import (
     ConfigServer,
-    T,
+    TModel,
+    TNonModel,
     TypeConversionException,
     _get_mime_type,
 )
 from daq_config_server.constants import ENDPOINTS
+from daq_config_server.converters.models import DisplayConfig, GenericLookupTable
 from daq_config_server.testing import make_test_response
 
 test_path = Path("test")
@@ -138,7 +140,9 @@ def test_get_file_contents_with_untyped_dict(mock_request: MagicMock):
         (dict[Any, Any], ValidAcceptHeaders.JSON),
         (str, ValidAcceptHeaders.PLAIN_TEXT),
         (bytes, ValidAcceptHeaders.RAW_BYTES),
+        (GenericLookupTable, ValidAcceptHeaders.JSON),
+        (DisplayConfig, ValidAcceptHeaders.JSON),
     ],
 )
-def test_get_mime_type(input: type[T], expected: ValidAcceptHeaders):
+def test_get_mime_type(input: type[TModel | TNonModel], expected: ValidAcceptHeaders):
     assert _get_mime_type(input) == expected

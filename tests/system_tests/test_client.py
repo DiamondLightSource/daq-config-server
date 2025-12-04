@@ -1,12 +1,19 @@
 import json
 import os
-from typing import Any
-from unittest.mock import MagicMock
+from typing import Any, get_type_hints
+from unittest.mock import MagicMock, patch
 
 import pytest
 import requests
+from pydantic import ValidationError
 
+import daq_config_server.converters._file_converter_map as file_converter_map
 from daq_config_server.client import ConfigServer
+from daq_config_server.converters.models import (
+    ConfigModel,
+    DisplayConfig,
+    GenericLookupTable,
+)
 from tests.constants import (
     ServerFilePaths,
     TestDataPaths,
@@ -104,3 +111,56 @@ def test_request_with_file_not_on_whitelist(server: ConfigServer):
         server.get_file_contents(
             file_path,
         )
+
+
+@pytest.mark.requires_local_server
+def test_request_for_file_with_converter_works(server: ConfigServer):
+    expected = {
+        "column_names": ["energy_eV", "gap_mm"],
+        "rows": [[5700, 5.4606], [5760, 5.5], [6000, 5.681], [6500, 6.045]],
+    }
+    result = server.get_file_contents(ServerFilePaths.GOOD_LUT, dict)
+    assert result == expected
+
+
+@pytest.mark.requires_local_server
+def test_request_for_file_with_converter_works_with_pydantic_model(
+    server: ConfigServer,
+):
+    expected = GenericLookupTable(
+        column_names=["energy_eV", "gap_mm"],
+        rows=[[5700, 5.4606], [5760, 5.5], [6000, 5.681], [6500, 6.045]],
+    )
+    result = server.get_file_contents(ServerFilePaths.GOOD_LUT, GenericLookupTable)
+    assert isinstance(result, GenericLookupTable)
+    assert result == expected
+
+
+@pytest.mark.requires_local_server
+def test_request_for_file_with_converter_with_wrong_pydantic_model_errors(
+    server: ConfigServer,
+):
+    with pytest.raises(ValidationError):
+        server.get_file_contents(ServerFilePaths.GOOD_LUT, DisplayConfig)
+
+
+@pytest.mark.requires_local_server
+def test_all_files_in_file_converter_map_can_be_converted_to_dict(server: ConfigServer):
+    for filename in file_converter_map.FILE_TO_CONVERTER_MAP.keys():
+        result = server.get_file_contents(filename, dict)
+        assert isinstance(result, dict)
+
+
+@pytest.mark.requires_local_server
+def test_all_files_in_file_converter_map_can_be_converted_to_target_type(
+    server: ConfigServer,
+):
+    with patch(
+        "daq_config_server.converters._file_converter_map.xmltodict.parse.__annotations__",
+        {"return": dict},  # Force a return type for xmltodict.parse()
+    ):
+        for filename, converter in file_converter_map.FILE_TO_CONVERTER_MAP.items():
+            return_type = get_type_hints(converter)["return"]
+            assert return_type is dict or issubclass(return_type, ConfigModel)
+            result = server.get_file_contents(filename, return_type)
+            assert isinstance(result, return_type)
