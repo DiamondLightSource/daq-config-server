@@ -20,6 +20,7 @@ from tests.constants import (
 )
 
 SERVER_ADDRESS = "http://0.0.0.0:8555"
+DEPLOYED_SERVER_ADDRESS = "https://daq-config.diamond.ac.uk"
 
 # Docs for running these system tests will be added in https://github.com/DiamondLightSource/daq-config-server/issues/68
 
@@ -27,6 +28,11 @@ SERVER_ADDRESS = "http://0.0.0.0:8555"
 @pytest.fixture
 def server():
     return ConfigServer(SERVER_ADDRESS)
+
+
+@pytest.fixture
+def deployed_server():
+    return ConfigServer(DEPLOYED_SERVER_ADDRESS)
 
 
 @pytest.mark.requires_local_server
@@ -144,23 +150,29 @@ def test_request_for_file_with_converter_with_wrong_pydantic_model_errors(
         server.get_file_contents(ServerFilePaths.GOOD_LUT, DisplayConfig)
 
 
-@pytest.mark.requires_local_server
-def test_all_files_in_file_converter_map_can_be_converted_to_dict(server: ConfigServer):
+@pytest.mark.requires_deployed_server
+def test_all_files_in_file_converter_map_can_be_converted_to_dict(
+    deployed_server: ConfigServer,
+):
     for filename in file_converter_map.FILE_TO_CONVERTER_MAP.keys():
-        result = server.get_file_contents(filename, dict)
+        if filename.startswith("/tests/test_data/"):
+            continue
+        result = deployed_server.get_file_contents(filename, dict)
         assert isinstance(result, dict)
 
 
-@pytest.mark.requires_local_server
+@pytest.mark.requires_deployed_server
 def test_all_files_in_file_converter_map_can_be_converted_to_target_type(
-    server: ConfigServer,
+    deployed_server: ConfigServer,
 ):
     with patch(
         "daq_config_server.converters._file_converter_map.xmltodict.parse.__annotations__",
         {"return": dict},  # Force a return type for xmltodict.parse()
     ):
         for filename, converter in file_converter_map.FILE_TO_CONVERTER_MAP.items():
+            if filename.startswith("/tests/test_data/"):
+                continue
             return_type = get_type_hints(converter)["return"]
             assert return_type is dict or issubclass(return_type, ConfigModel)
-            result = server.get_file_contents(filename, return_type)
+            result = deployed_server.get_file_contents(filename, return_type)
             assert isinstance(result, return_type)

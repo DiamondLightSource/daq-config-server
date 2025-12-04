@@ -75,6 +75,7 @@ addopts = """
     """
 markers = """
     requires_local_server: mark a test which requires locally hosting the config server
+    requires_deployed_server: mark a test which requires talking to the deployed config server
     use_threading: mark a test which will kickoff the background thread in WhitelistFetcher
 """
 
