@@ -13,7 +13,7 @@ from daq_config_server.converters._converters import (
     undulator_energy_gap_lut,
 )
 
-xmltodict.parse.__annotations__["return"] = dict[str, int]
+xmltodict.parse.__annotations__["return"] = dict[str, Any]
 
 FILE_TO_CONVERTER_MAP: dict[str, Callable[[str], BaseModel | dict[str, Any]]] = {  # type: ignore
     "/tests/test_data/test_good_lut.txt": undulator_energy_gap_lut,  # For system tests # noqa

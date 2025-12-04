@@ -1,4 +1,4 @@
-from collections.abc import Callable, Generator
+from collections.abc import Callable, Generator, Mapping
 from typing import Any
 from unittest.mock import patch
 
@@ -16,7 +16,7 @@ from tests.constants import ServerFilePaths, TestDataPaths
 
 @pytest.fixture
 def mock_file_converter_map() -> Generator[
-    dict[str, Callable[[str], BaseModel | dict[str, Any]]], None, None
+    Mapping[str, Callable[[str], BaseModel | dict[str, Any]]], None, None
 ]:
     with patch(
         "daq_config_server.converters._file_converter_map.FILE_TO_CONVERTER_MAP",
