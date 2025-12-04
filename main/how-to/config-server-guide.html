@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Guide to using the config-server &#8212; daq-config-server 1.0.0rc3.dev6+g88923a99f documentation</title>
+    <title>Guide to using the config-server &#8212; daq-config-server 1.0.0rc3.dev7+gde81d4986 documentation</title>
   
   
   
@@ -41,7 +41,7 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../_static/documentation_options.js?v=441ce028"></script>
+    <script src="../_static/documentation_options.js?v=f1bfd250"></script>
     <script src="../_static/doctools.js?v=9bcbadda"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -400,6 +400,7 @@
 <li class="toctree-l1 current active"><a class="current reference internal" href="#">Guide to using the config-server</a></li>
 
 
+
 <li class="toctree-l1"><a class="reference internal" href="contribute.html">Contribute to the project</a></li>
 <li class="toctree-l1"><a class="reference internal" href="run-container.html">Run in a container</a></li>
 </ul>
@@ -475,7 +476,12 @@
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">config_server</span><span class="o">.</span><span class="n">get_file_contents</span><span class="p">(</span><span class="n">FILE_PATH</span><span class="p">,</span><span class="n">reset_cached_result</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>By default, this will return the file’s raw string output - which includes things like linebreaks. It is up to you to format this output - using <code class="docutils literal notranslate"><span class="pre">splitlines()</span></code> will get you a list where each item is a line in the file. <code class="docutils literal notranslate"><span class="pre">get_file_contents</span></code> has a <code class="docutils literal notranslate"><span class="pre">desired_return_type</span></code> parameter where you can instead ask for a <code class="docutils literal notranslate"><span class="pre">dict</span></code> or <code class="docutils literal notranslate"><span class="pre">bytes</span></code>. The server will try and do the conversion, and respond with an HTTP error if the requested file is incompatible with that type.</p>
+<p>By default, this will return the file’s raw string output - which includes things like linebreaks. It is up to you to format this output - using <code class="docutils literal notranslate"><span class="pre">splitlines()</span></code> will get you a list where each item is a line in the file. <code class="docutils literal notranslate"><span class="pre">get_file_contents</span></code> has a <code class="docutils literal notranslate"><span class="pre">desired_return_type</span></code> parameter where you can instead ask for a <code class="docutils literal notranslate"><span class="pre">dict</span></code>, <code class="docutils literal notranslate"><span class="pre">bytes</span></code> or a one of the <code class="docutils literal notranslate"><span class="pre">pydantic</span> <span class="pre">models</span></code> defined in the server. The server will try and do the conversion, and respond with an HTTP error if the requested file is incompatible with that type, or a pydantic validation error if the data cannot be converted to the pydantic model provided. Custom <a class="reference internal" href="#file-converters">file converters</a> can be used to specify how a file should be converted to a dict or pydantic model.</p>
+</section>
+<section id="file-converters">
+<span id="id1"></span><h1>File converters<a class="headerlink" href="#file-converters" title="Link to this heading">#</a></h1>
+<p>Converters can be used to turn a file into a standard format server-side, reducing the complexity of reading config files client-side. Converters can convert config files to a <code class="docutils literal notranslate"><span class="pre">dict</span></code> or <code class="docutils literal notranslate"><span class="pre">pydantic</span> <span class="pre">model</span></code>, and the same <code class="docutils literal notranslate"><span class="pre">pydantic</span> <span class="pre">model</span></code> can be reconstructed client-side by the <code class="docutils literal notranslate"><span class="pre">get_file_contents</span></code> method. Available converters exist <a class="reference external" href="https://github.com/DiamondLightSource/daq-config-server/blob/main/converters._converters.py">here</a> - see if there’s a suitable converter you can use before adding your own. <a class="reference external" href="https://github.com/DiamondLightSource/daq-config-server/blob/main/converters._file_converter_map.py">This dictionary</a> maps files to converters. Add the path of your config file and a suitable converter to this dictionary and it will automatically be used by the config server when a request for that file is made.</p>
+<p>A request for <code class="docutils literal notranslate"><span class="pre">str</span></code> or <code class="docutils literal notranslate"><span class="pre">bytes</span></code> will fetch the raw file with no conversion.</p>
 </section>
 <section id="adding-files-to-the-whitelist">
 <h1>Adding files to the whitelist<a class="headerlink" href="#adding-files-to-the-whitelist" title="Link to this heading">#</a></h1>
@@ -534,6 +540,7 @@
   <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="visible nav section-nav flex-column">
 <li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#">Guide to using the config-server</a></li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#file-converters">File converters</a></li>
 <li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#adding-files-to-the-whitelist">Adding files to the whitelist</a></li>
 <li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#reading-sensitive-information">Reading sensitive information</a></li>
 </ul>

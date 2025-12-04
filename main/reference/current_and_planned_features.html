@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Current and future features &#8212; daq-config-server 1.0.0rc3.dev6+g88923a99f documentation</title>
+    <title>Current and future features &#8212; daq-config-server 1.0.0rc3.dev7+gde81d4986 documentation</title>
   
   
   
@@ -41,7 +41,7 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../_static/documentation_options.js?v=441ce028"></script>
+    <script src="../_static/documentation_options.js?v=f1bfd250"></script>
     <script src="../_static/doctools.js?v=9bcbadda"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -470,13 +470,13 @@
 <li><p>Periodically check the main branch’s to update the whitelist.</p></li>
 <li><p>Provide a client module for users to easily communicate with the server, with caching.</p></li>
 <li><p>Have this service hosted on diamond’s central argus cluster - with url <code class="docutils literal notranslate"><span class="pre">https://daq-config-server.diamond.ac.uk</span></code></p></li>
+<li><p>Provide server-side json and pydantic model formatting for commonly used configuration files - eg <code class="docutils literal notranslate"><span class="pre">beamline_parameters.txt</span></code> should be returned as a dictionary or pydantic model.</p></li>
 </ul>
 </section>
 <section id="future-features">
 <h2>Future features<a class="headerlink" href="#future-features" title="Link to this heading">#</a></h2>
 <p>Note that this is not actively ongoing work, but features that we are aware will be needed in the future.</p>
 <ul class="simple">
-<li><p>Provide server-side formatting for commonly used configuration files - eg <code class="docutils literal notranslate"><span class="pre">beamline_parameters.txt</span></code> should be returned as a dictionary.</p></li>
 <li><p>Remove absolute filepath as a user dependancy. For example, once we have a good picture of which files are being read, the client should be able to request the beamline parameters with something like <code class="docutils literal notranslate"><span class="pre">client.get_file_contents(SUPPORTED_CONFIG_FILES.BeamlineParameters,</span> <span class="pre">beamline=i03)</span></code></p></li>
 <li><p>Add authorisation + authentication. This is a pre-requisite for file-writing.</p></li>
 <li><p>Add endpoints for configuration file-writing. At this point, we can begin to remove any configuration from the filesystem. The config-server will use a redis database to store these values, and we can have a simple web-interface to change the values.</p></li>
