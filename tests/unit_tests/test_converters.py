@@ -244,7 +244,7 @@ def test_detector_xy_lut_gives_expected_results():
     assert result == expected
 
 
-def test_beam_line_pitch_lut_gives_expected_result():
+def test_beamline_pitch_lut_gives_expected_result():
     input = (
         "#       Bragg	pitch\n"
         "#	Degree	values	for	pitch	are	interpreted	as	mrad\n"
