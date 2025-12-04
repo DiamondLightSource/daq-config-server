@@ -75,6 +75,7 @@ addopts = """
     """
 markers = """
     requires_local_server: mark a test which requires locally hosting the config server
+    requires_deployed_server: mark a test which requires talking to the deployed config server
     use_threading: mark a test which will kickoff the background thread in WhitelistFetcher
 """
 
@@ -101,7 +102,7 @@ legacy_tox_ini = """
 [tox]
 skipsdist=True
 
-[testenv:{pre-commit,type-checking,unit_tests,docs,system_tests}]
+[testenv:{pre-commit,type-checking,unit_tests,docs,system_tests, system_tests_local, system_tests_deployed}]
 # Don't create a virtualenv for the command, requires tox-direct plugin
 direct = True
 passenv = *
@@ -117,6 +118,8 @@ commands =
     unit_tests: pytest --cov=daq_config_server --cov-report term --cov-report xml:cov.xml {posargs} tests/unit_tests
     docs: sphinx-{posargs:build -EW --keep-going} -T docs build/html
     system_tests: pytest tests/system_tests
+    system_tests_local: pytest tests/system_tests -m requires_local_server
+    system_tests_deployed: pytest tests/system_tests -m requires_deployed_server
 """
 
 [tool.ruff]
