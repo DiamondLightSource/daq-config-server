@@ -8,7 +8,7 @@ from daq_config_server.converters.lookup_tables._converters import (
     parse_lut,
     undulator_energy_gap_lut,
 )
-from daq_config_server.converters.lookup_tables.models import GenericLookupTable
+from daq_config_server.models import GenericLookupTable
 
 
 def test_parse_lut_to_dict_gives_expected_result_and_can_be_jsonified():
