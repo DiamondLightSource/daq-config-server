@@ -29,3 +29,6 @@ whitelist_dirs:
 - /dls_sw/i24/software/daq_configuration/
 - /dls_sw/i04-1/software/daq_configuration/
 - /dls_sw/i10/software/gda/workspace_git/gda-diamond.git/configurations/i10-shared/
+- /dls_sw/i09-1/software/gda/workspace_git/gda-diamond.git/configurations/i09-1-shared/lookupTables/
+- /dls_sw/i09-2/software/gda/workspace_git/gda-diamond.git/configurations/i09-2-shared/lookupTables/
+- /dls_sw/i21/software/gda/workspace_git/gda-diamond.git/configurations/i21-config/lookupTables/
