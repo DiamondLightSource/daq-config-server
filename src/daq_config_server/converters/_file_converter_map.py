@@ -15,7 +15,8 @@ from daq_config_server.converters.lookup_tables._converters import (
     detector_xy_lut,
     undulator_energy_gap_lut,
 )
-from daq_config_server.converters.models import ConfigModel
+
+from ._base_model import ConfigModel
 
 FILE_TO_CONVERTER_MAP: dict[str, Callable[[str], ConfigModel | dict[str, Any]]] = {  # type: ignore
     "/tests/test_data/test_good_lut.txt": undulator_energy_gap_lut,  # For system tests # noqa

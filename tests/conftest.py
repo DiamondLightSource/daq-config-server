@@ -5,6 +5,7 @@ from unittest.mock import patch
 import pytest
 import xmltodict
 
+from daq_config_server.converters import ConfigModel
 from daq_config_server.converters.beamline_parameters._converters import (
     beamline_parameters_to_dict,
 )
@@ -14,7 +15,6 @@ from daq_config_server.converters.display_config._converters import (
 from daq_config_server.converters.lookup_tables._converters import (
     undulator_energy_gap_lut,
 )
-from daq_config_server.converters.models import ConfigModel
 from tests.constants import ServerFilePaths, TestDataPaths
 
 

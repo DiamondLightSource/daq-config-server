@@ -1,7 +1,8 @@
 from typing import Any
 
-from daq_config_server.converters._converter_utils import parse_value, remove_comments
-from daq_config_server.converters.lookup_tables.models import GenericLookupTable
+from daq_config_server.converters import parse_value, remove_comments
+
+from ._models import GenericLookupTable
 
 
 def parse_lut(contents: str, *params: tuple[str, type | None]) -> GenericLookupTable:

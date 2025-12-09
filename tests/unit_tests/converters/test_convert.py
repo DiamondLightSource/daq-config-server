@@ -14,7 +14,7 @@ from daq_config_server.converters.beamline_parameters._converters import (
     beamline_parameters_to_dict,
 )
 from daq_config_server.converters.convert import get_converted_file_contents
-from daq_config_server.converters.lookup_tables.models import GenericLookupTable
+from daq_config_server.converters.lookup_tables import GenericLookupTable
 
 
 def test_get_converted_file_contents_uses_converter_if_file_in_map(

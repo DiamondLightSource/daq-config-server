@@ -1,8 +1,6 @@
-from daq_config_server.converters._converter_utils import parse_value, remove_comments
-from daq_config_server.converters.display_config.models import (
-    DisplayConfig,
-    DisplayConfigData,
-)
+from daq_config_server.converters import parse_value, remove_comments
+
+from ._models import DisplayConfig, DisplayConfigData
 
 
 def display_config_to_model(contents: str) -> DisplayConfig:
