@@ -3,13 +3,13 @@ from typing import Any
 
 import xmltodict
 
-from daq_config_server.converters.beamline_parameters._converters import (
+from daq_config_server.converters.beamline_parameters import (
     beamline_parameters_to_dict,
 )
-from daq_config_server.converters.display_config._converters import (
+from daq_config_server.converters.display_config import (
     display_config_to_model,
 )
-from daq_config_server.converters.lookup_tables._converters import (
+from daq_config_server.converters.lookup_tables import (
     beamline_pitch_lut,
     beamline_roll_lut,
     detector_xy_lut,
