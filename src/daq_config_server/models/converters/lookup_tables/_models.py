@@ -1,6 +1,6 @@
 from pydantic import model_validator
 
-from daq_config_server.converters import ConfigModel
+from daq_config_server.models.converters import ConfigModel
 
 
 class GenericLookupTable(ConfigModel):

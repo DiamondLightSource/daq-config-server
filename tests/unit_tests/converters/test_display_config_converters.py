@@ -3,7 +3,7 @@ import json
 import pytest
 from tests.constants import TestDataPaths
 
-from daq_config_server.converters.display_config import (
+from daq_config_server.models.converters.display_config import (
     DisplayConfig,
     DisplayConfigData,
     display_config_to_model,

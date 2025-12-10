@@ -1,14 +1,14 @@
 import pytest
 from tests.constants import TestDataPaths
 
-from daq_config_server.converters.lookup_tables import (
+from daq_config_server.models.converters.lookup_tables import (
     GenericLookupTable,
     beamline_pitch_lut,
     beamline_roll_lut,
     detector_xy_lut,
-    parse_lut,
     undulator_energy_gap_lut,
 )
+from daq_config_server.models.converters.lookup_tables._converters import parse_lut
 
 
 def test_parse_lut_to_dict_gives_expected_result_and_can_be_jsonified():

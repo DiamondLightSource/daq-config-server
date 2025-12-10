@@ -1,6 +1,6 @@
 from typing import Any
 
-from daq_config_server.converters._converter_utils import parse_value, remove_comments
+from daq_config_server.models.converters import parse_value, remove_comments
 
 ALLOWED_BEAMLINE_PARAMETER_STRINGS = ["FB", "FULL", "deadtime"]
 

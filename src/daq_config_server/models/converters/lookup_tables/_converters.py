@@ -1,6 +1,6 @@
 from typing import Any
 
-from daq_config_server.converters import parse_value, remove_comments
+from daq_config_server.models.converters import parse_value, remove_comments
 
 from ._models import GenericLookupTable
 

@@ -2,7 +2,7 @@ from typing import Any
 
 import pytest
 
-from daq_config_server.converters._converter_utils import parse_value, remove_comments
+from daq_config_server.models.converters import parse_value, remove_comments
 
 
 def test_remove_comments_works_as_expected():

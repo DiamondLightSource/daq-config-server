@@ -15,8 +15,8 @@ from daq_config_server.config import Config
 from daq_config_server.constants import (
     ENDPOINTS,
 )
-from daq_config_server.converters.convert import get_converted_file_contents
 from daq_config_server.log import set_up_logging
+from daq_config_server.models.converters.convert import get_converted_file_contents
 from daq_config_server.whitelist import get_whitelist
 
 # See https://github.com/DiamondLightSource/daq-config-server/issues/105

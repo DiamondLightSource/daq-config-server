@@ -2,7 +2,7 @@ import json
 from pathlib import Path
 from typing import Any
 
-import daq_config_server.converters._file_converter_map as file_converter_map
+import daq_config_server.models.converters._file_converter_map as file_converter_map
 
 from ._base_model import ConfigModel
 from ._converter_utils import ConverterParseError

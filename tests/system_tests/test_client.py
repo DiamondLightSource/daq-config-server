@@ -8,10 +8,12 @@ import requests
 from pydantic import ValidationError
 
 from daq_config_server.client import ConfigServer
-from daq_config_server.converters import ConfigModel
-from daq_config_server.converters._file_converter_map import FILE_TO_CONVERTER_MAP
-from daq_config_server.converters.display_config import DisplayConfig
-from daq_config_server.converters.lookup_tables import GenericLookupTable
+from daq_config_server.models.converters import ConfigModel
+from daq_config_server.models.converters._file_converter_map import (
+    FILE_TO_CONVERTER_MAP,
+)
+from daq_config_server.models.converters.display_config import DisplayConfig
+from daq_config_server.models.converters.lookup_tables import GenericLookupTable
 from tests.constants import (
     ServerFilePaths,
     TestDataPaths,
