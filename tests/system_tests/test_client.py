@@ -166,7 +166,7 @@ def test_all_files_in_file_converter_map_can_be_converted_to_target_type(
     deployed_server: ConfigServer,
 ):
     with patch(
-        "daq_config_server.converters._file_converter_map.xmltodict.parse.__annotations__",
+        "daq_config_server.models.converters._file_converter_map.xmltodict.parse.__annotations__",
         {"return": dict},  # Force a return type for xmltodict.parse()
     ):
         for filename, converter in FILE_TO_CONVERTER_MAP.items():
