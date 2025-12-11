@@ -3,15 +3,20 @@ from typing import Any
 
 import xmltodict
 
-from daq_config_server.converters._converters import (
+from daq_config_server.models.converters.beamline_parameters import (
     beamline_parameters_to_dict,
+)
+from daq_config_server.models.converters.display_config import (
+    display_config_to_model,
+)
+from daq_config_server.models.converters.lookup_tables import (
     beamline_pitch_lut,
     beamline_roll_lut,
     detector_xy_lut,
-    display_config_to_model,
     undulator_energy_gap_lut,
 )
-from daq_config_server.converters.models import ConfigModel
+
+from ._base_model import ConfigModel
 
 FILE_TO_CONVERTER_MAP: dict[str, Callable[[str], ConfigModel | dict[str, Any]]] = {  # type: ignore
     "/tests/test_data/test_good_lut.txt": undulator_energy_gap_lut,  # For system tests # noqa

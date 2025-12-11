@@ -1,7 +1,6 @@
-from pydantic import BaseModel, model_validator
+from pydantic import model_validator
 
-
-class ConfigModel(BaseModel): ...
+from daq_config_server.models.converters import ConfigModel
 
 
 class DisplayConfigData(ConfigModel):
@@ -28,20 +27,4 @@ class DisplayConfig(ConfigModel):
                 f"Zoom levels {existing_keys} "
                 f"do not match required zoom levels: {self.required_zoom_levels}"
             )
-        return self
-
-
-class GenericLookupTable(ConfigModel):
-    column_names: list[str]
-    rows: list[list[int | float]]
-
-    @model_validator(mode="after")
-    def check_row_length_matches_n_columns(self):
-        n_columns = len(self.column_names)
-        for row in self.rows:
-            if len(row) != n_columns:
-                raise ValueError(
-                    f"Length of row {row} does not match number "
-                    f"of columns: {self.column_names}"
-                )
         return self

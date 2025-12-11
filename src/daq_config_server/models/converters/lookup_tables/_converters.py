@@ -1,30 +1,8 @@
-import ast
 from typing import Any
 
-from daq_config_server.converters.models import GenericLookupTable
+from daq_config_server.models.converters import parse_value, remove_comments
 
-ALLOWED_BEAMLINE_PARAMETER_STRINGS = ["FB", "FULL", "deadtime"]
-
-
-class ConverterParseError(Exception): ...
-
-
-def remove_comments(lines: list[str]) -> list[str]:
-    return [
-        line.strip().split("#", 1)[0].strip()
-        for line in lines
-        if line.strip().split("#", 1)[0]
-    ]
-
-
-def parse_value(value: str, convert_to: type | None = None) -> Any:
-    """Convert a string value into an appropriate Python type. Optionally provide a type
-    to convert to. If not given, the type will be inferred.
-    """
-    value = ast.literal_eval(value.replace("Yes", "True").replace("No", "False"))
-    if convert_to:
-        value = convert_to(value)
-    return value
+from ._models import GenericLookupTable
 
 
 def parse_lut(contents: str, *params: tuple[str, type | None]) -> GenericLookupTable:
@@ -46,3 +24,24 @@ def parse_lut(contents: str, *params: tuple[str, type | None]) -> GenericLookupT
             [parse_value(value, types[i]) for i, value in enumerate(line.split())]
         )
     return GenericLookupTable(column_names=column_names, rows=rows)
+
+
+def detector_xy_lut(contents: str) -> GenericLookupTable:
+    return parse_lut(
+        contents,
+        ("detector_distances_mm", float),
+        ("beam_centre_x_mm", float),
+        ("beam_centre_y_mm", float),
+    )
+
+
+def beamline_pitch_lut(contents: str) -> GenericLookupTable:
+    return parse_lut(contents, ("bragg_angle_deg", float), ("pitch_mrad", float))
+
+
+def beamline_roll_lut(contents: str) -> GenericLookupTable:
+    return parse_lut(contents, ("bragg_angle_deg", float), ("roll_mrad", float))
+
+
+def undulator_energy_gap_lut(contents: str) -> GenericLookupTable:
+    return parse_lut(contents, ("energy_eV", int), ("gap_mm", float))

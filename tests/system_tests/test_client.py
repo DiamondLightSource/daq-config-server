@@ -7,13 +7,13 @@ import pytest
 import requests
 from pydantic import ValidationError
 
-import daq_config_server.converters._file_converter_map as file_converter_map
 from daq_config_server.client import ConfigServer
-from daq_config_server.converters.models import (
-    ConfigModel,
-    DisplayConfig,
-    GenericLookupTable,
+from daq_config_server.models.converters import ConfigModel
+from daq_config_server.models.converters._file_converter_map import (
+    FILE_TO_CONVERTER_MAP,
 )
+from daq_config_server.models.converters.display_config import DisplayConfig
+from daq_config_server.models.converters.lookup_tables import GenericLookupTable
 from tests.constants import (
     ServerFilePaths,
     TestDataPaths,
@@ -154,7 +154,7 @@ def test_request_for_file_with_converter_with_wrong_pydantic_model_errors(
 def test_all_files_in_file_converter_map_can_be_converted_to_dict(
     deployed_server: ConfigServer,
 ):
-    for filename in file_converter_map.FILE_TO_CONVERTER_MAP.keys():
+    for filename in FILE_TO_CONVERTER_MAP.keys():
         if filename.startswith("/tests/test_data/"):
             continue
         result = deployed_server.get_file_contents(filename, dict)
@@ -166,10 +166,10 @@ def test_all_files_in_file_converter_map_can_be_converted_to_target_type(
     deployed_server: ConfigServer,
 ):
     with patch(
-        "daq_config_server.converters._file_converter_map.xmltodict.parse.__annotations__",
+        "daq_config_server.models.converters._file_converter_map.xmltodict.parse.__annotations__",
         {"return": dict},  # Force a return type for xmltodict.parse()
     ):
-        for filename, converter in file_converter_map.FILE_TO_CONVERTER_MAP.items():
+        for filename, converter in FILE_TO_CONVERTER_MAP.items():
             if filename.startswith("/tests/test_data/"):
                 continue
             return_type = get_type_hints(converter)["return"]

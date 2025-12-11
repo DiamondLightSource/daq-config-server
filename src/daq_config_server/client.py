@@ -10,7 +10,7 @@ from requests import Response
 from requests.exceptions import HTTPError
 
 from daq_config_server.app import ValidAcceptHeaders
-from daq_config_server.converters.models import ConfigModel
+from daq_config_server.models import ConfigModel
 
 from .constants import ENDPOINTS
 

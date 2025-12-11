@@ -16,7 +16,8 @@ from daq_config_server.client import (
     _get_mime_type,
 )
 from daq_config_server.constants import ENDPOINTS
-from daq_config_server.converters.models import DisplayConfig, GenericLookupTable
+from daq_config_server.models.converters.display_config import DisplayConfig
+from daq_config_server.models.converters.lookup_tables import GenericLookupTable
 from daq_config_server.testing import make_test_response
 
 test_path = Path("test")
