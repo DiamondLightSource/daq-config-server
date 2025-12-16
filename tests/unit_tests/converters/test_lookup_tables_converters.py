@@ -1,3 +1,5 @@
+import re
+
 import pytest
 from tests.constants import TestDataPaths
 
@@ -113,3 +115,48 @@ def test_undulator_gap_lut_gives_expected_result():
     )
     result = undulator_energy_gap_lut(input)
     assert result == expected
+
+
+@pytest.mark.parametrize(
+    "args, expected_value",
+    [
+        (("detector_distances_mm", 150, "beam_centre_x_mm", True), 152.2),
+        (("beam_centre_y_mm", 160.96, "detector_distances_mm", True), 800),
+        (
+            ("beam_centre_x_mm", 153, "beam_centre_y_mm", False),
+            166.26,  # get closest value when value_must_exist == False
+        ),
+    ],
+)
+def test_generic_lut_model_get_value_function(
+    args: tuple[str, int | float, str, bool], expected_value: int | float
+):
+    my_lut = GenericLookupTable(
+        column_names=["detector_distances_mm", "beam_centre_x_mm", "beam_centre_y_mm"],
+        rows=[[150, 152.2, 166.26], [800, 152.08, 160.96]],
+    )
+    assert my_lut.get_value(*args) == expected_value
+
+
+def test_generic_lut_model_get_value_errors_if_value_doesnt_exist():
+    my_lut = GenericLookupTable(
+        column_names=["detector_distances_mm", "beam_centre_x_mm", "beam_centre_y_mm"],
+        rows=[[150, 152.2, 166.26], [800, 152.08, 160.96]],
+    )
+    with pytest.raises(
+        ValueError,
+        match=re.escape(
+            "'160.97' doesn't exist in column 'beam_centre_y_mm': [166.26, 160.96]"
+        ),
+    ):
+        # value doesn't exist
+        my_lut.get_value("beam_centre_y_mm", 160.97, "detector_distances_mm")
+
+
+def test_generic_lut_model_columns_function():
+    my_lut = GenericLookupTable(
+        column_names=["detector_distances_mm", "beam_centre_x_mm", "beam_centre_y_mm"],
+        rows=[[150, 152.2, 166.26], [800, 152.08, 160.96]],
+    )
+    expected_columns = [[150, 800], [152.2, 152.08], [166.26, 160.96]]
+    assert my_lut.columns() == expected_columns
