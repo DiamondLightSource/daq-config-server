@@ -1,3 +1,5 @@
+import re
+
 import pytest
 from tests.constants import TestDataPaths
 
@@ -141,7 +143,12 @@ def test_generic_lut_model_get_value_errors_if_value_doesnt_exist():
         column_names=["detector_distances_mm", "beam_centre_x_mm", "beam_centre_y_mm"],
         rows=[[150, 152.2, 166.26], [800, 152.08, 160.96]],
     )
-    with pytest.raises(ValueError):
+    with pytest.raises(
+        ValueError,
+        match=re.escape(
+            "'160.97' doesn't exist in column 'beam_centre_y_mm': [166.26, 160.96]"
+        ),
+    ):
         # value doesn't exist
         my_lut.get_value("beam_centre_y_mm", 160.97, "detector_distances_mm")
 
