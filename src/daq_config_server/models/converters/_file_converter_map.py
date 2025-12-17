@@ -40,4 +40,5 @@ FILE_TO_CONVERTER_MAP: dict[str, Callable[[str], ConfigModel | dict[str, Any]]] 
     "/dls_sw/i03/software/daq_configuration/lookup/BeamLineEnergy_DCM_Pitch_converter.txt": beamline_pitch_lut,  # noqa
     "/dls_sw/i03/software/daq_configuration/lookup/BeamLineEnergy_DCM_Roll_converter.txt": beamline_roll_lut,  # noqa
     "/dls_sw/i03/software/daq_configuration/lookup/BeamLine_Undulator_toGap.txt": undulator_energy_gap_lut,  # noqa
+    "IIDCalibrationTable.txt": undulator_energy_gap_lut,  # noga
 }

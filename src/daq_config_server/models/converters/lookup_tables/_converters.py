@@ -18,7 +18,7 @@ def parse_lut(contents: str, *params: tuple[str, type | None]) -> GenericLookupT
     column_names = [param[0] for param in params]
     types = [param[1] for param in params]
     for line in remove_comments(contents.splitlines()):
-        if line.startswith("Units"):
+        if line.startswith("Units") or line.startswith("ScannableUnits"):
             continue
         rows.append(
             [parse_value(value, types[i]) for i, value in enumerate(line.split())]
