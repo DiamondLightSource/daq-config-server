@@ -4,6 +4,8 @@ from daq_config_server.models.converters import parse_value, remove_comments
 
 from ._models import GenericLookupTable
 
+ignore_lines_starting_with = ("Units", "ScannableUnits", "ScannableNames")
+
 
 def parse_lut(contents: str, *params: tuple[str, type | None]) -> GenericLookupTable:
     """Converts a lookup table to a pydantic model, containing the names of each column
@@ -18,7 +20,7 @@ def parse_lut(contents: str, *params: tuple[str, type | None]) -> GenericLookupT
     column_names = [param[0] for param in params]
     types = [param[1] for param in params]
     for line in remove_comments(contents.splitlines()):
-        if line.startswith("Units") or line.startswith("ScannableUnits"):
+        if line.startswith(ignore_lines_starting_with):
             continue
         rows.append(
             [parse_value(value, types[i]) for i, value in enumerate(line.split())]
@@ -45,3 +47,17 @@ def beamline_roll_lut(contents: str) -> GenericLookupTable:
 
 def undulator_energy_gap_lut(contents: str) -> GenericLookupTable:
     return parse_lut(contents, ("energy_eV", int), ("gap_mm", float))
+
+
+def i09_hu_undulator_energy_gap_lut(contents: str) -> GenericLookupTable:
+    return parse_lut(
+        contents,
+        ("order", int),
+        ("ring_energy_gev", float),
+        ("magnetic_field_t", float),
+        ("energy_min_eV", float),
+        ("energy_max_eV", float),
+        ("gap_min_mm", float),
+        ("gap_max_mm", float),
+        ("gap_offset_mm", float),
+    )

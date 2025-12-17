@@ -14,7 +14,6 @@ def get_converted_file_contents(file_path: Path) -> dict[str, Any]:
     if converter := file_converter_map.FILE_TO_CONVERTER_MAP.get(str(file_path)):
         try:
             contents = converter(raw_contents)
-            raise TypeError(contents)
             if isinstance(contents, ConfigModel):
                 return contents.model_dump()
             return contents

@@ -34,6 +34,8 @@ class TestDataPaths:
 
     TEST_BAD_LUT_PATH = TEST_DATA_DIR_PATH.joinpath("test_bad_lut.txt")
 
+    TEST_I09_HU_LUT_PATH = TEST_DATA_DIR_PATH.joinpath("test_i09_hu_lut.txt")
+
     TEST_GOOD_DISPLAY_CONFIG_PATH = TEST_DATA_DIR_PATH.joinpath(
         "test_display.configuration"
     )
@@ -53,6 +55,7 @@ class ServerFilePaths:
     BAD_JSON_FILE = Path("/tests/test_data/test_bad_json")
     FILE_IN_GOOD_DIR = Path("/tests/test_data/test_bad_json")
     GOOD_LUT = Path("/tests/test_data/test_good_lut.txt")
+    I09_HU_LUT = Path("/tests/test_data/test_i09_hu_lut.txt")
 
 
 TEST_CONFIG_PATH = TEST_DATA_DIR_PATH.joinpath("test_config.yaml")
@@ -63,6 +66,7 @@ whitelist_files:
   - {TestDataPaths.TEST_BAD_JSON_PATH}
   - {TestDataPaths.TEST_BEAMLINE_PARAMETERS_PATH}
   - {TestDataPaths.TEST_INVALID_FILE_PATH}
+  - {TestDataPaths.TEST_I09_HU_LUT_PATH}
 
 whitelist_dirs:
   - {TEST_DATA_DIR_PATH.joinpath("good_dir")}
