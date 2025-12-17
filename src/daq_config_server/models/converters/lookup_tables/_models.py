@@ -25,7 +25,7 @@ class GenericLookupTable(ConfigModel):
         target_column_name: str,
         value_must_exist: bool = True,
     ) -> int | float:
-        """Look up a value in one columna nd return the corresponding entry from another
+        """Look up a value in one column and return the corresponding entry from another
         column.
 
         Args:
