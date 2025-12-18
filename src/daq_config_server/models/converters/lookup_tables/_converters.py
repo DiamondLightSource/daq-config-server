@@ -4,7 +4,7 @@ from daq_config_server.models.converters import parse_value, remove_comments
 
 from ._models import GenericLookupTable
 
-ignore_lines_starting_with = ("Units", "ScannableUnits", "ScannableNames")
+IGNORE_LINES_STARTING_WITH = ("Units", "ScannableUnits", "ScannableNames")
 
 
 def parse_lut(contents: str, *params: tuple[str, type | None]) -> GenericLookupTable:
@@ -20,7 +20,7 @@ def parse_lut(contents: str, *params: tuple[str, type | None]) -> GenericLookupT
     column_names = [param[0] for param in params]
     types = [param[1] for param in params]
     for line in remove_comments(contents.splitlines()):
-        if line.startswith(ignore_lines_starting_with):
+        if line.startswith(IGNORE_LINES_STARTING_WITH):
             continue
         rows.append(
             [parse_value(value, types[i]) for i, value in enumerate(line.split())]
