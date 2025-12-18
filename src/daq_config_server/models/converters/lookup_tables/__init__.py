@@ -2,6 +2,7 @@ from ._converters import (
     beamline_pitch_lut,
     beamline_roll_lut,
     detector_xy_lut,
+    i09_hu_undulator_energy_gap_lut,
     undulator_energy_gap_lut,
 )
 from ._models import GenericLookupTable
@@ -12,4 +13,5 @@ __all__ = [
     "beamline_pitch_lut",
     "beamline_roll_lut",
     "undulator_energy_gap_lut",
+    "i09_hu_undulator_energy_gap_lut",
 ]
