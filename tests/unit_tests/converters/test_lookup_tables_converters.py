@@ -4,6 +4,7 @@ import pytest
 from tests.constants import TestDataPaths
 
 from daq_config_server.models.converters.lookup_tables import (
+    DetectorXYLookupTable,
     GenericLookupTable,
     beamline_pitch_lut,
     beamline_roll_lut,
@@ -189,3 +190,19 @@ def test_generic_lut_model_columns_function():
     )
     expected_columns = [[150, 800], [152.2, 152.08], [166.26, 160.96]]
     assert my_lut.columns() == expected_columns
+
+
+def test_detector_xy_lut_model_column_names():
+    my_lut = DetectorXYLookupTable(rows=[[1, 2, 3]])
+    assert my_lut.get_column_names() == [
+        "detector_distances_mm",
+        "beam_centre_x_mm",
+        "beam_centre_y_mm",
+    ]
+
+
+def test_detector_xy_lut_model_get_value():
+    my_lut = DetectorXYLookupTable(
+        rows=[[1.1, 2.2, 3.3], [4.4, 5.5, 6.6]],
+    )
+    assert my_lut.get_value("beam_centre_x_mm", 5.5, "beam_centre_y_mm") == 6.6

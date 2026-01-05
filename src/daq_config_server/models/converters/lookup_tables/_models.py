@@ -75,7 +75,6 @@ class LookupTableBase(ConfigModel, Generic[ColumnNameT]):
 
 class GenericLookupTable(LookupTableBase[str]):
     column_names: list[str]
-    rows: list[list[int | float]]
 
     def get_column_names(self) -> list[str]:
         return self.column_names
@@ -87,7 +86,5 @@ DETECTOR_XY_COLUMN_NAMES = Literal[
 
 
 class DetectorXYLookupTable(LookupTableBase[DETECTOR_XY_COLUMN_NAMES]):
-    rows: list[list[int | float]]
-
     def get_column_names(self) -> list[DETECTOR_XY_COLUMN_NAMES]:
         return list(get_args(DETECTOR_XY_COLUMN_NAMES))
