@@ -2,9 +2,25 @@ from typing import Any
 
 from daq_config_server.models.converters import parse_value, remove_comments
 
-from ._models import GenericLookupTable
+from ._models import DetectorXYLookupTable, GenericLookupTable
 
 IGNORE_LINES_STARTING_WITH = ("Units", "ScannableUnits", "ScannableNames")
+
+
+def parse_lut_rows(
+    contents: str, types: list[type | None] | None = None
+) -> list[list[Any]]:
+    rows: list[list[Any]] = []
+    for line in remove_comments(contents.splitlines()):
+        if line.startswith(IGNORE_LINES_STARTING_WITH):
+            continue
+        rows.append(
+            [
+                parse_value(value, types[i] if types else None)
+                for i, value in enumerate(line.split())
+            ]
+        )
+    return rows
 
 
 def parse_lut(contents: str, *params: tuple[str, type | None]) -> GenericLookupTable:
@@ -16,25 +32,14 @@ def parse_lut(contents: str, *params: tuple[str, type | None]) -> GenericLookupT
     If a type is provided, the values in that column will be converted to that type.
     Otherwise, the type will be inferred. Units should be included in the column name.
     """
-    rows: list[list[Any]] = []
     column_names = [param[0] for param in params]
     types = [param[1] for param in params]
-    for line in remove_comments(contents.splitlines()):
-        if line.startswith(IGNORE_LINES_STARTING_WITH):
-            continue
-        rows.append(
-            [parse_value(value, types[i]) for i, value in enumerate(line.split())]
-        )
+    rows = parse_lut_rows(contents, types)
     return GenericLookupTable(column_names=column_names, rows=rows)
 
 
-def detector_xy_lut(contents: str) -> GenericLookupTable:
-    return parse_lut(
-        contents,
-        ("detector_distances_mm", float),
-        ("beam_centre_x_mm", float),
-        ("beam_centre_y_mm", float),
-    )
+def detector_xy_lut(contents: str) -> DetectorXYLookupTable:
+    return DetectorXYLookupTable(rows=parse_lut_rows(contents))
 
 
 def beamline_pitch_lut(contents: str) -> GenericLookupTable:
