@@ -188,10 +188,19 @@ def test_lut_model_get_value_errors_if_value_doesnt_exist():
         my_lut.get_value("beam_centre_y_mm", 160.97, "detector_distances_mm")
 
 
-def test_lut_model_columns_function():
+def test_lut_model_columns_property():
     my_lut = GenericLookupTable(
         column_names=["detector_distances_mm", "beam_centre_x_mm", "beam_centre_y_mm"],
         rows=[[150, 152.2, 166.26], [800, 152.08, 160.96]],
     )
     expected_columns = [[150, 800], [152.2, 152.08], [166.26, 160.96]]
-    assert my_lut.columns() == expected_columns
+    assert my_lut.columns == expected_columns
+
+
+def test_lut_model_columns_property_cannot_be_set():
+    my_lut = GenericLookupTable(
+        column_names=["detector_distances_mm", "beam_centre_x_mm", "beam_centre_y_mm"],
+        rows=[[150, 152.2, 166.26], [800, 152.08, 160.96]],
+    )
+    with pytest.raises(AttributeError):
+        my_lut.columns = [[1, 2], [3, 4], [5, 6]]
