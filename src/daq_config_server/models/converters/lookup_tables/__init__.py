@@ -5,7 +5,13 @@ from ._converters import (
     i09_hu_undulator_energy_gap_lut,
     undulator_energy_gap_lut,
 )
-from ._models import DetectorXYLookupTable, GenericLookupTable
+from ._models import (
+    BeamlinePitchLookupTable,
+    BeamlineRollLookupTable,
+    DetectorXYLookupTable,
+    GenericLookupTable,
+    UndulatorEnergyGapLookupTable,
+)
 
 __all__ = [
     "GenericLookupTable",
@@ -15,4 +21,7 @@ __all__ = [
     "undulator_energy_gap_lut",
     "i09_hu_undulator_energy_gap_lut",
     "DetectorXYLookupTable",
+    "BeamlinePitchLookupTable",
+    "BeamlineRollLookupTable",
+    "UndulatorEnergyGapLookupTable",
 ]

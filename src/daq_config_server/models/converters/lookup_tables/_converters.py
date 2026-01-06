@@ -2,7 +2,13 @@ from typing import Any
 
 from daq_config_server.models.converters import parse_value, remove_comments
 
-from ._models import DetectorXYLookupTable, GenericLookupTable
+from ._models import (
+    BeamlinePitchLookupTable,
+    BeamlineRollLookupTable,
+    DetectorXYLookupTable,
+    GenericLookupTable,
+    UndulatorEnergyGapLookupTable,
+)
 
 IGNORE_LINES_STARTING_WITH = ("Units", "ScannableUnits", "ScannableNames")
 
@@ -28,9 +34,10 @@ def parse_lut(contents: str, *params: tuple[str, type | None]) -> GenericLookupT
     and the rows as a 2D list.
 
     Any args after the contents provide the column names and optionally, python types
-    for values in a column to be converted to. e.g: (energy_EV, float), (pixels, int).
-    If a type is provided, the values in that column will be converted to that type.
-    Otherwise, the type will be inferred. Units should be included in the column name.
+    for values in a column to be converted to. e.g: ("energy_EV", float),
+    ("pixels", int). If a type is provided, the values in that column will be converted
+    to that type. Otherwise, the type will be inferred. Units should be included in the
+    column name.
     """
     column_names = [param[0] for param in params]
     types = [param[1] for param in params]
@@ -42,16 +49,16 @@ def detector_xy_lut(contents: str) -> DetectorXYLookupTable:
     return DetectorXYLookupTable(rows=parse_lut_rows(contents))
 
 
-def beamline_pitch_lut(contents: str) -> GenericLookupTable:
-    return parse_lut(contents, ("bragg_angle_deg", float), ("pitch_mrad", float))
+def beamline_pitch_lut(contents: str) -> BeamlinePitchLookupTable:
+    return BeamlinePitchLookupTable(rows=parse_lut_rows(contents))
 
 
-def beamline_roll_lut(contents: str) -> GenericLookupTable:
-    return parse_lut(contents, ("bragg_angle_deg", float), ("roll_mrad", float))
+def beamline_roll_lut(contents: str) -> BeamlineRollLookupTable:
+    return BeamlineRollLookupTable(rows=parse_lut_rows(contents))
 
 
-def undulator_energy_gap_lut(contents: str) -> GenericLookupTable:
-    return parse_lut(contents, ("energy_eV", int), ("gap_mm", float))
+def undulator_energy_gap_lut(contents: str) -> UndulatorEnergyGapLookupTable:
+    return UndulatorEnergyGapLookupTable(rows=parse_lut_rows(contents))
 
 
 def i09_hu_undulator_energy_gap_lut(contents: str) -> GenericLookupTable:
