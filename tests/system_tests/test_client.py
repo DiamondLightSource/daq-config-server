@@ -13,7 +13,9 @@ from daq_config_server.models.converters._file_converter_map import (
     FILE_TO_CONVERTER_MAP,
 )
 from daq_config_server.models.converters.display_config import DisplayConfig
-from daq_config_server.models.converters.lookup_tables import GenericLookupTable
+from daq_config_server.models.converters.lookup_tables import (
+    UndulatorEnergyGapLookupTable,
+)
 from tests.constants import (
     ServerFilePaths,
     TestDataPaths,
@@ -122,7 +124,6 @@ def test_request_with_file_not_on_whitelist(server: ConfigServer):
 @pytest.mark.requires_local_server
 def test_request_for_file_with_converter_works(server: ConfigServer):
     expected = {
-        "column_names": ["energy_eV", "gap_mm"],
         "rows": [[5700, 5.4606], [5760, 5.5], [6000, 5.681], [6500, 6.045]],
     }
     result = server.get_file_contents(ServerFilePaths.GOOD_LUT, dict)
@@ -133,12 +134,13 @@ def test_request_for_file_with_converter_works(server: ConfigServer):
 def test_request_for_file_with_converter_works_with_pydantic_model(
     server: ConfigServer,
 ):
-    expected = GenericLookupTable(
-        column_names=["energy_eV", "gap_mm"],
+    expected = UndulatorEnergyGapLookupTable(
         rows=[[5700, 5.4606], [5760, 5.5], [6000, 5.681], [6500, 6.045]],
     )
-    result = server.get_file_contents(ServerFilePaths.GOOD_LUT, GenericLookupTable)
-    assert isinstance(result, GenericLookupTable)
+    result = server.get_file_contents(
+        ServerFilePaths.GOOD_LUT, UndulatorEnergyGapLookupTable
+    )
+    assert isinstance(result, UndulatorEnergyGapLookupTable)
     assert result == expected
 
 
