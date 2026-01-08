@@ -9,11 +9,11 @@ from daq_config_server.models.converters.lookup_tables import (
     DetectorXYLookupTable,
     GenericLookupTable,
     UndulatorEnergyGapLookupTable,
-    beamline_pitch_lut,
-    beamline_roll_lut,
-    detector_xy_lut,
-    i09_hu_undulator_energy_gap_lut,
-    undulator_energy_gap_lut,
+    parse_beamline_pitch_lut,
+    parse_beamline_roll_lut,
+    parse_detector_xy_lut,
+    parse_i09_hu_undulator_energy_gap_lut,
+    parse_undulator_energy_gap_lut,
 )
 from daq_config_server.models.converters.lookup_tables._converters import (
     parse_generic_lut,
@@ -64,7 +64,7 @@ def test_detector_xy_lut_gives_expected_results():
     expected = DetectorXYLookupTable(
         rows=[[150, 152.2, 166.26], [800, 152.08, 160.96]],
     )
-    result = detector_xy_lut(input)
+    result = parse_detector_xy_lut(input)
     assert result == expected
     assert result.get_column_names() == [
         "detector_distances_mm",
@@ -94,7 +94,7 @@ def test_beamline_pitch_lut_gives_expected_result():
             [11.40557, -0.60849],
         ],
     )
-    result = beamline_pitch_lut(input)
+    result = parse_beamline_pitch_lut(input)
     assert result == expected
     assert result.get_column_names() == ["bragg_angle_deg", "pitch_mrad"]
 
@@ -109,7 +109,7 @@ def test_beamline_roll_lut_gives_expected_result():
         "6.3075  2.6154\n"
     )
     expected = BeamlineRollLookupTable(rows=[[26.4095, 2.6154], [6.3075, 2.6154]])
-    result = beamline_roll_lut(input)
+    result = parse_beamline_roll_lut(input)
     assert result == expected
     assert result.get_column_names() == ["bragg_angle_deg", "roll_mrad"]
 
@@ -129,7 +129,7 @@ def test_undulator_gap_lut_gives_expected_result():
     expected = UndulatorEnergyGapLookupTable(
         rows=[[5700, 5.4606], [5760, 5.5], [6000, 5.681], [6500, 6.045]]
     )
-    result = undulator_energy_gap_lut(input)
+    result = parse_undulator_energy_gap_lut(input)
     assert result == expected
     assert result.get_column_names() == ["energy_eV", "gap_mm"]
 
@@ -158,7 +158,7 @@ def test_i09_hu_undulator_gap_lut_gives_expected_result():
             [2, 3.04129, 1.02504, 2.50, 2.80, 5.05165, 8.88007, 0.0],
         ],
     )
-    result = i09_hu_undulator_energy_gap_lut(input)
+    result = parse_i09_hu_undulator_energy_gap_lut(input)
     assert result == expected
 
 

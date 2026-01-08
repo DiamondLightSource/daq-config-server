@@ -47,23 +47,23 @@ def parse_generic_lut(
     return GenericLookupTable(column_names=column_names, rows=rows)
 
 
-def detector_xy_lut(contents: str) -> DetectorXYLookupTable:
+def parse_detector_xy_lut(contents: str) -> DetectorXYLookupTable:
     return DetectorXYLookupTable(rows=parse_lut_rows(contents))
 
 
-def beamline_pitch_lut(contents: str) -> BeamlinePitchLookupTable:
+def parse_beamline_pitch_lut(contents: str) -> BeamlinePitchLookupTable:
     return BeamlinePitchLookupTable(rows=parse_lut_rows(contents))
 
 
-def beamline_roll_lut(contents: str) -> BeamlineRollLookupTable:
+def parse_beamline_roll_lut(contents: str) -> BeamlineRollLookupTable:
     return BeamlineRollLookupTable(rows=parse_lut_rows(contents))
 
 
-def undulator_energy_gap_lut(contents: str) -> UndulatorEnergyGapLookupTable:
+def parse_undulator_energy_gap_lut(contents: str) -> UndulatorEnergyGapLookupTable:
     return UndulatorEnergyGapLookupTable(rows=parse_lut_rows(contents))
 
 
-def i09_hu_undulator_energy_gap_lut(contents: str) -> GenericLookupTable:
+def parse_i09_hu_undulator_energy_gap_lut(contents: str) -> GenericLookupTable:
     return parse_generic_lut(
         contents,
         ("order", int),
