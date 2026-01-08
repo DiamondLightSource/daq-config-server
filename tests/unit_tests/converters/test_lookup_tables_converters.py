@@ -4,14 +4,28 @@ import pytest
 from tests.constants import TestDataPaths
 
 from daq_config_server.models.converters.lookup_tables import (
+    BeamlinePitchLookupTable,
+    BeamlineRollLookupTable,
+    DetectorXYLookupTable,
     GenericLookupTable,
-    beamline_pitch_lut,
-    beamline_roll_lut,
-    detector_xy_lut,
-    i09_hu_undulator_energy_gap_lut,
-    undulator_energy_gap_lut,
+    UndulatorEnergyGapLookupTable,
+    parse_beamline_pitch_lut,
+    parse_beamline_roll_lut,
+    parse_detector_xy_lut,
+    parse_i09_hu_undulator_energy_gap_lut,
+    parse_undulator_energy_gap_lut,
 )
-from daq_config_server.models.converters.lookup_tables._converters import parse_lut
+from daq_config_server.models.converters.lookup_tables._converters import (
+    parse_generic_lut,
+)
+
+
+@pytest.fixture
+def generic_lookup_table():
+    return GenericLookupTable(
+        column_names=["detector_distances_mm", "beam_centre_x_mm", "beam_centre_y_mm"],
+        rows=[[150, 152.2, 166.26], [800, 152.08, 160.96]],
+    )
 
 
 def test_parse_lut_to_dict_gives_expected_result_and_can_be_jsonified():
@@ -21,7 +35,7 @@ def test_parse_lut_to_dict_gives_expected_result_and_can_be_jsonified():
         column_names=["energy_eV", "gap_mm"],
         rows=[[5700, 5.4606], [5760, 5.5], [6000, 5.681], [6500, 6.045]],
     )
-    result = parse_lut(contents, ("energy_eV", int), ("gap_mm", float))
+    result = parse_generic_lut(contents, ("energy_eV", int), ("gap_mm", float))
     assert result == expected
     result.model_dump_json()
 
@@ -30,7 +44,7 @@ def test_parsing_bad_lut_causes_error():
     with open(TestDataPaths.TEST_BAD_LUT_PATH) as f:
         contents = f.read()
     with pytest.raises(IndexError):
-        parse_lut(contents, ("energy_eV", int), ("gap_mm", float))
+        parse_generic_lut(contents, ("energy_eV", int), ("gap_mm", float))
 
 
 def test_lut_with_different_number_of_row_items_to_column_names_causes_error():
@@ -47,12 +61,16 @@ def test_detector_xy_lut_gives_expected_results():
         "150 152.2 166.26\n"
         "800 152.08 160.96\n"
     )
-    expected = GenericLookupTable(
-        column_names=["detector_distances_mm", "beam_centre_x_mm", "beam_centre_y_mm"],
+    expected = DetectorXYLookupTable(
         rows=[[150, 152.2, 166.26], [800, 152.08, 160.96]],
     )
-    result = detector_xy_lut(input)
+    result = parse_detector_xy_lut(input)
     assert result == expected
+    assert result.get_column_names() == [
+        "detector_distances_mm",
+        "beam_centre_x_mm",
+        "beam_centre_y_mm",
+    ]
 
 
 def test_beamline_pitch_lut_gives_expected_result():
@@ -68,8 +86,7 @@ def test_beamline_pitch_lut_gives_expected_result():
         "12.69285 -0.61243\n"
         "11.40557 -0.60849\n"
     )
-    expected = GenericLookupTable(
-        column_names=["bragg_angle_deg", "pitch_mrad"],
+    expected = BeamlinePitchLookupTable(
         rows=[
             [16.40956, -0.62681],
             [14.31123, -0.61833],
@@ -77,8 +94,9 @@ def test_beamline_pitch_lut_gives_expected_result():
             [11.40557, -0.60849],
         ],
     )
-    result = beamline_pitch_lut(input)
+    result = parse_beamline_pitch_lut(input)
     assert result == expected
+    assert result.get_column_names() == ["bragg_angle_deg", "pitch_mrad"]
 
 
 def test_beamline_roll_lut_gives_expected_result():
@@ -90,12 +108,10 @@ def test_beamline_roll_lut_gives_expected_result():
         "26.4095 2.6154\n"
         "6.3075  2.6154\n"
     )
-    expected = GenericLookupTable(
-        column_names=["bragg_angle_deg", "roll_mrad"],
-        rows=[[26.4095, 2.6154], [6.3075, 2.6154]],
-    )
-    result = beamline_roll_lut(input)
+    expected = BeamlineRollLookupTable(rows=[[26.4095, 2.6154], [6.3075, 2.6154]])
+    result = parse_beamline_roll_lut(input)
     assert result == expected
+    assert result.get_column_names() == ["bragg_angle_deg", "roll_mrad"]
 
 
 def test_undulator_gap_lut_gives_expected_result():
@@ -110,12 +126,12 @@ def test_undulator_gap_lut_gives_expected_result():
         "6000		5.681\n"
         "6500		6.045\n"
     )
-    expected = GenericLookupTable(
-        column_names=["energy_eV", "gap_mm"],
-        rows=[[5700, 5.4606], [5760, 5.5], [6000, 5.681], [6500, 6.045]],
+    expected = UndulatorEnergyGapLookupTable(
+        rows=[[5700, 5.4606], [5760, 5.5], [6000, 5.681], [6500, 6.045]]
     )
-    result = undulator_energy_gap_lut(input)
+    result = parse_undulator_energy_gap_lut(input)
     assert result == expected
+    assert result.get_column_names() == ["energy_eV", "gap_mm"]
 
 
 def test_i09_hu_undulator_gap_lut_gives_expected_result():
@@ -142,7 +158,7 @@ def test_i09_hu_undulator_gap_lut_gives_expected_result():
             [2, 3.04129, 1.02504, 2.50, 2.80, 5.05165, 8.88007, 0.0],
         ],
     )
-    result = i09_hu_undulator_energy_gap_lut(input)
+    result = parse_i09_hu_undulator_energy_gap_lut(input)
     assert result == expected
 
 
@@ -157,21 +173,17 @@ def test_i09_hu_undulator_gap_lut_gives_expected_result():
         ),
     ],
 )
-def test_generic_lut_model_get_value_function(
-    args: tuple[str, int | float, str, bool], expected_value: int | float
+def test_lut_model_get_value(
+    generic_lookup_table: GenericLookupTable,
+    args: tuple[str, int | float, str, bool],
+    expected_value: int | float,
 ):
-    my_lut = GenericLookupTable(
-        column_names=["detector_distances_mm", "beam_centre_x_mm", "beam_centre_y_mm"],
-        rows=[[150, 152.2, 166.26], [800, 152.08, 160.96]],
-    )
-    assert my_lut.get_value(*args) == expected_value
+    assert generic_lookup_table.get_value(*args) == expected_value
 
 
-def test_generic_lut_model_get_value_errors_if_value_doesnt_exist():
-    my_lut = GenericLookupTable(
-        column_names=["detector_distances_mm", "beam_centre_x_mm", "beam_centre_y_mm"],
-        rows=[[150, 152.2, 166.26], [800, 152.08, 160.96]],
-    )
+def test_lut_model_get_value_errors_if_value_doesnt_exist(
+    generic_lookup_table: GenericLookupTable,
+):
     with pytest.raises(
         ValueError,
         match=re.escape(
@@ -179,13 +191,11 @@ def test_generic_lut_model_get_value_errors_if_value_doesnt_exist():
         ),
     ):
         # value doesn't exist
-        my_lut.get_value("beam_centre_y_mm", 160.97, "detector_distances_mm")
+        generic_lookup_table.get_value(
+            "beam_centre_y_mm", 160.97, "detector_distances_mm"
+        )
 
 
-def test_generic_lut_model_columns_function():
-    my_lut = GenericLookupTable(
-        column_names=["detector_distances_mm", "beam_centre_x_mm", "beam_centre_y_mm"],
-        rows=[[150, 152.2, 166.26], [800, 152.08, 160.96]],
-    )
+def test_lut_model_columns_property(generic_lookup_table: GenericLookupTable):
     expected_columns = [[150, 800], [152.2, 152.08], [166.26, 160.96]]
-    assert my_lut.columns() == expected_columns
+    assert generic_lookup_table.columns == expected_columns
