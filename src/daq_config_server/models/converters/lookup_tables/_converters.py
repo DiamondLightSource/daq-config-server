@@ -29,7 +29,9 @@ def parse_lut_rows(
     return rows
 
 
-def parse_lut(contents: str, *params: tuple[str, type | None]) -> GenericLookupTable:
+def parse_generic_lut(
+    contents: str, *params: tuple[str, type | None]
+) -> GenericLookupTable:
     """Converts a lookup table to a pydantic model, containing the names of each column
     and the rows as a 2D list.
 
@@ -62,7 +64,7 @@ def undulator_energy_gap_lut(contents: str) -> UndulatorEnergyGapLookupTable:
 
 
 def i09_hu_undulator_energy_gap_lut(contents: str) -> GenericLookupTable:
-    return parse_lut(
+    return parse_generic_lut(
         contents,
         ("order", int),
         ("ring_energy_gev", float),

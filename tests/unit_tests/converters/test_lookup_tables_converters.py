@@ -15,7 +15,17 @@ from daq_config_server.models.converters.lookup_tables import (
     i09_hu_undulator_energy_gap_lut,
     undulator_energy_gap_lut,
 )
-from daq_config_server.models.converters.lookup_tables._converters import parse_lut
+from daq_config_server.models.converters.lookup_tables._converters import (
+    parse_generic_lut,
+)
+
+
+@pytest.fixture
+def generic_lookup_table():
+    return GenericLookupTable(
+        column_names=["detector_distances_mm", "beam_centre_x_mm", "beam_centre_y_mm"],
+        rows=[[150, 152.2, 166.26], [800, 152.08, 160.96]],
+    )
 
 
 def test_parse_lut_to_dict_gives_expected_result_and_can_be_jsonified():
@@ -25,7 +35,7 @@ def test_parse_lut_to_dict_gives_expected_result_and_can_be_jsonified():
         column_names=["energy_eV", "gap_mm"],
         rows=[[5700, 5.4606], [5760, 5.5], [6000, 5.681], [6500, 6.045]],
     )
-    result = parse_lut(contents, ("energy_eV", int), ("gap_mm", float))
+    result = parse_generic_lut(contents, ("energy_eV", int), ("gap_mm", float))
     assert result == expected
     result.model_dump_json()
 
@@ -34,7 +44,7 @@ def test_parsing_bad_lut_causes_error():
     with open(TestDataPaths.TEST_BAD_LUT_PATH) as f:
         contents = f.read()
     with pytest.raises(IndexError):
-        parse_lut(contents, ("energy_eV", int), ("gap_mm", float))
+        parse_generic_lut(contents, ("energy_eV", int), ("gap_mm", float))
 
 
 def test_lut_with_different_number_of_row_items_to_column_names_causes_error():
@@ -164,20 +174,16 @@ def test_i09_hu_undulator_gap_lut_gives_expected_result():
     ],
 )
 def test_lut_model_get_value(
-    args: tuple[str, int | float, str, bool], expected_value: int | float
+    generic_lookup_table: GenericLookupTable,
+    args: tuple[str, int | float, str, bool],
+    expected_value: int | float,
 ):
-    my_lut = GenericLookupTable(
-        column_names=["detector_distances_mm", "beam_centre_x_mm", "beam_centre_y_mm"],
-        rows=[[150, 152.2, 166.26], [800, 152.08, 160.96]],
-    )
-    assert my_lut.get_value(*args) == expected_value
+    assert generic_lookup_table.get_value(*args) == expected_value
 
 
-def test_lut_model_get_value_errors_if_value_doesnt_exist():
-    my_lut = GenericLookupTable(
-        column_names=["detector_distances_mm", "beam_centre_x_mm", "beam_centre_y_mm"],
-        rows=[[150, 152.2, 166.26], [800, 152.08, 160.96]],
-    )
+def test_lut_model_get_value_errors_if_value_doesnt_exist(
+    generic_lookup_table: GenericLookupTable,
+):
     with pytest.raises(
         ValueError,
         match=re.escape(
@@ -185,22 +191,18 @@ def test_lut_model_get_value_errors_if_value_doesnt_exist():
         ),
     ):
         # value doesn't exist
-        my_lut.get_value("beam_centre_y_mm", 160.97, "detector_distances_mm")
+        generic_lookup_table.get_value(
+            "beam_centre_y_mm", 160.97, "detector_distances_mm"
+        )
 
 
-def test_lut_model_columns_property():
-    my_lut = GenericLookupTable(
-        column_names=["detector_distances_mm", "beam_centre_x_mm", "beam_centre_y_mm"],
-        rows=[[150, 152.2, 166.26], [800, 152.08, 160.96]],
-    )
+def test_lut_model_columns_property(generic_lookup_table: GenericLookupTable):
     expected_columns = [[150, 800], [152.2, 152.08], [166.26, 160.96]]
-    assert my_lut.columns == expected_columns
+    assert generic_lookup_table.columns == expected_columns
 
 
-def test_lut_model_columns_property_cannot_be_set():
-    my_lut = GenericLookupTable(
-        column_names=["detector_distances_mm", "beam_centre_x_mm", "beam_centre_y_mm"],
-        rows=[[150, 152.2, 166.26], [800, 152.08, 160.96]],
-    )
+def test_lut_model_columns_property_cannot_be_set(
+    generic_lookup_table: GenericLookupTable,
+):
     with pytest.raises(AttributeError):
-        my_lut.columns = [[1, 2], [3, 4], [5, 6]]
+        generic_lookup_table.columns = [[1, 2], [3, 4], [5, 6]]  # type: ignore

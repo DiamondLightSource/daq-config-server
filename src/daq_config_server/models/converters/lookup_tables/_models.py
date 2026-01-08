@@ -19,17 +19,13 @@ class LookupTableBase(ConfigModel, Generic[ColumnNameT]):
             if len(row) != n_columns:
                 raise ValueError(
                     f"Length of row {row} does not match number "
-                    f"of columns: {column_names}"
+                    f"of columns: {len(column_names)}"
                 )
         return self
 
     @property
     def columns(self) -> list[list[int | float]]:
         return [[row[i] for row in self.rows] for i in range(len(self.rows[0]))]
-
-    @columns.setter
-    def columns(self, _):
-        raise AttributeError("columns is read-only")
 
     def get_value(
         self,
