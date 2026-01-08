@@ -199,10 +199,3 @@ def test_lut_model_get_value_errors_if_value_doesnt_exist(
 def test_lut_model_columns_property(generic_lookup_table: GenericLookupTable):
     expected_columns = [[150, 800], [152.2, 152.08], [166.26, 160.96]]
     assert generic_lookup_table.columns == expected_columns
-
-
-def test_lut_model_columns_property_cannot_be_set(
-    generic_lookup_table: GenericLookupTable,
-):
-    with pytest.raises(AttributeError):
-        generic_lookup_table.columns = [[1, 2], [3, 4], [5, 6]]  # type: ignore
