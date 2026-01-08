@@ -66,7 +66,7 @@ jobs:
       - name: Helm login to GHCR
         if: ${{ github.event_name == 'push' && github.ref_type == 'tag' }}
         run: |
-          echo ${{ secrets.GITHUB_TOKEN }} | helm registry login ghcr.io/${{ github.repository }} --username ${{ github.repository_owner }} --password-stdin
+          echo ${{ secrets.GITHUB_TOKEN }} | helm registry login ghcr.io --username ${{ github.repository_owner }} --password-stdin
 
       - name: Package and push chart
         if: ${{ github.event_name == 'push' && github.ref_type == 'tag' }}
