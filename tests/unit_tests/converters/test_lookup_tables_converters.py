@@ -23,7 +23,7 @@ from daq_config_server.models.converters.lookup_tables._converters import (
 @pytest.fixture
 def generic_lookup_table():
     return GenericLookupTable(
-        column_names=["detector_distances_mm", "beam_centre_x_mm", "beam_centre_y_mm"],
+        column_names=["detector_distance_mm", "beam_centre_x_mm", "beam_centre_y_mm"],
         rows=[[150, 152.2, 166.26], [800, 152.08, 160.96]],
     )
 
@@ -67,7 +67,7 @@ def test_detector_xy_lut_gives_expected_results():
     result = parse_detector_xy_lut(input)
     assert result == expected
     assert result.get_column_names() == [
-        "detector_distances_mm",
+        "detector_distance_mm",
         "beam_centre_x_mm",
         "beam_centre_y_mm",
     ]
@@ -165,8 +165,8 @@ def test_i09_hu_undulator_gap_lut_gives_expected_result():
 @pytest.mark.parametrize(
     "args, expected_value",
     [
-        (("detector_distances_mm", 150, "beam_centre_x_mm", True), 152.2),
-        (("beam_centre_y_mm", 160.96, "detector_distances_mm", True), 800),
+        (("detector_distance_mm", 150, "beam_centre_x_mm", True), 152.2),
+        (("beam_centre_y_mm", 160.96, "detector_distance_mm", True), 800),
         (
             ("beam_centre_x_mm", 153, "beam_centre_y_mm", False),
             166.26,  # get closest value when value_must_exist == False
@@ -192,7 +192,7 @@ def test_lut_model_get_value_errors_if_value_doesnt_exist(
     ):
         # value doesn't exist
         generic_lookup_table.get_value(
-            "beam_centre_y_mm", 160.97, "detector_distances_mm"
+            "beam_centre_y_mm", 160.97, "detector_distance_mm"
         )
 
 
