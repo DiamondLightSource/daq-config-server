@@ -15,7 +15,8 @@ To update this:
 5. Update the `Chart.lock` by running:
 
     ```
-    cd services/numtracker
+    cd services/daq-config-server/
+    module load helm
     helm dependency update . 
     ```
 
