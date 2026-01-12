@@ -23,4 +23,4 @@ To update this:
 
 6. Merge this as a MR (you will need approval from a DAQ team lead)
 
-6. Ensure the version in [argoCD](https://argocd.diamond.ac.uk/applications/daq-config-server/daq-config-server) updates
+6. Ensure the version in [argoCD](https://argocd.diamond.ac.uk/applications/daq-config-server/daq-config-server) updates. This should be automatic and take no longer than 5 mins.
