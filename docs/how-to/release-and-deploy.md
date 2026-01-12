@@ -10,7 +10,7 @@ To update this:
 
 3. Clone the [services-repo](https://gitlab.diamond.ac.uk/daq/athena-app/) locally
 
-4. Update the `services/daq-config-server/Chart.yaml` to have the new version numbers
+4. Update the `services/daq-config-server/Chart.yaml` to have the new version numbers. Including changing the chart version as specified in the comment in the file.
 
 5. Update the `Chart.lock` by running:
 
