@@ -82,7 +82,7 @@ class GenericLookupTable(LookupTableBase[str]):
 
 
 DETECTOR_XY_COLUMN_NAMES = Literal[
-    "detector_distances_mm", "beam_centre_x_mm", "beam_centre_y_mm"
+    "detector_distance_mm", "beam_centre_x_mm", "beam_centre_y_mm"
 ]
 
 
