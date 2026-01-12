@@ -21,4 +21,6 @@ To update this:
 
     For an example of this and the previous step see [here](https://gitlab.diamond.ac.uk/daq/athena-app/-/merge_requests/34)
 
+6. Merge this as a MR (you will need approval from a DAQ team lead)
+
 6. Ensure the version in [argoCD](https://argocd.diamond.ac.uk/applications/daq-config-server/daq-config-server) updates
