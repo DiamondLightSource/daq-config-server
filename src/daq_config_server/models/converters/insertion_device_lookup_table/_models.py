@@ -33,10 +33,11 @@ from pydantic import (
     BaseModel,
     ConfigDict,
     Field,
-    RootModel,
     field_serializer,
     field_validator,
 )
+
+from daq_config_server.models.converters import ConfigModel
 
 DEFAULT_POLY_DEG = [
     "7th-order",
@@ -217,13 +218,14 @@ class EnergyCoverage(BaseModel):
         return None
 
 
-class InsertionDeviceLookupTable(RootModel[Mapping[Pol, EnergyCoverage]]):
+class InsertionDeviceLookupTable(ConfigModel):
     """
     Specialised lookup table for insertion devices to relate the energy and polarisation
     values to Apple2 motor positions.
     """
 
     model_config = ConfigDict(frozen=True)
+    root: Mapping[Pol, EnergyCoverage]
 
     @classmethod
     def generate(
