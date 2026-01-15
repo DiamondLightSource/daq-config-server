@@ -199,3 +199,9 @@ def test_lut_model_get_value_errors_if_value_doesnt_exist(
 def test_lut_model_columns_property(generic_lookup_table: GenericLookupTable):
     expected_columns = [[150, 800], [152.2, 152.08], [166.26, 160.96]]
     assert generic_lookup_table.columns == expected_columns
+
+
+def test_get_column(generic_lookup_table: GenericLookupTable):
+    assert generic_lookup_table.get_column("detector_distance_mm") == [150, 800]
+    assert generic_lookup_table.get_column("beam_centre_x_mm") == [152.2, 152.08]
+    assert generic_lookup_table.get_column("beam_centre_y_mm") == [166.26, 160.96]
