@@ -1,14 +1,15 @@
 # Changes here will be overwritten by Copier
-_commit: 3.0.0
+_commit: 5.0.1
 _src_path: gh:DiamondLightSource/python-copier-template
 author_email: oliver.silvester@diamond.ac.uk
 author_name: Oliver Silvester
-component_lifecycle: experimental
+component_lifecycle: production
 component_owner: group:default/data-acquisition
 component_type: service
 description: A service to read files on dls_sw from a blueapi container
 distribution_name: daq-config-server
 docker: true
+docker_debug: true
 docs_type: sphinx
 git_platform: github.com
 github_org: DiamondLightSource
