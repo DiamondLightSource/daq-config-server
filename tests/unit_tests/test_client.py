@@ -12,7 +12,7 @@ from daq_config_server.client import (
     ConfigServer,
     TModel,
     TNonModel,
-    TypeConversionException,
+    TypeConversionError,
     _get_mime_type,
 )
 from daq_config_server.constants import ENDPOINTS
@@ -64,7 +64,7 @@ def test_get_file_contents_gives_exception_on_invalid_json(
     )
     url = "url"
     server = ConfigServer(url)
-    with pytest.raises(TypeConversionException):
+    with pytest.raises(TypeConversionError):
         server.get_file_contents(test_path, desired_return_type=dict[Any, Any])
 
 
