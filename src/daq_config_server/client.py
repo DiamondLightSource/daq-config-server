@@ -18,7 +18,7 @@ TModel = TypeVar("TModel", bound=ConfigModel)
 TNonModel = TypeVar("TNonModel", str, bytes, dict[str, Any])
 
 
-class TypeConversionException(Exception): ...
+class TypeConversionError(Exception): ...
 
 
 def _get_mime_type(
@@ -133,7 +133,7 @@ class ConfigServer:
                 case _:
                     content = r.content
         except Exception as e:
-            raise TypeConversionException(
+            raise TypeConversionError(
                 f"Failed trying to convert to content-type {content_type}."
             ) from e
 
