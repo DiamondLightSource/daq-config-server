@@ -1,4 +1,5 @@
 from daq_config_server.models.converters import parse_value, remove_comments
+from daq_config_server.models.converters._converter_utils import camel_to_snake_case
 
 from ._models import DisplayConfig, DisplayConfigData
 
@@ -10,7 +11,8 @@ def display_config_to_model(contents: str) -> DisplayConfig:
 
     for line in remove_comments(lines):
         key, value = (item.strip() for item in line.split("=", 1))
-        if key == "zoomLevel":
+        key = camel_to_snake_case(key)
+        if key == "zoom_level":
             zoom_level = float(value)
             assert zoom_level not in config_dict.keys(), (
                 f"Multiple instances of zoomLevel {zoom_level}"

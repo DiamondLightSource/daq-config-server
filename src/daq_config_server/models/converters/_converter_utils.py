@@ -1,4 +1,5 @@
 import ast
+import re
 from typing import Any
 
 ALLOWED_BEAMLINE_PARAMETER_STRINGS = ["FB", "FULL", "deadtime"]
@@ -23,3 +24,7 @@ def parse_value(value: str, convert_to: type | None = None) -> Any:
     if convert_to:
         value = convert_to(value)
     return value
+
+
+def camel_to_snake_case(value: str) -> str:
+    return re.sub(r"([a-z])([A-Z])", r"\1_\2", value).lower()
