@@ -2,7 +2,11 @@ from typing import Any
 
 import pytest
 
-from daq_config_server.models.converters import parse_value, remove_comments
+from daq_config_server.models.converters import (
+    camel_to_snake_case,
+    parse_value,
+    remove_comments,
+)
 
 
 def test_remove_comments_works_as_expected():
@@ -39,3 +43,17 @@ def test_parse_value_works_as_expected(
     parsed_value = parse_value(value, convert_to)
     assert parsed_value == expected_parsed_value
     assert type(parsed_value) is type(expected_parsed_value)
+
+
+@pytest.mark.parametrize(
+    "camel_case, snake_case",
+    [
+        ("CamelCase", "camel_case"),
+        ("camelCase", "camel_case"),
+        ("_Camel_Case", "_camel_case"),
+        ("CAMELCASE", "camelcase"),
+        ("CAMELCAsE", "camelcas_e"),
+    ],
+)
+def test_camel_to_snake_case_works_as_expected(camel_case: str, snake_case: str):
+    assert camel_to_snake_case(camel_case) == snake_case
