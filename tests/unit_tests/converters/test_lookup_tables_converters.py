@@ -215,4 +215,4 @@ def test_get_column_with_invalid_column_name(generic_lookup_table: GenericLookup
             + "['detector_distance_mm', 'beam_centre_x_mm', 'beam_centre_y_mm']",
         ),
     ):
-        assert generic_lookup_table.get_column("column_name") == [150, 800]
+        generic_lookup_table.get_column("column_name")
