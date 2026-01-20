@@ -205,3 +205,14 @@ def test_get_column(generic_lookup_table: GenericLookupTable):
     assert generic_lookup_table.get_column("detector_distance_mm") == [150, 800]
     assert generic_lookup_table.get_column("beam_centre_x_mm") == [152.2, 152.08]
     assert generic_lookup_table.get_column("beam_centre_y_mm") == [166.26, 160.96]
+
+
+def test_get_column_with_invalid_column_name(generic_lookup_table: GenericLookupTable):
+    with pytest.raises(
+        ValueError,
+        match=re.escape(
+            "'column_name' not in column names: "
+            + "['detector_distance_mm', 'beam_centre_x_mm', 'beam_centre_y_mm']",
+        ),
+    ):
+        assert generic_lookup_table.get_column("column_name") == [150, 800]
