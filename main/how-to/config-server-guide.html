@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Guide to using the config-server &#8212; daq-config-server 1.1.2.dev1+g3695b7d46 documentation</title>
+    <title>Guide to using the config-server &#8212; daq-config-server 1.1.3.dev1+g7d9c5bd5b documentation</title>
   
   
   
@@ -41,9 +41,9 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../_static/documentation_options.js?v=a08587e4"></script>
-    <script src="../_static/doctools.js?v=9bcbadda"></script>
-    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/documentation_options.js?v=d2d22563"></script>
+    <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../_static/copybutton.js?v=30646c52"></script>
     <script src="../_static/design-tabs.js?v=f930bc37"></script>
@@ -402,6 +402,7 @@
 
 
 <li class="toctree-l1"><a class="reference internal" href="contribute.html">Contribute to the project</a></li>
+<li class="toctree-l1"><a class="reference internal" href="release-and-deploy.html">Deploying to production</a></li>
 <li class="toctree-l1"><a class="reference internal" href="run-container.html">Run in a container</a></li>
 </ul>
 </div>
@@ -465,7 +466,7 @@
                   
   <section id="guide-to-using-the-config-server">
 <h1>Guide to using the config-server<a class="headerlink" href="#guide-to-using-the-config-server" title="Link to this heading">#</a></h1>
-<p>The server is centrally hosted on argus and is accessible anywhere within the Diamond network. You can quickly get a feel for it using FastAPI’s generated Swagger UI at https://daq-config.diamond.ac.uk/docs</p>
+<p>The server is centrally hosted on argus and is accessible anywhere within the Diamond network. You can quickly get a feel for it using FastAPI’s generated <a class="reference external" href="https://daq-config.diamond.ac.uk/docs">Swagger UI</a>.</p>
 <p>This library provides a python client to easily make requests from Bluesky code. The client can use caching to prevent needlessly making time-consuming requests on data which won’t have changed. You can choose the maximum number of items it can hold as well as the lifetime of an item upon instantiation.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">daq_config_server.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">ConfigServer</span>
 
