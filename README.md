@@ -27,7 +27,7 @@ file_contents = config_server.get_file_contents({ABSOLUTE_PATH_TO_CONFIG_FILE}, 
 
 The output will come out as a raw string - you should format it as required in your own code. You may also request that the file contents is returned as a `dict` or in `bytes` - this will raise an http exception if the file cannot be converted to that type. To be able to read a file, you must first add it to the [whitelist](https://github.com/DiamondLightSource/daq-config-server/blob/main/whitelist.yaml).
 
-## Testing and deployment
+## Testing
 
 To run unit tests, type `tox -e unit_tests` from within the dev container
 
@@ -35,7 +35,7 @@ There is a convenient script in `./deployment/build_and_push.sh` which can be us
 
 To run local system tests, start a local container by running `./deployment/build_and_push.sh -r -b`. Then, in the dev container, forward port 8555. There are instructions on port forwarding within vscode [here](https://code.visualstudio.com/docs/debugtest/port-forwarding). Next, in a terminal in the devcontainer, run `tox -e system_tests_local` from the `daq-config-server` directory.
 
-To test on argus, log in to argus in your namespace and run:
+To run a test deployment on argus, log in to argus in your namespace and run:
 
 ```bash
 helm install daq-config ./helmchart/ --values dev-values.yaml

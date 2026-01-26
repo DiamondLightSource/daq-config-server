@@ -68,6 +68,15 @@ class LookupTableBase(ConfigModel, Generic[ColumnNameT]):
 
         return target_row[target_column_index]
 
+    def get_column(self, column_name: ColumnNameT) -> list[int | float]:
+        try:
+            column_index = self.get_column_names().index(column_name)
+        except ValueError as e:
+            raise ValueError(
+                f"'{column_name}' not in column names: {self.get_column_names()}"
+            ) from e
+        return self.columns[column_index]
+
     @abstractmethod
     def get_column_names(
         self,
