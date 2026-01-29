@@ -10,7 +10,7 @@ metadata:
 spec:
   type: service
   lifecycle: production
-  owner: group:data-acquisition
+  owner: group:default/data-acquisition
   system: athena
   providesApis:
     - daqConfigControl
@@ -26,7 +26,7 @@ metadata:
 spec:
   type: openapi
   lifecycle: production
-  owner: group:data-acquisition
+  owner: group:default/data-acquisition
   definition:
     $text: ./docs/reference/openapi.yaml
 ---

@@ -16,20 +16,20 @@ def test_display_config_to_model_gives_expected_result_and_can_be_jsonified():
     expected = DisplayConfig(
         zoom_levels={
             1.0: DisplayConfigData(
-                bottomRightX=410,
-                bottomRightY=278,
-                crosshairX=541,
-                crosshairY=409,
-                topLeftX=383,
-                topLeftY=253,
+                bottom_right_x=410,
+                bottom_right_y=278,
+                crosshair_x=541,
+                crosshair_y=409,
+                top_left_x=383,
+                top_left_y=253,
             ),
             2.5: DisplayConfigData(
-                bottomRightX=388,
-                bottomRightY=322,
-                crosshairX=551,
-                crosshairY=410,
-                topLeftX=340,
-                topLeftY=283,
+                bottom_right_x=388,
+                bottom_right_y=322,
+                crosshair_x=551,
+                crosshair_y=410,
+                top_left_x=340,
+                top_left_y=283,
             ),
         }
     )
@@ -41,20 +41,20 @@ def test_display_config_to_model_gives_expected_result_and_can_be_jsonified():
 def test_display_config_with_wrong_zoom_levels_causes_error():
     zoom_levels = {
         1.0: DisplayConfigData(
-            bottomRightX=410,
-            bottomRightY=278,
-            crosshairX=541,
-            crosshairY=409,
-            topLeftX=383,
-            topLeftY=253,
+            bottom_right_x=410,
+            bottom_right_y=278,
+            crosshair_x=541,
+            crosshair_y=409,
+            top_left_x=383,
+            top_left_y=253,
         ),
         2.5: DisplayConfigData(
-            bottomRightX=388,
-            bottomRightY=322,
-            crosshairX=551,
-            crosshairY=410,
-            topLeftX=340,
-            topLeftY=283,
+            bottom_right_x=388,
+            bottom_right_y=322,
+            crosshair_x=551,
+            crosshair_y=410,
+            top_left_x=340,
+            top_left_y=283,
         ),
     }
     with pytest.raises(
