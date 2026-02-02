@@ -41,7 +41,7 @@ To do this:
 
 3. Ensure the `securityContext` section is correct for your beamline. Running `id k8s-ixx-beamline` in a terminal will give you the correct user ID and group ID for your beamline.
 
-4. In the {beamline}-deployment repo on gitlab, update `apps/values.yaml` to include the new config server app. See [this commit](https://gitlab.diamond.ac.uk/controls/containers/beamline/i03-deployment/-/commit/5668afe1c69e7fd18fd42feca7689206bf647e17) as an example.
+4. In the {beamline}-deployment repo on gitlab, update `apps/values.yaml` to include the new config server app by adding the service name below the other services.
 
 5. Check the app is running on [ArgoCD](https://argocd.diamond.ac.uk/applications). If you don't have access to the namespace of the beamline cluster you are deploying to, someone already with access can request to add you [here](https://jira.diamond.ac.uk/servicedesk/customer/portal/2/create/92).
 
