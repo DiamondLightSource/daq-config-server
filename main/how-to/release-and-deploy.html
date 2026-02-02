@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Deploying to production &#8212; daq-config-server 1.1.3.dev3+gcd47b1c05 documentation</title>
+    <title>Deploying to production &#8212; daq-config-server 1.1.3.dev4+g357c95caf documentation</title>
   
   
   
@@ -41,7 +41,7 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../_static/documentation_options.js?v=cd074363"></script>
+    <script src="../_static/documentation_options.js?v=680dffa1"></script>
     <script src="../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -403,6 +403,7 @@
 
 <li class="toctree-l1"><a class="reference internal" href="contribute.html">Contribute to the project</a></li>
 <li class="toctree-l1 current active"><a class="current reference internal" href="#">Deploying to production</a></li>
+
 <li class="toctree-l1"><a class="reference internal" href="run-container.html">Run in a container</a></li>
 </ul>
 </div>
@@ -485,6 +486,25 @@
 <li><p>Ensure the version in <a class="reference external" href="https://argocd.diamond.ac.uk/applications/daq-config-server/daq-config-server">argoCD</a> updates. This should be automatic and take no longer than 5 mins.</p></li>
 </ol>
 </section>
+<section id="deploying-to-a-beamline-cluster">
+<h1>Deploying to a beamline cluster<a class="headerlink" href="#deploying-to-a-beamline-cluster" title="Link to this heading">#</a></h1>
+<p>The config server can also be deployed to beamline clusters.</p>
+<p>To do this:</p>
+<ol class="arabic simple">
+<li><p>Request a new ingress from the cloud team from <a class="reference external" href="https://jira.diamond.ac.uk/servicedesk/customer/portal/2/create/156">this page</a>. For example, for i03 the request would be</p></li>
+</ol>
+<ul class="simple">
+<li><p>Namespace Name: <code class="docutils literal notranslate"><span class="pre">i03-beamline</span></code></p></li>
+<li><p>Ingress Names: <code class="docutils literal notranslate"><span class="pre">i03-daq-config.diamond.ac.uk</span></code></p></li>
+</ul>
+<ol class="arabic simple" start="2">
+<li><p>In the {beamline}-services repo on gitlab, create a new folder inside the services folder called <code class="docutils literal notranslate"><span class="pre">{beamline}-daq-config-server/</span></code>. Create a <code class="docutils literal notranslate"><span class="pre">Chart.yaml</span></code> and <code class="docutils literal notranslate"><span class="pre">values.yaml</span></code> here. See <a class="reference external" href="https://gitlab.diamond.ac.uk/controls/containers/beamline/i03-services/-/tree/main/services/i03-daq-config-server?ref_type=heads">here</a> for an example in <code class="docutils literal notranslate"><span class="pre">i03-services</span></code>. Make sure the ingress section in <code class="docutils literal notranslate"><span class="pre">values.yaml</span></code> matches the ingress information you requested in step 1.</p></li>
+<li><p>Ensure the <code class="docutils literal notranslate"><span class="pre">securityContext</span></code> section is correct for your beamline. Running <code class="docutils literal notranslate"><span class="pre">id</span> <span class="pre">k8s-ixx-beamline</span></code> in a terminal will give you the correct user ID and group ID for your beamline.</p></li>
+<li><p>In the {beamline}-deployment repo on gitlab, update <code class="docutils literal notranslate"><span class="pre">apps/values.yaml</span></code> to include the new config server app by adding the service name below the other services.</p></li>
+<li><p>Check the app is running on <a class="reference external" href="https://argocd.diamond.ac.uk/applications">ArgoCD</a>. If you don’t have access to the namespace of the beamline cluster you are deploying to, someone already with access can request to add you <a class="reference external" href="https://jira.diamond.ac.uk/servicedesk/customer/portal/2/create/92">here</a>.</p></li>
+<li><p>Once ArgoCD is showing the app is up and running, check you can retrieve config from the server by visiting the ingress url in a browser with <code class="docutils literal notranslate"><span class="pre">/docs</span></code> to see the interactive API. You should be able to use the <code class="docutils literal notranslate"><span class="pre">Get</span> <span class="pre">Configuration</span></code> form to retrieve a config file. For example, here’s the <a class="reference external" href="https://i03-daq-config.diamond.ac.uk/docs">i03 site</a>.</p></li>
+</ol>
+</section>
 
 
                 </article>
@@ -524,6 +544,20 @@
                 <dialog id="pst-secondary-sidebar-modal"></dialog>
                 <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
 
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#">Deploying to production</a></li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#deploying-to-a-beamline-cluster">Deploying to a beamline cluster</a></li>
+</ul>
+
+  </nav></div>
 
   <div class="sidebar-secondary-item">
 
