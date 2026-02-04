@@ -4,12 +4,12 @@ from daq_config_server.models.converters import ConfigModel
 
 
 class DisplayConfigData(ConfigModel):
-    crosshairX: int
-    crosshairY: int
-    topLeftX: int
-    topLeftY: int
-    bottomRightX: int
-    bottomRightY: int
+    crosshair_x: int
+    crosshair_y: int
+    top_left_x: int
+    top_left_y: int
+    bottom_right_x: int
+    bottom_right_y: int
 
 
 class DisplayConfig(ConfigModel):
