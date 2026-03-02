@@ -198,9 +198,7 @@ def test_get_file_contents_with_force_parser_still_validates_desired_return_type
     expected_exception: type[Exception] | None,
 ):
     mock_config = "Units eV mm\n5700		5.4606\n#24500		7.2\n"
-    expected_result = UndulatorEnergyGapLookupTable(
-        rows=[[5700, 5.4606], [5760, 5.5], [6000, 5.681], [6500, 6.045]]
-    )
+    expected_result = UndulatorEnergyGapLookupTable(rows=[[5700, 5.4606]])
     mock_request.return_value = make_test_response(mock_config)
 
     server = ConfigServer("url")

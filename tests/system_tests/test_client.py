@@ -159,21 +159,38 @@ def test_request_for_file_with_converter_with_wrong_pydantic_model_errors(
 
 
 @pytest.mark.parametrize(
-    "desired_return_type, converter",
+    "file_converter_map_entry, desired_return_type, converter",
     [
-        (BeamlinePitchLookupTable, parse_beamline_pitch_lut),
-        (BeamlineRollLookupTable, parse_beamline_roll_lut),
-        (UndulatorEnergyGapLookupTable, parse_undulator_energy_gap_lut),
+        (
+            UndulatorEnergyGapLookupTable,
+            BeamlinePitchLookupTable,
+            parse_beamline_pitch_lut,
+        ),
+        (
+            parse_undulator_energy_gap_lut,
+            BeamlineRollLookupTable,
+            parse_beamline_roll_lut,
+        ),
+        (None, UndulatorEnergyGapLookupTable, parse_undulator_energy_gap_lut),
     ],
 )
 @pytest.mark.requires_local_server
 def test_get_file_contents_with_force_parser_option_overides_converter_to_config_map(
     server: ConfigServer,
+    mock_file_converter_map: dict[str, Callable[[str], Any]],
+    file_converter_map_entry: Callable[[str], Any] | None,
     desired_return_type: type[ConfigModel],
     converter: Callable[[str], Any],
 ):
+    filepath = ServerFilePaths.GOOD_LUT
+
+    if file_converter_map_entry is None:
+        del mock_file_converter_map[str(filepath)]
+    else:
+        mock_file_converter_map[str(filepath)] = file_converter_map_entry
+
     result = server.get_file_contents(
-        ServerFilePaths.GOOD_LUT,
+        filepath,
         desired_return_type,
         force_parser=converter,
     )
