@@ -30,7 +30,7 @@ from tests.constants import (
 SERVER_ADDRESS = "http://0.0.0.0:8555"
 DEPLOYED_SERVER_ADDRESS = "https://daq-config.diamond.ac.uk"
 
-# Docs for running these system tests will be added in https://github.com/DiamondLightSource/daq-config-server/issues/68
+# See docs for running these system tests: https://diamondlightsource.github.io/daq-config-server/main/index.html#testing
 
 
 @pytest.fixture

@@ -199,6 +199,7 @@ class ConfigServer:
                 "FILE_TO_CONVERTER_MAP. See "
                 "https://github.com/DiamondLightSource/daq-config-server/blob/main/docs/how-to/config-server-guide.md#file-converters"
             )
+            # force accept header to string so conversion is done client side
             accept_header = _get_mime_type(str)
         else:
             accept_header = _get_mime_type(desired_return_type)

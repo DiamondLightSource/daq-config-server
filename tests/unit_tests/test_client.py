@@ -19,13 +19,14 @@ from daq_config_server.client import (
 from daq_config_server.constants import ENDPOINTS
 from daq_config_server.models.converters._base_model import ConfigModel
 from daq_config_server.models.converters.display_config import DisplayConfig
-from daq_config_server.models.converters.lookup_tables import GenericLookupTable
-from daq_config_server.models.converters.lookup_tables._converters import (
-    parse_undulator_energy_gap_lut,
+from daq_config_server.models.converters.display_config._converters import (
+    display_config_to_model,
 )
-from daq_config_server.models.converters.lookup_tables._models import (
+from daq_config_server.models.converters.lookup_tables import (
     BeamlinePitchLookupTable,
+    GenericLookupTable,
     UndulatorEnergyGapLookupTable,
+    parse_undulator_energy_gap_lut,
 )
 from daq_config_server.testing import make_test_response
 
@@ -159,12 +160,9 @@ def test_get_mime_type(input: type[TModel | TNonModel], expected: ValidAcceptHea
 
 
 @patch("daq_config_server.client.requests.get")
-@patch("daq_config_server.client._get_mime_type")
 def test_get_file_contents_with_force_parser_requests_str_from_server_and_converts(
-    mock__get_mime_type: MagicMock,
     mock_request: MagicMock,
 ):
-    mock__get_mime_type.return_value = _get_mime_type(str)
     mock_config = "mock_config"
     mock_request.return_value = make_test_response(mock_config)
 
@@ -176,7 +174,6 @@ def test_get_file_contents_with_force_parser_requests_str_from_server_and_conver
     result = server.get_file_contents(test_path, dict, force_parser=mock_converter)
 
     mock_converter.assert_called_once_with(mock_config)
-    mock__get_mime_type.assert_called_once_with(str)
     mock_request.assert_called_once_with(
         "url/config/test", headers={"Accept": ValidAcceptHeaders.PLAIN_TEXT}
     )
@@ -203,7 +200,7 @@ def test_get_file_contents_with_force_parser_still_validates_desired_return_type
 
     server = ConfigServer("url")
     if expected_exception:
-        with pytest.raises(expected_exception=expected_exception):
+        with pytest.raises(expected_exception):
             server.get_file_contents(
                 test_path,
                 desired_return_type,
@@ -216,3 +213,19 @@ def test_get_file_contents_with_force_parser_still_validates_desired_return_type
             force_parser=parse_undulator_energy_gap_lut,
         )
         assert result == expected_result
+
+
+@patch("daq_config_server.client.requests.get")
+def test_get_file_contents_with_bad_force_parser_errors(
+    mock_request: MagicMock,
+):
+    mock_config = "Units eV mm\n5700		5.4606\n#24500		7.2\n"
+    mock_request.return_value = make_test_response(mock_config)
+
+    server = ConfigServer("url")
+    with pytest.raises(ValueError):
+        server.get_file_contents(
+            test_path,
+            DisplayConfig,
+            force_parser=display_config_to_model,
+        )
