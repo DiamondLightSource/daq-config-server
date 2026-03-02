@@ -1,4 +1,6 @@
+import logging
 import operator
+from collections.abc import Callable
 from logging import Logger, getLogger
 from pathlib import Path
 from typing import Any, TypeVar, get_origin, overload
@@ -13,6 +15,8 @@ from daq_config_server.app import ValidAcceptHeaders
 from daq_config_server.models import ConfigModel
 
 from .constants import ENDPOINTS
+
+LOGGER = logging.getLogger(__name__)
 
 TModel = TypeVar("TModel", bound=ConfigModel)
 TNonModel = TypeVar("TNonModel", str, bytes, dict[str, Any])
@@ -145,6 +149,7 @@ class ConfigServer:
         file_path: str | Path,
         desired_return_type: type[TNonModel] = str,
         reset_cached_result: bool = False,
+        force_parser: Callable[[str], Any] | None = None,
     ) -> TNonModel: ...
 
     @overload
@@ -153,6 +158,7 @@ class ConfigServer:
         file_path: str | Path,
         desired_return_type: type[TModel],
         reset_cached_result: bool = False,
+        force_parser: Callable[[str], Any] | None = None,
     ) -> TModel: ...
 
     def get_file_contents(
@@ -160,6 +166,7 @@ class ConfigServer:
         file_path: str | Path,
         desired_return_type: type[Any] = str,
         reset_cached_result: bool = False,
+        force_parser: Callable[[str], Any] | None = None,
     ) -> Any:
         """
         Get contents of a file from the config server in the format specified.
@@ -180,13 +187,25 @@ class ConfigServer:
         """
         file_path = Path(file_path)
 
-        accept_header = _get_mime_type(desired_return_type)
-
-        return TypeAdapter(desired_return_type).validate_python(
-            self._get(
-                ENDPOINTS.CONFIG,
-                accept_header,
-                file_path,
-                reset_cached_result=reset_cached_result,
+        if force_parser:
+            LOGGER.warning(
+                "The force_parser option should only be used for testing or "
+                "as a temporary measure. Add your file and parser to the "
+                "FILE_TO_CONVERTER_MAP. See "
+                "https://github.com/DiamondLightSource/daq-config-server/blob/main/docs/how-to/config-server-guide.md#file-converters"
             )
+            accept_header = _get_mime_type(str)
+        else:
+            accept_header = _get_mime_type(desired_return_type)
+
+        result = self._get(
+            ENDPOINTS.CONFIG,
+            accept_header,
+            file_path,
+            reset_cached_result=reset_cached_result,
         )
+        if force_parser:
+            assert isinstance(result, str)
+            result = force_parser(result)
+
+        return TypeAdapter(desired_return_type).validate_python(result)
