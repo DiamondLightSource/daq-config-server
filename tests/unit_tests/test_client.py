@@ -2,6 +2,7 @@ from pathlib import Path
 from typing import Any
 from unittest.mock import MagicMock, patch
 
+import pydantic
 import pytest
 import requests
 from fastapi import status
@@ -16,8 +17,16 @@ from daq_config_server.client import (
     _get_mime_type,
 )
 from daq_config_server.constants import ENDPOINTS
+from daq_config_server.models.converters._base_model import ConfigModel
 from daq_config_server.models.converters.display_config import DisplayConfig
 from daq_config_server.models.converters.lookup_tables import GenericLookupTable
+from daq_config_server.models.converters.lookup_tables._converters import (
+    parse_undulator_energy_gap_lut,
+)
+from daq_config_server.models.converters.lookup_tables._models import (
+    BeamlinePitchLookupTable,
+    UndulatorEnergyGapLookupTable,
+)
 from daq_config_server.testing import make_test_response
 
 test_path = Path("test")
@@ -147,3 +156,65 @@ def test_get_file_contents_with_untyped_dict(mock_request: MagicMock):
 )
 def test_get_mime_type(input: type[TModel | TNonModel], expected: ValidAcceptHeaders):
     assert _get_mime_type(input) == expected
+
+
+@patch("daq_config_server.client.requests.get")
+@patch("daq_config_server.client._get_mime_type")
+def test_get_file_contents_with_force_parser_requests_str_from_server_and_converts(
+    mock__get_mime_type: MagicMock,
+    mock_request: MagicMock,
+):
+    mock__get_mime_type.return_value = _get_mime_type(str)
+    mock_config = "mock_config"
+    mock_request.return_value = make_test_response(mock_config)
+
+    mock_converted_result = {"value": 12345}
+
+    mock_converter = MagicMock(return_value=mock_converted_result)
+
+    server = ConfigServer("url")
+    result = server.get_file_contents(test_path, dict, force_parser=mock_converter)
+
+    mock_converter.assert_called_once_with(mock_config)
+    mock__get_mime_type.assert_called_once_with(str)
+    mock_request.assert_called_once_with(
+        "url/config/test", headers={"Accept": ValidAcceptHeaders.PLAIN_TEXT}
+    )
+
+    assert result == mock_converted_result
+
+
+@pytest.mark.parametrize(
+    "desired_return_type, expected_exception",
+    [
+        (UndulatorEnergyGapLookupTable, None),
+        (BeamlinePitchLookupTable, pydantic.ValidationError),
+    ],
+)
+@patch("daq_config_server.client.requests.get")
+def test_get_file_contents_with_force_parser_still_validates_desired_return_type(
+    mock_request: MagicMock,
+    desired_return_type: type[ConfigModel],
+    expected_exception: type[Exception] | None,
+):
+    mock_config = "Units eV mm\n5700		5.4606\n#24500		7.2\n"
+    expected_result = UndulatorEnergyGapLookupTable(
+        rows=[[5700, 5.4606], [5760, 5.5], [6000, 5.681], [6500, 6.045]]
+    )
+    mock_request.return_value = make_test_response(mock_config)
+
+    server = ConfigServer("url")
+    if expected_exception:
+        with pytest.raises(expected_exception=expected_exception):
+            server.get_file_contents(
+                test_path,
+                desired_return_type,
+                force_parser=parse_undulator_energy_gap_lut,
+            )
+    else:
+        result = server.get_file_contents(
+            test_path,
+            desired_return_type,
+            force_parser=parse_undulator_energy_gap_lut,
+        )
+        assert result == expected_result
