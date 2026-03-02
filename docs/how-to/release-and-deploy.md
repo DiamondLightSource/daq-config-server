@@ -37,7 +37,7 @@ To do this:
 - Namespace Name: `i03-beamline`
 - Ingress Names: `i03-daq-config.diamond.ac.uk`
 
-2. In the {beamline}-services repo on gitlab, create a new folder inside the services folder called `{beamline}-daq-config-server/`. Create a `Chart.yaml` and `values.yaml` here. See [here](https://gitlab.diamond.ac.uk/controls/containers/beamline/i03-services/-/tree/main/services/i03-daq-config-server?ref_type=heads) for an example in `i03-services`. Make sure the ingress section in `values.yaml` matches the ingress information you requested in step 1.
+2. In the {beamline}-services repo on [GitLab](https://gitlab.diamond.ac.uk/?name=services), create a new folder inside the services folder called `{beamline}-daq-config-server/`. Create a `Chart.yaml` and `values.yaml` here. See [here](https://gitlab.diamond.ac.uk/controls/containers/beamline/i03-services/-/tree/main/services/i03-daq-config-server?ref_type=heads) for an example in `i03-services`. Make sure the ingress section in `values.yaml` matches the ingress information you requested in step 1.
 
 3. Ensure the `securityContext` section is correct for your beamline. Running `id k8s-ixx-beamline` in a terminal will give you the correct user ID and group ID for your beamline.
 
