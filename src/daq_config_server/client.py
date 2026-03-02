@@ -180,8 +180,13 @@ class ConfigServer:
             file_path: Path to the file.
             desired_return_type: Specify how to parse the response.
             reset_cached_result: If true, make a request and store response in cache,
-                                otherwise look for cached response before making
-                                new request
+                otherwise look for cached response before making new request
+            force_parser: Optionally provide a function to convert the contents of a
+                config file to the desired return type. This overides whatever converter
+                is specified for that file in the FILE_TO_CONVERTER_MAP, and can be used
+                if the config file isn't in the FILE_TO_CONVERTER_MAP at all. This
+                should only be used for testing or when waiting on a release that will
+                add the file to the FILE_TO_CONVERTER_MAP.
         Returns:
             The file contents, in the format specified.
         """
@@ -189,7 +194,7 @@ class ConfigServer:
 
         if force_parser:
             LOGGER.warning(
-                "The force_parser option should only be used for testing or "
+                "The force_parser argument should only be used for testing or "
                 "as a temporary measure. Add your file and parser to the "
                 "FILE_TO_CONVERTER_MAP. See "
                 "https://github.com/DiamondLightSource/daq-config-server/blob/main/docs/how-to/config-server-guide.md#file-converters"
