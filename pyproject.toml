@@ -29,6 +29,7 @@ dependencies = [
     "urllib3",
     "requests",
     "xmltodict",
+    "ophyd-async",
 ]
 
 [dependency-groups]
