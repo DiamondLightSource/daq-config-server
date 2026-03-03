@@ -8,7 +8,7 @@ from threading import Event, Thread
 import requests
 import yaml
 
-from daq_config_server.constants import (
+from daq_config_server._core.constants import (
     WHITELIST_REFRESH_RATE_S,
     WHITELIST_URL,
 )

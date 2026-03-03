@@ -1,13 +1,13 @@
 import json
 
 import pytest
-from tests.constants import TestDataPaths
 
-from daq_config_server.models.converters.display_config import (
+from daq_config_server.plugins.display_config import (
     DisplayConfig,
     DisplayConfigData,
     display_config_to_model,
 )
+from tests.constants import TestDataPaths
 
 
 def test_display_config_to_model_gives_expected_result_and_can_be_jsonified():

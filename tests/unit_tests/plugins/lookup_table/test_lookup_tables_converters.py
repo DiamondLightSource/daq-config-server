@@ -1,9 +1,8 @@
 import re
 
 import pytest
-from tests.constants import TestDataPaths
 
-from daq_config_server.models.converters.lookup_tables import (
+from daq_config_server.plugins.lookup_tables import (
     BeamlinePitchLookupTable,
     BeamlineRollLookupTable,
     DetectorXYLookupTable,
@@ -15,9 +14,10 @@ from daq_config_server.models.converters.lookup_tables import (
     parse_i09_hu_undulator_energy_gap_lut,
     parse_undulator_energy_gap_lut,
 )
-from daq_config_server.models.converters.lookup_tables._converters import (
+from daq_config_server.plugins.lookup_tables._converters import (
     parse_generic_lut,
 )
+from tests.constants import TestDataPaths
 
 
 @pytest.fixture

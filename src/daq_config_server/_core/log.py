@@ -3,7 +3,7 @@ from typing import TextIO
 
 from graypy import GELFTCPHandler
 
-from daq_config_server.config import LoggingConfig
+from daq_config_server._core.config import LoggingConfig
 
 
 def set_up_stream_handler(

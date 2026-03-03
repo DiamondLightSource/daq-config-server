@@ -11,13 +11,13 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse, Response
 from starlette import status
 
-from daq_config_server.config import Config
-from daq_config_server.constants import (
+from daq_config_server._converters.convert import get_converted_file_contents
+from daq_config_server._core.config import Config
+from daq_config_server._core.constants import (
     ENDPOINTS,
 )
-from daq_config_server.log import set_up_logging
-from daq_config_server.models.converters.convert import get_converted_file_contents
-from daq_config_server.whitelist import get_whitelist
+from daq_config_server._core.log import set_up_logging
+from daq_config_server._core.whitelist import get_whitelist
 
 # See https://github.com/DiamondLightSource/daq-config-server/issues/105
 # to make this path configurable

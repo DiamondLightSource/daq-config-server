@@ -3,13 +3,13 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from daq_config_server.config import GraylogConfig
-from daq_config_server.log import LoggingConfig, set_up_logging
+from daq_config_server._core.config import GraylogConfig
+from daq_config_server._core.log import LoggingConfig, set_up_logging
 
 
 @pytest.fixture
 def mock_graylog_emit():
-    with patch("daq_config_server.log.GELFTCPHandler.emit") as graylog_emit:
+    with patch("daq_config_server._core.log.GELFTCPHandler.emit") as graylog_emit:
         yield graylog_emit
 
 

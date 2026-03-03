@@ -3,18 +3,16 @@ from typing import Any
 from unittest.mock import MagicMock
 
 import pytest
-from tests.constants import (
-    TestDataPaths,
-)
+from tests.constants import TestDataPaths
 
-from daq_config_server.models.converters._converter_utils import (
+from daq_config_server._converters._converter_utils import (
     ConverterParseError,
 )
-from daq_config_server.models.converters.beamline_parameters import (
+from daq_config_server._converters.convert import get_converted_file_contents
+from daq_config_server.plugins.beamline_parameters import (
     beamline_parameters_to_dict,
 )
-from daq_config_server.models.converters.convert import get_converted_file_contents
-from daq_config_server.models.converters.lookup_tables import GenericLookupTable
+from daq_config_server.plugins.lookup_tables import GenericLookupTable
 
 
 def test_get_converted_file_contents_uses_converter_if_file_in_map(

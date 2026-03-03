@@ -17,7 +17,7 @@ def test_cli_version():
 
 
 @patch("daq_config_server.app.uvicorn.run")
-@patch("daq_config_server.log.set_up_graylog_handler")
+@patch("daq_config_server._core.log.set_up_graylog_handler")
 def test_logging_with_mounted_config(
     mock_graylog_setup: MagicMock, mock_run: MagicMock
 ):
@@ -34,7 +34,7 @@ def test_main(mock_parse_args: MagicMock, mock_main: MagicMock):
 
 
 @patch("daq_config_server.app.uvicorn.run")
-@patch("daq_config_server.log.set_up_graylog_handler")
+@patch("daq_config_server._core.log.set_up_graylog_handler")
 def test_logging_with_no_mounted_config(
     mock_graylog_setup: MagicMock, mock_run: MagicMock
 ):

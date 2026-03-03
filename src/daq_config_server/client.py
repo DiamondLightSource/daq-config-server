@@ -11,10 +11,10 @@ from pydantic import TypeAdapter
 from requests import Response
 from requests.exceptions import HTTPError
 
+from daq_config_server._core.base_model import ConfigModel
 from daq_config_server.app import ValidAcceptHeaders
-from daq_config_server.models import ConfigModel
 
-from .constants import ENDPOINTS
+from ._core.constants import ENDPOINTS
 
 LOGGER = logging.getLogger(__name__)
 

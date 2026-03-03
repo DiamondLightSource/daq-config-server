@@ -1,11 +1,11 @@
 import json
 
 import pytest
-from tests.constants import TestDataPaths
 
-from daq_config_server.models.converters.beamline_parameters import (
+from daq_config_server.plugins.beamline_parameters import (
     beamline_parameters_to_dict,
 )
+from tests.constants import TestDataPaths
 
 
 def test_beamline_parameters_to_dict_gives_expected_result():
