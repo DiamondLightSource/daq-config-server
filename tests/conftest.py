@@ -5,7 +5,7 @@ from unittest.mock import patch
 import pytest
 import xmltodict
 
-from daq_config_server._core.base_model import ConfigModel
+from daq_config_server.core._base_model import ConfigModel
 from daq_config_server.plugins.beamline_parameters import (
     beamline_parameters_to_dict,
 )
@@ -23,7 +23,7 @@ def mock_file_converter_map() -> Generator[
     Mapping[str, Callable[[str], ConfigModel | dict[str, Any]]], None, None
 ]:
     with patch(
-        "daq_config_server._converters._file_converter_map.FILE_TO_CONVERTER_MAP",
+        "daq_config_server.converters._file_converter_map.FILE_TO_CONVERTER_MAP",
         {
             str(TestDataPaths.TEST_GOOD_XML_PATH): xmltodict.parse,
             str(

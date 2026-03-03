@@ -5,10 +5,10 @@ from unittest.mock import MagicMock
 import pytest
 from tests.constants import TestDataPaths
 
-from daq_config_server._converters._converter_utils import (
+from daq_config_server.converters._convert import get_converted_file_contents
+from daq_config_server.converters._converter_utils import (
     ConverterParseError,
 )
-from daq_config_server._converters.convert import get_converted_file_contents
 from daq_config_server.plugins.beamline_parameters import (
     beamline_parameters_to_dict,
 )

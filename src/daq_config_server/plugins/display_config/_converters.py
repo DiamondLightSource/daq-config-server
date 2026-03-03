@@ -1,4 +1,4 @@
-from daq_config_server._converters._converter_utils import (
+from daq_config_server.converters._converter_utils import (
     camel_to_snake_case,
     parse_value,
     remove_comments,

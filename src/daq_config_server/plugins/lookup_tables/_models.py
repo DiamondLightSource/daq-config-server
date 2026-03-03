@@ -3,7 +3,7 @@ from typing import Generic, Literal, TypeVar, get_args
 
 from pydantic import model_validator
 
-from daq_config_server._core.base_model import ConfigModel
+from daq_config_server.core._base_model import ConfigModel
 
 ColumnNameT = TypeVar("ColumnNameT", bound=str)
 

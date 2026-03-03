@@ -2,9 +2,9 @@ import json
 from pathlib import Path
 from typing import Any
 
-import daq_config_server._converters._file_converter_map as file_converter_map
-from daq_config_server._converters._converter_utils import ConverterParseError
-from daq_config_server._core.base_model import ConfigModel
+import daq_config_server.converters._file_converter_map as file_converter_map
+from daq_config_server.converters._converter_utils import ConverterParseError
+from daq_config_server.core._base_model import ConfigModel
 
 
 def get_converted_file_contents(file_path: Path) -> dict[str, Any]:
