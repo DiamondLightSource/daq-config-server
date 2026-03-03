@@ -1,5 +1,6 @@
 import json
 import os
+from collections.abc import Callable
 from typing import Any, get_type_hints
 from unittest.mock import MagicMock, patch
 
@@ -14,7 +15,12 @@ from daq_config_server.models.converters._file_converter_map import (
 )
 from daq_config_server.models.converters.display_config import DisplayConfig
 from daq_config_server.models.converters.lookup_tables import (
+    BeamlinePitchLookupTable,
+    BeamlineRollLookupTable,
     UndulatorEnergyGapLookupTable,
+    parse_beamline_pitch_lut,
+    parse_beamline_roll_lut,
+    parse_undulator_energy_gap_lut,
 )
 from tests.constants import (
     ServerFilePaths,
@@ -24,7 +30,7 @@ from tests.constants import (
 SERVER_ADDRESS = "http://0.0.0.0:8555"
 DEPLOYED_SERVER_ADDRESS = "https://daq-config.diamond.ac.uk"
 
-# Docs for running these system tests will be added in https://github.com/DiamondLightSource/daq-config-server/issues/68
+# See docs for running these system tests: https://diamondlightsource.github.io/daq-config-server/main/index.html#testing
 
 
 @pytest.fixture
@@ -150,6 +156,45 @@ def test_request_for_file_with_converter_with_wrong_pydantic_model_errors(
 ):
     with pytest.raises(ValidationError):
         server.get_file_contents(ServerFilePaths.GOOD_LUT, DisplayConfig)
+
+
+@pytest.mark.parametrize(
+    "file_converter_map_entry, desired_return_type, converter",
+    [
+        (
+            UndulatorEnergyGapLookupTable,
+            BeamlinePitchLookupTable,
+            parse_beamline_pitch_lut,
+        ),
+        (
+            parse_undulator_energy_gap_lut,
+            BeamlineRollLookupTable,
+            parse_beamline_roll_lut,
+        ),
+        (None, UndulatorEnergyGapLookupTable, parse_undulator_energy_gap_lut),
+    ],
+)
+@pytest.mark.requires_local_server
+def test_get_file_contents_with_force_parser_option_overides_converter_to_config_map(
+    server: ConfigServer,
+    mock_file_converter_map: dict[str, Callable[[str], Any]],
+    file_converter_map_entry: Callable[[str], Any] | None,
+    desired_return_type: type[ConfigModel],
+    converter: Callable[[str], Any],
+):
+    filepath = ServerFilePaths.GOOD_LUT
+
+    if file_converter_map_entry is None:
+        del mock_file_converter_map[str(filepath)]
+    else:
+        mock_file_converter_map[str(filepath)] = file_converter_map_entry
+
+    result = server.get_file_contents(
+        filepath,
+        desired_return_type,
+        force_parser=converter,
+    )
+    assert isinstance(result, desired_return_type)
 
 
 @pytest.mark.requires_deployed_server
