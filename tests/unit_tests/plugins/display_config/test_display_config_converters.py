@@ -2,7 +2,7 @@ import json
 
 import pytest
 
-from daq_config_server.plugins.display_config import (
+from daq_config_server.models.display_config import (
     DisplayConfig,
     DisplayConfigData,
     display_config_to_model,

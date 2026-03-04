@@ -6,13 +6,13 @@ import pytest
 import xmltodict
 
 from daq_config_server.core._base_model import ConfigModel
-from daq_config_server.plugins.beamline_parameters import (
+from daq_config_server.models.beamline_parameters import (
     beamline_parameters_to_dict,
 )
-from daq_config_server.plugins.display_config import (
+from daq_config_server.models.display_config import (
     display_config_to_model,
 )
-from daq_config_server.plugins.lookup_tables import (
+from daq_config_server.models.lookup_tables import (
     parse_undulator_energy_gap_lut,
 )
 from tests.constants import ServerFilePaths, TestDataPaths

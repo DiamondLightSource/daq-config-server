@@ -13,8 +13,8 @@ from daq_config_server.converters._file_converter_map import (
     FILE_TO_CONVERTER_MAP,
 )
 from daq_config_server.core._base_model import ConfigModel
-from daq_config_server.plugins.display_config import DisplayConfig
-from daq_config_server.plugins.lookup_tables import (
+from daq_config_server.models.display_config import DisplayConfig
+from daq_config_server.models.lookup_tables import (
     BeamlinePitchLookupTable,
     BeamlineRollLookupTable,
     UndulatorEnergyGapLookupTable,

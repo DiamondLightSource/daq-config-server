@@ -9,10 +9,10 @@ from daq_config_server.converters._convert import get_converted_file_contents
 from daq_config_server.converters._converter_utils import (
     ConverterParseError,
 )
-from daq_config_server.plugins.beamline_parameters import (
+from daq_config_server.models.beamline_parameters import (
     beamline_parameters_to_dict,
 )
-from daq_config_server.plugins.lookup_tables import GenericLookupTable
+from daq_config_server.models.lookup_tables import GenericLookupTable
 
 
 def test_get_converted_file_contents_uses_converter_if_file_in_map(

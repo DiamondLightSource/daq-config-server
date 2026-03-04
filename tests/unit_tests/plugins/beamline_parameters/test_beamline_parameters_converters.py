@@ -2,7 +2,7 @@ import json
 
 import pytest
 
-from daq_config_server.plugins.beamline_parameters import (
+from daq_config_server.models.beamline_parameters import (
     beamline_parameters_to_dict,
 )
 from tests.constants import TestDataPaths
