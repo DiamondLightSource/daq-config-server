@@ -8,7 +8,7 @@ import requests
 from fastapi import status
 from httpx import Response
 
-from daq_config_server.app import ValidAcceptHeaders
+from daq_config_server.app import ENDPOINTS, ValidAcceptHeaders
 from daq_config_server.client import (
     ConfigServer,
     TModel,
@@ -16,7 +16,6 @@ from daq_config_server.client import (
     TypeConversionError,
     _get_mime_type,
 )
-from daq_config_server.core._constants import ENDPOINTS
 from daq_config_server.models._base_model import ConfigModel
 from daq_config_server.models.display_config import DisplayConfig
 from daq_config_server.models.display_config._converters import (

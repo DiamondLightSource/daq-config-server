@@ -1,6 +1,7 @@
 import logging
 import os
 from collections.abc import Awaitable, Callable
+from dataclasses import dataclass
 from enum import StrEnum
 from pathlib import Path
 
@@ -13,9 +14,6 @@ from pydantic import BaseModel
 from starlette import status
 
 from daq_config_server.converters._convert import get_converted_file_contents
-from daq_config_server.core._constants import (
-    ENDPOINTS,
-)
 from daq_config_server.core._log import LoggingConfig, set_up_logging
 from daq_config_server.core._whitelist import get_whitelist
 
@@ -73,6 +71,12 @@ def path_is_whitelisted(file_path: Path) -> bool:
     return file_path in whitelist.whitelist_files or any(
         file_path.is_relative_to(dir) for dir in whitelist.whitelist_dirs
     )
+
+
+@dataclass(frozen=True)
+class ENDPOINTS:
+    CONFIG = "/config"
+    HEALTH = "/healthz"
 
 
 @app.get(

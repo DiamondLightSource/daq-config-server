@@ -8,12 +8,11 @@ from threading import Event, Thread
 import requests
 import yaml
 
-from daq_config_server.core._constants import (
-    WHITELIST_REFRESH_RATE_S,
-    WHITELIST_URL,
-)
-
 LOGGER = logging.getLogger(__name__)
+
+
+WHITELIST_REFRESH_RATE_S = 300
+WHITELIST_URL = "https://raw.githubusercontent.com/DiamondLightSource/daq-config-server/refs/heads/main/whitelist.yaml"
 
 
 class WhitelistFetcher:

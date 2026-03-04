@@ -8,8 +8,7 @@ from fastapi.responses import JSONResponse, Response
 from fastapi.testclient import TestClient
 
 from daq_config_server import app
-from daq_config_server.app import ValidAcceptHeaders
-from daq_config_server.core._constants import ENDPOINTS
+from daq_config_server.app import ENDPOINTS, ValidAcceptHeaders
 from tests.constants import TestDataPaths
 
 
