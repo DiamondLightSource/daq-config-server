@@ -1,4 +1,3 @@
-import logging
 import threading
 from pathlib import Path
 from unittest.mock import MagicMock, patch
@@ -9,8 +8,6 @@ from daq_config_server.core._whitelist import WhitelistFetcher, get_whitelist
 
 """The tests in this file will read directly from the whitelist.yaml in the current
 branch"""
-
-LOGGER = logging.getLogger(__name__)
 
 
 def test_fetch_and_update_contructs_whitelist_given_yaml():
@@ -49,7 +46,6 @@ def test_initial_load_on_failed_fetch(mock_log_error: MagicMock):
 @pytest.mark.use_threading
 @patch("daq_config_server.core._whitelist.LOGGER.error")
 def test_periodically_update_whitelist_on_failed_update(mock_log_error: MagicMock):
-
     with patch.object(WhitelistFetcher, "_initial_load"):
         with patch.object(
             WhitelistFetcher,
