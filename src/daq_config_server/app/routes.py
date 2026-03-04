@@ -7,8 +7,8 @@ from fastapi import APIRouter, HTTPException, Request
 from fastapi.responses import JSONResponse, Response
 from starlette import status
 
+from daq_config_server.app.whitelist import get_whitelist
 from daq_config_server.converters._convert import get_converted_file_contents
-from daq_config_server.core._whitelist import get_whitelist
 
 
 def path_is_whitelisted(file_path: Path) -> bool:

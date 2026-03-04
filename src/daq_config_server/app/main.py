@@ -1,7 +1,7 @@
 import uvicorn
 
 from daq_config_server.app.config import load_config
-from daq_config_server.core._log import set_up_logging
+from daq_config_server.app.log import set_up_logging
 
 
 def main():

@@ -3,7 +3,7 @@ import os
 import yaml
 from pydantic import BaseModel
 
-from daq_config_server.core._log import LoggingConfig
+from daq_config_server.app.log import LoggingConfig
 
 CONFIG_PATH = "/etc/config/config.yaml"
 

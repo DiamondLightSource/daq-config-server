@@ -4,7 +4,7 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from daq_config_server.core._whitelist import WhitelistFetcher, get_whitelist
+from daq_config_server.app.whitelist import WhitelistFetcher, get_whitelist
 
 """The tests in this file will read directly from the whitelist.yaml in the current
 branch"""
@@ -23,13 +23,13 @@ def test_fetch_and_update_contructs_whitelist_given_yaml():
     assert expected_dirs.issubset(whitelist.whitelist_dirs)
 
 
-@patch("daq_config_server.core._whitelist.LOGGER.info")
+@patch("daq_config_server.app.whitelist.LOGGER.info")
 def test_initial_load_on_sucessful_fetch(mock_log_info: MagicMock):
     get_whitelist()
     mock_log_info.assert_called_once_with("Successfully read whitelist from GitHub.")
 
 
-@patch("daq_config_server.core._whitelist.LOGGER.error")
+@patch("daq_config_server.app.whitelist.LOGGER.error")
 def test_initial_load_on_failed_fetch(mock_log_error: MagicMock):
     with patch.object(
         WhitelistFetcher, "_fetch_and_update", side_effect=Exception("blah")
@@ -44,7 +44,7 @@ def test_initial_load_on_failed_fetch(mock_log_error: MagicMock):
 
 
 @pytest.mark.use_threading
-@patch("daq_config_server.core._whitelist.LOGGER.error")
+@patch("daq_config_server.app.whitelist.LOGGER.error")
 def test_periodically_update_whitelist_on_failed_update(mock_log_error: MagicMock):
     with patch.object(WhitelistFetcher, "_initial_load"):
         with patch.object(
@@ -64,8 +64,8 @@ def test_periodically_update_whitelist_on_failed_update(mock_log_error: MagicMoc
 
 
 @pytest.mark.use_threading
-@patch("daq_config_server.core._whitelist.LOGGER")
-@patch("daq_config_server.core._whitelist.WHITELIST_REFRESH_RATE_S", new=0)
+@patch("daq_config_server.app.whitelist.LOGGER")
+@patch("daq_config_server.app.whitelist.WHITELIST_REFRESH_RATE_S", new=0)
 def test_periodically_update_whitelist_on_successful_update(mock_log: MagicMock):
     logging_event = threading.Event()
 
