@@ -3,7 +3,7 @@
 from argparse import ArgumentParser
 
 from . import __version__
-from .app import main as main_app
+from .app.main import main as main_app
 
 __all__ = ["main"]
 

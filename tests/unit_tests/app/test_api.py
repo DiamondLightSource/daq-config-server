@@ -7,14 +7,14 @@ from fastapi import status
 from fastapi.responses import JSONResponse, Response
 from fastapi.testclient import TestClient
 
-from daq_config_server import app
-from daq_config_server.app import ENDPOINTS, ValidAcceptHeaders
+from daq_config_server.app.api import app
+from daq_config_server.app.routes import ENDPOINTS, ValidAcceptHeaders
 from tests.constants import TestDataPaths
 
 
 @pytest.fixture
 def mock_app():
-    return TestClient(app.app)
+    return TestClient(app)
 
 
 ACCEPT_HEADER_DEFAULT = {"Accept": ValidAcceptHeaders.PLAIN_TEXT}
@@ -100,7 +100,7 @@ async def test_get_configuration_on_json_file(mock_app: TestClient):
     )
 
 
-@patch("daq_config_server.app.path_is_whitelisted")
+@patch("daq_config_server.app.routes.path_is_whitelisted")
 async def test_get_configuration_gives_http_422_on_failed_conversion(
     mock_validate: MagicMock, mock_app: TestClient, tmpdir: Path
 ):

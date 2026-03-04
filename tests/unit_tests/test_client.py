@@ -8,7 +8,7 @@ import requests
 from fastapi import status
 from httpx import Response
 
-from daq_config_server.app import ENDPOINTS, ValidAcceptHeaders
+from daq_config_server.app.routes import ENDPOINTS, ValidAcceptHeaders
 from daq_config_server.client import (
     ConfigServer,
     TModel,

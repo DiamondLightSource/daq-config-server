@@ -11,7 +11,7 @@ from pydantic import TypeAdapter
 from requests import Response
 from requests.exceptions import HTTPError
 
-from daq_config_server.app import ENDPOINTS, ValidAcceptHeaders
+from daq_config_server.app.routes import ENDPOINTS, ValidAcceptHeaders
 from daq_config_server.models._base_model import ConfigModel
 
 LOGGER = logging.getLogger(__name__)
