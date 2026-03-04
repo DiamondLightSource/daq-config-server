@@ -9,14 +9,14 @@ import yaml
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse, Response
+from pydantic import BaseModel
 from starlette import status
 
 from daq_config_server.converters._convert import get_converted_file_contents
-from daq_config_server.core._config import Config
 from daq_config_server.core._constants import (
     ENDPOINTS,
 )
-from daq_config_server.core._log import set_up_logging
+from daq_config_server.core._log import LoggingConfig, set_up_logging
 from daq_config_server.core._whitelist import get_whitelist
 
 # See https://github.com/DiamondLightSource/daq-config-server/issues/105
@@ -24,6 +24,15 @@ from daq_config_server.core._whitelist import get_whitelist
 CONFIG_PATH = "/etc/config/config.yaml"
 
 LOGGER = logging.getLogger(__name__)
+
+
+class UvicornConfig(BaseModel):
+    workers: int = 2
+
+
+class AppConfig(BaseModel):
+    logging: LoggingConfig = LoggingConfig()
+    uvicorn: UvicornConfig = UvicornConfig()
 
 
 async def log_request_details(
@@ -170,15 +179,15 @@ def main():
     if os.path.isfile(CONFIG_PATH):
         with open(CONFIG_PATH) as f:
             data = yaml.safe_load(f)
-            config = Config(**data)
+            config = AppConfig(**data)
     else:
-        config = Config()
+        config = AppConfig()
 
-    set_up_logging(config.logging_config)
+    set_up_logging(config.logging)
 
     uvicorn.run(
         app="daq_config_server.app:app",
         host="0.0.0.0",
         port=8555,
-        workers=config.uvicorn_config.workers,
+        workers=config.uvicorn.workers,
     )

@@ -56,9 +56,9 @@ readinessProbe:
 
 # Send logs to the dodal graylog stream for now until a more suitable stream exists
 config:
-  uvicorn_config:
+  uvicorn:
     workers: 2
-  logging_config:
+  logging:
     graylog:
       enabled: true
       url: http://graylog-log-target.diamond.ac.uk:12231/

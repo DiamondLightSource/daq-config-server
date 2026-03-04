@@ -12,7 +12,7 @@ from requests import Response
 from requests.exceptions import HTTPError
 
 from daq_config_server.app import ValidAcceptHeaders
-from daq_config_server.core._base_model import ConfigModel
+from daq_config_server.models._base_model import ConfigModel
 
 from .core._constants import ENDPOINTS
 

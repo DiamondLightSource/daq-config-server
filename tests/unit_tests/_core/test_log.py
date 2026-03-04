@@ -3,8 +3,7 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from daq_config_server.core._config import GraylogConfig
-from daq_config_server.core._log import LoggingConfig, set_up_logging
+from daq_config_server.core._log import GraylogConfig, LoggingConfig, set_up_logging
 
 
 @pytest.fixture

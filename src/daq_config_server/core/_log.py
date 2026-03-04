@@ -1,9 +1,26 @@
 import logging
-from typing import TextIO
+from typing import Literal, TextIO
 
 from graypy import GELFTCPHandler
+from pydantic import AnyUrl, BaseModel
 
-from daq_config_server.core._config import LoggingConfig
+LogLevel = Literal["NOTSET", "DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"]
+
+
+class GraylogConfig(BaseModel):
+    enabled: bool = False
+    level: LogLevel = "INFO"
+    url: AnyUrl = AnyUrl("tcp://localhost:5555")
+
+
+class StreamLogConfig(BaseModel):
+    enabled: bool = True
+    level: LogLevel = "DEBUG"
+
+
+class LoggingConfig(BaseModel):
+    graylog: GraylogConfig = GraylogConfig()
+    stream_log: StreamLogConfig = StreamLogConfig()
 
 
 def set_up_stream_handler(

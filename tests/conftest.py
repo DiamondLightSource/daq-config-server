@@ -5,7 +5,7 @@ from unittest.mock import patch
 import pytest
 import xmltodict
 
-from daq_config_server.core._base_model import ConfigModel
+from daq_config_server.models._base_model import ConfigModel
 from daq_config_server.models.beamline_parameters import (
     beamline_parameters_to_dict,
 )

@@ -3,7 +3,7 @@ from typing import Any
 
 import xmltodict
 
-from daq_config_server.core._base_model import ConfigModel
+from daq_config_server.models._base_model import ConfigModel
 from daq_config_server.models.beamline_parameters._converters import (
     beamline_parameters_to_dict,
 )
