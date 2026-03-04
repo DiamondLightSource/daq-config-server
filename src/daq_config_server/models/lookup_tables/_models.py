@@ -1,8 +1,9 @@
 from abc import abstractmethod
-from typing import Generic, Literal, TypeVar, get_args
+from typing import Generic, Self, TypeVar
 
 from pydantic import model_validator
 
+from daq_config_server.converters._converter_utils import parse_lut_rows
 from daq_config_server.models._base_model import ConfigModel
 
 ColumnNameT = TypeVar("ColumnNameT", bound=str)
@@ -82,43 +83,13 @@ class LookupTableBase(ConfigModel, Generic[ColumnNameT]):
         self,
     ) -> list[ColumnNameT]: ...
 
+    @classmethod
+    def from_parse_lut_rows(cls, contents: str) -> Self:
+        return cls(rows=parse_lut_rows(contents))
+
 
 class GenericLookupTable(LookupTableBase[str]):
     column_names: list[str]
 
     def get_column_names(self) -> list[str]:
         return self.column_names
-
-
-DETECTOR_XY_COLUMN_NAMES = Literal[
-    "detector_distance_mm", "beam_centre_x_mm", "beam_centre_y_mm"
-]
-
-
-class DetectorXYLookupTable(LookupTableBase[DETECTOR_XY_COLUMN_NAMES]):
-    def get_column_names(self) -> list[DETECTOR_XY_COLUMN_NAMES]:
-        return list(get_args(DETECTOR_XY_COLUMN_NAMES))
-
-
-BEAMLINE_PITCH_COLUMN_NAMES = Literal["bragg_angle_deg", "pitch_mrad"]
-
-
-class BeamlinePitchLookupTable(LookupTableBase[BEAMLINE_PITCH_COLUMN_NAMES]):
-    def get_column_names(self) -> list[BEAMLINE_PITCH_COLUMN_NAMES]:
-        return list(get_args(BEAMLINE_PITCH_COLUMN_NAMES))
-
-
-BEAMLINE_ROLL_COLUMN_NAMES = Literal["bragg_angle_deg", "roll_mrad"]
-
-
-class BeamlineRollLookupTable(LookupTableBase[BEAMLINE_ROLL_COLUMN_NAMES]):
-    def get_column_names(self) -> list[BEAMLINE_ROLL_COLUMN_NAMES]:
-        return list(get_args(BEAMLINE_ROLL_COLUMN_NAMES))
-
-
-UNDULATOR_ENERGY_GAP_COLUMN_NAMES = Literal["energy_eV", "gap_mm"]
-
-
-class UndulatorEnergyGapLookupTable(LookupTableBase[UNDULATOR_ENERGY_GAP_COLUMN_NAMES]):
-    def get_column_names(self) -> list[UNDULATOR_ENERGY_GAP_COLUMN_NAMES]:
-        return list(get_args(UNDULATOR_ENERGY_GAP_COLUMN_NAMES))

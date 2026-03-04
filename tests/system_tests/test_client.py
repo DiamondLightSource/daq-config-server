@@ -14,13 +14,12 @@ from daq_config_server.converters._file_converter_map import (
 )
 from daq_config_server.models._base_model import ConfigModel
 from daq_config_server.models.display_config import DisplayConfig
-from daq_config_server.models.lookup_tables import (
+from daq_config_server.models.lookup_tables.insertion_device import (
+    UndulatorEnergyGapLookupTable,
+)
+from daq_config_server.models.lookup_tables.mx import (
     BeamlinePitchLookupTable,
     BeamlineRollLookupTable,
-    UndulatorEnergyGapLookupTable,
-    parse_beamline_pitch_lut,
-    parse_beamline_roll_lut,
-    parse_undulator_energy_gap_lut,
 )
 from tests.constants import (
     ServerFilePaths,
@@ -164,14 +163,18 @@ def test_request_for_file_with_converter_with_wrong_pydantic_model_errors(
         (
             UndulatorEnergyGapLookupTable,
             BeamlinePitchLookupTable,
-            parse_beamline_pitch_lut,
+            BeamlinePitchLookupTable.from_parse_lut_rows,
         ),
         (
-            parse_undulator_energy_gap_lut,
+            UndulatorEnergyGapLookupTable.from_parse_lut_rows,
             BeamlineRollLookupTable,
-            parse_beamline_roll_lut,
+            BeamlineRollLookupTable.from_parse_lut_rows,
         ),
-        (None, UndulatorEnergyGapLookupTable, parse_undulator_energy_gap_lut),
+        (
+            None,
+            UndulatorEnergyGapLookupTable,
+            UndulatorEnergyGapLookupTable.from_parse_lut_rows,
+        ),
     ],
 )
 @pytest.mark.requires_local_server

@@ -28,3 +28,22 @@ def parse_value(value: str, convert_to: type | None = None) -> Any:
 
 def camel_to_snake_case(value: str) -> str:
     return re.sub(r"([a-z])([A-Z])", r"\1_\2", value).lower()
+
+
+IGNORE_LINES_STARTING_WITH = ("Units", "ScannableUnits", "ScannableNames")
+
+
+def parse_lut_rows(
+    contents: str, types: list[type | None] | None = None
+) -> list[list[Any]]:
+    rows: list[list[Any]] = []
+    for line in remove_comments(contents.splitlines()):
+        if line.startswith(IGNORE_LINES_STARTING_WITH):
+            continue
+        rows.append(
+            [
+                parse_value(value, types[i] if types else None)
+                for i, value in enumerate(line.split())
+            ]
+        )
+    return rows

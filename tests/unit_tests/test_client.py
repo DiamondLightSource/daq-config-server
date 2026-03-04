@@ -21,12 +21,11 @@ from daq_config_server.models.display_config import DisplayConfig
 from daq_config_server.models.display_config._converters import (
     display_config_to_model,
 )
-from daq_config_server.models.lookup_tables import (
-    BeamlinePitchLookupTable,
-    GenericLookupTable,
+from daq_config_server.models.lookup_tables import GenericLookupTable
+from daq_config_server.models.lookup_tables.insertion_device import (
     UndulatorEnergyGapLookupTable,
-    parse_undulator_energy_gap_lut,
 )
+from daq_config_server.models.lookup_tables.mx import BeamlinePitchLookupTable
 from daq_config_server.testing import make_test_response
 
 test_path = Path("test")
@@ -203,13 +202,13 @@ def test_get_file_contents_with_force_parser_still_validates_desired_return_type
             server.get_file_contents(
                 test_path,
                 desired_return_type,
-                force_parser=parse_undulator_energy_gap_lut,
+                force_parser=UndulatorEnergyGapLookupTable.from_parse_lut_rows,
             )
     else:
         result = server.get_file_contents(
             test_path,
             desired_return_type,
-            force_parser=parse_undulator_energy_gap_lut,
+            force_parser=UndulatorEnergyGapLookupTable.from_parse_lut_rows,
         )
         assert result == expected_result
 

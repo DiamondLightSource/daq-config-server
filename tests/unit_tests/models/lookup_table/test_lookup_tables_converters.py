@@ -2,20 +2,15 @@ import re
 
 import pytest
 
-from daq_config_server.models.lookup_tables import (
+from daq_config_server.models.lookup_tables import GenericLookupTable, parse_generic_lut
+from daq_config_server.models.lookup_tables.insertion_device import (
+    UndulatorEnergyGapLookupTable,
+    parse_i09_hu_undulator_energy_gap_lut,
+)
+from daq_config_server.models.lookup_tables.mx import (
     BeamlinePitchLookupTable,
     BeamlineRollLookupTable,
     DetectorXYLookupTable,
-    GenericLookupTable,
-    UndulatorEnergyGapLookupTable,
-    parse_beamline_pitch_lut,
-    parse_beamline_roll_lut,
-    parse_detector_xy_lut,
-    parse_i09_hu_undulator_energy_gap_lut,
-    parse_undulator_energy_gap_lut,
-)
-from daq_config_server.models.lookup_tables._converters import (
-    parse_generic_lut,
 )
 from tests.constants import TestDataPaths
 
@@ -64,7 +59,7 @@ def test_detector_xy_lut_gives_expected_results():
     expected = DetectorXYLookupTable(
         rows=[[150, 152.2, 166.26], [800, 152.08, 160.96]],
     )
-    result = parse_detector_xy_lut(input)
+    result = DetectorXYLookupTable.from_parse_lut_rows(input)
     assert result == expected
     assert result.get_column_names() == [
         "detector_distance_mm",
@@ -94,7 +89,7 @@ def test_beamline_pitch_lut_gives_expected_result():
             [11.40557, -0.60849],
         ],
     )
-    result = parse_beamline_pitch_lut(input)
+    result = BeamlinePitchLookupTable.from_parse_lut_rows(input)
     assert result == expected
     assert result.get_column_names() == ["bragg_angle_deg", "pitch_mrad"]
 
@@ -109,7 +104,7 @@ def test_beamline_roll_lut_gives_expected_result():
         "6.3075  2.6154\n"
     )
     expected = BeamlineRollLookupTable(rows=[[26.4095, 2.6154], [6.3075, 2.6154]])
-    result = parse_beamline_roll_lut(input)
+    result = BeamlineRollLookupTable.from_parse_lut_rows(input)
     assert result == expected
     assert result.get_column_names() == ["bragg_angle_deg", "roll_mrad"]
 
@@ -129,7 +124,7 @@ def test_undulator_gap_lut_gives_expected_result():
     expected = UndulatorEnergyGapLookupTable(
         rows=[[5700, 5.4606], [5760, 5.5], [6000, 5.681], [6500, 6.045]]
     )
-    result = parse_undulator_energy_gap_lut(input)
+    result = UndulatorEnergyGapLookupTable.from_parse_lut_rows(input)
     assert result == expected
     assert result.get_column_names() == ["energy_eV", "gap_mm"]
 

@@ -12,8 +12,8 @@ from daq_config_server.models.beamline_parameters import (
 from daq_config_server.models.display_config import (
     display_config_to_model,
 )
-from daq_config_server.models.lookup_tables import (
-    parse_undulator_energy_gap_lut,
+from daq_config_server.models.lookup_tables.insertion_device import (
+    UndulatorEnergyGapLookupTable,
 )
 from tests.constants import ServerFilePaths, TestDataPaths
 
@@ -29,9 +29,13 @@ def mock_file_converter_map() -> Generator[
             str(
                 TestDataPaths.TEST_BEAMLINE_PARAMETERS_PATH
             ): beamline_parameters_to_dict,
-            str(TestDataPaths.TEST_GOOD_LUT_PATH): parse_undulator_energy_gap_lut,
+            str(
+                TestDataPaths.TEST_GOOD_LUT_PATH
+            ): UndulatorEnergyGapLookupTable.from_parse_lut_rows,
             str(TestDataPaths.TEST_GOOD_DISPLAY_CONFIG_PATH): display_config_to_model,
-            str(ServerFilePaths.GOOD_LUT): parse_undulator_energy_gap_lut,
+            str(
+                ServerFilePaths.GOOD_LUT
+            ): UndulatorEnergyGapLookupTable.from_parse_lut_rows,
         },
     ) as mock_map:
         yield mock_map

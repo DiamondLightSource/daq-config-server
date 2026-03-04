@@ -1,27 +1,8 @@
-from ._converters import (
-    parse_beamline_pitch_lut,
-    parse_beamline_roll_lut,
-    parse_detector_xy_lut,
-    parse_i09_hu_undulator_energy_gap_lut,
-    parse_undulator_energy_gap_lut,
-)
-from ._models import (
-    BeamlinePitchLookupTable,
-    BeamlineRollLookupTable,
-    DetectorXYLookupTable,
-    GenericLookupTable,
-    UndulatorEnergyGapLookupTable,
-)
+from ._conveters import parse_generic_lut
+from ._models import GenericLookupTable, LookupTableBase
 
 __all__ = [
+    "parse_generic_lut",
     "GenericLookupTable",
-    "parse_detector_xy_lut",
-    "parse_beamline_pitch_lut",
-    "parse_beamline_roll_lut",
-    "parse_undulator_energy_gap_lut",
-    "parse_i09_hu_undulator_energy_gap_lut",
-    "DetectorXYLookupTable",
-    "BeamlinePitchLookupTable",
-    "BeamlineRollLookupTable",
-    "UndulatorEnergyGapLookupTable",
+    "LookupTableBase",
 ]
