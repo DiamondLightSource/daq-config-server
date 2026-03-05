@@ -2,7 +2,7 @@ from typing import Any
 
 import pytest
 
-from daq_config_server.converters import (
+from daq_config_server.models.utils import (
     camel_to_snake_case,
     parse_value,
     remove_comments,

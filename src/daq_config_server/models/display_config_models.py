@@ -2,12 +2,12 @@ from typing import Self
 
 from pydantic import model_validator
 
-from daq_config_server.converters._converter_utils import (
+from daq_config_server.models._base_model import ConfigModel
+from daq_config_server.models.utils import (
     camel_to_snake_case,
     parse_value,
     remove_comments,
 )
-from daq_config_server.models._base_model import ConfigModel
 
 
 class DisplayConfigData(ConfigModel):
