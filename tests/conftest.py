@@ -5,14 +5,12 @@ from unittest.mock import patch
 import pytest
 import xmltodict
 
+from daq_config_server.models import DisplayConfig
 from daq_config_server.models._base_model import ConfigModel
 from daq_config_server.models.beamline_parameters import (
     beamline_parameters_to_dict,
 )
-from daq_config_server.models.display_config import (
-    display_config_to_model,
-)
-from daq_config_server.models.lookup_tables.insertion_device.hard import (
+from daq_config_server.models.lookup_tables.insertion_device import (
     UndulatorEnergyGapLookupTable,
 )
 from tests.constants import ServerFilePaths, TestDataPaths
@@ -32,7 +30,9 @@ def mock_file_converter_map() -> Generator[
             str(
                 TestDataPaths.TEST_GOOD_LUT_PATH
             ): UndulatorEnergyGapLookupTable.from_contents,
-            str(TestDataPaths.TEST_GOOD_DISPLAY_CONFIG_PATH): display_config_to_model,
+            str(
+                TestDataPaths.TEST_GOOD_DISPLAY_CONFIG_PATH
+            ): DisplayConfig.from_contents,
             str(ServerFilePaths.GOOD_LUT): UndulatorEnergyGapLookupTable.from_contents,
         },
     ) as mock_map:

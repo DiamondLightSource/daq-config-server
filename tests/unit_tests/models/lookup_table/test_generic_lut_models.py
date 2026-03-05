@@ -2,7 +2,7 @@ import re
 
 import pytest
 
-from daq_config_server.models.lookup_tables import GenericLookupTable, parse_generic_lut
+from daq_config_server.models.lookup_tables import GenericLookupTable
 from tests.constants import TestDataPaths
 
 
@@ -21,7 +21,9 @@ def test_parse_lut_to_dict_gives_expected_result_and_can_be_jsonified():
         column_names=["energy_eV", "gap_mm"],
         rows=[[5700, 5.4606], [5760, 5.5], [6000, 5.681], [6500, 6.045]],
     )
-    result = parse_generic_lut(contents, ("energy_eV", int), ("gap_mm", float))
+    result = GenericLookupTable.from_contents(
+        contents, ("energy_eV", int), ("gap_mm", float)
+    )
     assert result == expected
     result.model_dump_json()
 
@@ -30,7 +32,9 @@ def test_parsing_bad_lut_causes_error():
     with open(TestDataPaths.TEST_BAD_LUT_PATH) as f:
         contents = f.read()
     with pytest.raises(IndexError):
-        parse_generic_lut(contents, ("energy_eV", int), ("gap_mm", float))
+        GenericLookupTable.from_contents(
+            contents, ("energy_eV", int), ("gap_mm", float)
+        )
 
 
 def test_lut_with_different_number_of_row_items_to_column_names_causes_error():

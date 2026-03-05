@@ -1,8 +1,14 @@
-from ._conveters import parse_generic_lut
-from ._models import GenericLookupTable, LookupTableBase
+from .generic_lut_models import GenericLookupTable, LookupTableBase
+from .mx_lut_models import (
+    BeamlinePitchLookupTable,
+    BeamlineRollLookupTable,
+    DetectorXYLookupTable,
+)
 
 __all__ = [
-    "parse_generic_lut",
     "GenericLookupTable",
     "LookupTableBase",
+    "BeamlinePitchLookupTable",
+    "BeamlineRollLookupTable",
+    "DetectorXYLookupTable",
 ]

@@ -1,5 +1,5 @@
 from daq_config_server.models.lookup_tables import GenericLookupTable
-from daq_config_server.models.lookup_tables.insertion_device.hard import (
+from daq_config_server.models.lookup_tables.insertion_device import (
     UndulatorEnergyGapLookupTable,
     parse_i09_hu_undulator_energy_gap_lut,
 )

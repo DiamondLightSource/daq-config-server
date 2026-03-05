@@ -1,6 +1,8 @@
 from typing import Literal, get_args
 
-from daq_config_server.models.lookup_tables._models import LookupTableBase
+from daq_config_server.models.lookup_tables.generic_lut_models import (
+    LookupTableBase,
+)
 
 DETECTOR_XY_COLUMN_NAMES = Literal[
     "detector_distance_mm", "beam_centre_x_mm", "beam_centre_y_mm"

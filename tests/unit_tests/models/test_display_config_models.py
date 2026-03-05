@@ -2,15 +2,11 @@ import json
 
 import pytest
 
-from daq_config_server.models.display_config import (
-    DisplayConfig,
-    DisplayConfigData,
-    display_config_to_model,
-)
+from daq_config_server.models import DisplayConfig, DisplayConfigData
 from tests.constants import TestDataPaths
 
 
-def test_display_config_to_model_gives_expected_result_and_can_be_jsonified():
+def test_display_config_from_contents_gives_expected_result_and_can_be_jsonified():
     with open(TestDataPaths.TEST_GOOD_DISPLAY_CONFIG_PATH) as f:
         contents = f.read()
     expected = DisplayConfig(
@@ -33,7 +29,7 @@ def test_display_config_to_model_gives_expected_result_and_can_be_jsonified():
             ),
         }
     )
-    result = display_config_to_model(contents)
+    result = DisplayConfig.from_contents(contents)
     assert result == expected
     json.dumps(result.model_dump())
 

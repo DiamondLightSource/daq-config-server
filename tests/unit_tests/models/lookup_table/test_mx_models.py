@@ -1,4 +1,4 @@
-from daq_config_server.models.lookup_tables.mx import (
+from daq_config_server.models.lookup_tables import (
     BeamlinePitchLookupTable,
     BeamlineRollLookupTable,
     DetectorXYLookupTable,

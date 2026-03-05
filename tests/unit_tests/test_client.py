@@ -16,16 +16,15 @@ from daq_config_server.client import (
     TypeConversionError,
     _get_mime_type,
 )
+from daq_config_server.models import DisplayConfig
 from daq_config_server.models._base_model import ConfigModel
-from daq_config_server.models.display_config import DisplayConfig
-from daq_config_server.models.display_config._converters import (
-    display_config_to_model,
+from daq_config_server.models.lookup_tables import (
+    BeamlinePitchLookupTable,
+    GenericLookupTable,
 )
-from daq_config_server.models.lookup_tables import GenericLookupTable
-from daq_config_server.models.lookup_tables.insertion_device.hard import (
+from daq_config_server.models.lookup_tables.insertion_device import (
     UndulatorEnergyGapLookupTable,
 )
-from daq_config_server.models.lookup_tables.mx import BeamlinePitchLookupTable
 from daq_config_server.testing import make_test_response
 
 test_path = Path("test")
@@ -225,5 +224,5 @@ def test_get_file_contents_with_bad_force_parser_errors(
         server.get_file_contents(
             test_path,
             DisplayConfig,
-            force_parser=display_config_to_model,
+            force_parser=DisplayConfig.from_contents,
         )
