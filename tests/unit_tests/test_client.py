@@ -22,7 +22,7 @@ from daq_config_server.models.display_config._converters import (
     display_config_to_model,
 )
 from daq_config_server.models.lookup_tables import GenericLookupTable
-from daq_config_server.models.lookup_tables.insertion_device import (
+from daq_config_server.models.lookup_tables.insertion_device.hard import (
     UndulatorEnergyGapLookupTable,
 )
 from daq_config_server.models.lookup_tables.mx import BeamlinePitchLookupTable

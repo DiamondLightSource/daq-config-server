@@ -10,10 +10,10 @@ from daq_config_server.models.beamline_parameters._converters import (
 from daq_config_server.models.display_config._converters import (
     display_config_to_model,
 )
-from daq_config_server.models.lookup_tables.insertion_device._converters import (
+from daq_config_server.models.lookup_tables.insertion_device.hard._converters import (
     parse_i09_hu_undulator_energy_gap_lut,
 )
-from daq_config_server.models.lookup_tables.insertion_device._models import (
+from daq_config_server.models.lookup_tables.insertion_device.hard._models import (
     UndulatorEnergyGapLookupTable,
 )
 from daq_config_server.models.lookup_tables.mx._models import (

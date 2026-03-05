@@ -14,7 +14,7 @@ from daq_config_server.converters._file_converter_map import (
 )
 from daq_config_server.models._base_model import ConfigModel
 from daq_config_server.models.display_config import DisplayConfig
-from daq_config_server.models.lookup_tables.insertion_device import (
+from daq_config_server.models.lookup_tables.insertion_device.hard import (
     UndulatorEnergyGapLookupTable,
 )
 from daq_config_server.models.lookup_tables.mx import (
