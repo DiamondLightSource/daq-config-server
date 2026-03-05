@@ -31,11 +31,9 @@ def mock_file_converter_map() -> Generator[
             ): beamline_parameters_to_dict,
             str(
                 TestDataPaths.TEST_GOOD_LUT_PATH
-            ): UndulatorEnergyGapLookupTable.from_parse_lut_rows,
+            ): UndulatorEnergyGapLookupTable.from_contents,
             str(TestDataPaths.TEST_GOOD_DISPLAY_CONFIG_PATH): display_config_to_model,
-            str(
-                ServerFilePaths.GOOD_LUT
-            ): UndulatorEnergyGapLookupTable.from_parse_lut_rows,
+            str(ServerFilePaths.GOOD_LUT): UndulatorEnergyGapLookupTable.from_contents,
         },
     ) as mock_map:
         yield mock_map

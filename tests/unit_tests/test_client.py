@@ -202,13 +202,13 @@ def test_get_file_contents_with_force_parser_still_validates_desired_return_type
             server.get_file_contents(
                 test_path,
                 desired_return_type,
-                force_parser=UndulatorEnergyGapLookupTable.from_parse_lut_rows,
+                force_parser=UndulatorEnergyGapLookupTable.from_contents,
             )
     else:
         result = server.get_file_contents(
             test_path,
             desired_return_type,
-            force_parser=UndulatorEnergyGapLookupTable.from_parse_lut_rows,
+            force_parser=UndulatorEnergyGapLookupTable.from_contents,
         )
         assert result == expected_result
 

@@ -30,15 +30,17 @@ def camel_to_snake_case(value: str) -> str:
     return re.sub(r"([a-z])([A-Z])", r"\1_\2", value).lower()
 
 
-IGNORE_LINES_STARTING_WITH = ("Units", "ScannableUnits", "ScannableNames")
+DEFAULT_IGNORE_LINES_STARTING_WITH = ("Units", "ScannableUnits", "ScannableNames")
 
 
 def parse_lut_rows(
-    contents: str, types: list[type | None] | None = None
+    contents: str,
+    types: list[type | None] | None = None,
+    ignore_lines_starting_with: tuple[str, ...] = DEFAULT_IGNORE_LINES_STARTING_WITH,
 ) -> list[list[Any]]:
     rows: list[list[Any]] = []
     for line in remove_comments(contents.splitlines()):
-        if line.startswith(IGNORE_LINES_STARTING_WITH):
+        if line.startswith(ignore_lines_starting_with):
             continue
         rows.append(
             [

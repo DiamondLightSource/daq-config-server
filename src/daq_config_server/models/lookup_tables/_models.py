@@ -84,7 +84,7 @@ class LookupTableBase(ConfigModel, Generic[ColumnNameT]):
     ) -> list[ColumnNameT]: ...
 
     @classmethod
-    def from_parse_lut_rows(cls, contents: str) -> Self:
+    def from_contents(cls, contents: str) -> Self:
         return cls(rows=parse_lut_rows(contents))
 
 

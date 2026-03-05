@@ -163,17 +163,17 @@ def test_request_for_file_with_converter_with_wrong_pydantic_model_errors(
         (
             UndulatorEnergyGapLookupTable,
             BeamlinePitchLookupTable,
-            BeamlinePitchLookupTable.from_parse_lut_rows,
+            BeamlinePitchLookupTable.from_contents,
         ),
         (
-            UndulatorEnergyGapLookupTable.from_parse_lut_rows,
+            UndulatorEnergyGapLookupTable.from_contents,
             BeamlineRollLookupTable,
-            BeamlineRollLookupTable.from_parse_lut_rows,
+            BeamlineRollLookupTable.from_contents,
         ),
         (
             None,
             UndulatorEnergyGapLookupTable,
-            UndulatorEnergyGapLookupTable.from_parse_lut_rows,
+            UndulatorEnergyGapLookupTable.from_contents,
         ),
     ],
 )

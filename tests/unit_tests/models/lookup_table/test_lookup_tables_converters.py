@@ -59,7 +59,7 @@ def test_detector_xy_lut_gives_expected_results():
     expected = DetectorXYLookupTable(
         rows=[[150, 152.2, 166.26], [800, 152.08, 160.96]],
     )
-    result = DetectorXYLookupTable.from_parse_lut_rows(input)
+    result = DetectorXYLookupTable.from_contents(input)
     assert result == expected
     assert result.get_column_names() == [
         "detector_distance_mm",
@@ -89,7 +89,7 @@ def test_beamline_pitch_lut_gives_expected_result():
             [11.40557, -0.60849],
         ],
     )
-    result = BeamlinePitchLookupTable.from_parse_lut_rows(input)
+    result = BeamlinePitchLookupTable.from_contents(input)
     assert result == expected
     assert result.get_column_names() == ["bragg_angle_deg", "pitch_mrad"]
 
@@ -104,7 +104,7 @@ def test_beamline_roll_lut_gives_expected_result():
         "6.3075  2.6154\n"
     )
     expected = BeamlineRollLookupTable(rows=[[26.4095, 2.6154], [6.3075, 2.6154]])
-    result = BeamlineRollLookupTable.from_parse_lut_rows(input)
+    result = BeamlineRollLookupTable.from_contents(input)
     assert result == expected
     assert result.get_column_names() == ["bragg_angle_deg", "roll_mrad"]
 
@@ -124,7 +124,7 @@ def test_undulator_gap_lut_gives_expected_result():
     expected = UndulatorEnergyGapLookupTable(
         rows=[[5700, 5.4606], [5760, 5.5], [6000, 5.681], [6500, 6.045]]
     )
-    result = UndulatorEnergyGapLookupTable.from_parse_lut_rows(input)
+    result = UndulatorEnergyGapLookupTable.from_contents(input)
     assert result == expected
     assert result.get_column_names() == ["energy_eV", "gap_mm"]
 
