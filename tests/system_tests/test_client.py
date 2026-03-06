@@ -8,19 +8,17 @@ import pytest
 import requests
 from pydantic import ValidationError
 
-from daq_config_server.client import ConfigServer
-from daq_config_server.models.converters import ConfigModel
-from daq_config_server.models.converters._file_converter_map import (
+from daq_config_server.app._file_converter_map import (
     FILE_TO_CONVERTER_MAP,
 )
-from daq_config_server.models.converters.display_config import DisplayConfig
-from daq_config_server.models.converters.lookup_tables import (
+from daq_config_server.app.client import ConfigServer
+from daq_config_server.models import ConfigModel, DisplayConfig
+from daq_config_server.models.lookup_tables import (
     BeamlinePitchLookupTable,
     BeamlineRollLookupTable,
+)
+from daq_config_server.models.lookup_tables.insertion_device import (
     UndulatorEnergyGapLookupTable,
-    parse_beamline_pitch_lut,
-    parse_beamline_roll_lut,
-    parse_undulator_energy_gap_lut,
 )
 from tests.constants import (
     ServerFilePaths,
@@ -164,14 +162,18 @@ def test_request_for_file_with_converter_with_wrong_pydantic_model_errors(
         (
             UndulatorEnergyGapLookupTable,
             BeamlinePitchLookupTable,
-            parse_beamline_pitch_lut,
+            BeamlinePitchLookupTable.from_contents,
         ),
         (
-            parse_undulator_energy_gap_lut,
+            UndulatorEnergyGapLookupTable.from_contents,
             BeamlineRollLookupTable,
-            parse_beamline_roll_lut,
+            BeamlineRollLookupTable.from_contents,
         ),
-        (None, UndulatorEnergyGapLookupTable, parse_undulator_energy_gap_lut),
+        (
+            None,
+            UndulatorEnergyGapLookupTable,
+            UndulatorEnergyGapLookupTable.from_contents,
+        ),
     ],
 )
 @pytest.mark.requires_local_server
@@ -213,7 +215,7 @@ def test_all_files_in_file_converter_map_can_be_converted_to_target_type(
     deployed_server: ConfigServer,
 ):
     with patch(
-        "daq_config_server.models.converters._file_converter_map.xmltodict.parse.__annotations__",
+        "daq_config_server.app._file_converter_map.xmltodict.parse.__annotations__",
         {"return": dict},  # Force a return type for xmltodict.parse()
     ):
         for filename, converter in FILE_TO_CONVERTER_MAP.items():

@@ -3,7 +3,7 @@ from unittest.mock import MagicMock
 from httpx import Response
 from requests import RequestException
 
-from daq_config_server.app import ValidAcceptHeaders
+from daq_config_server.app._routes import ValidAcceptHeaders
 
 
 def make_test_response(

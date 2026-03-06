@@ -1,4 +1,4 @@
-logging_config:
+logging:
   graylog:
     enabled: true
     level: "INFO"
