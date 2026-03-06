@@ -4,7 +4,7 @@ from typing import Any
 import xmltodict
 
 from daq_config_server.models import DisplayConfig, beamline_parameters_to_dict
-from daq_config_server.models._base_model import ConfigModel
+from daq_config_server.models.base_model import ConfigModel
 from daq_config_server.models.lookup_tables import (
     BeamlinePitchLookupTable,
     BeamlineRollLookupTable,

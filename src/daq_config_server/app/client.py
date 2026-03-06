@@ -12,7 +12,7 @@ from requests import Response
 from requests.exceptions import HTTPError
 
 from daq_config_server.app._routes import ENDPOINTS, ValidAcceptHeaders
-from daq_config_server.models._base_model import ConfigModel
+from daq_config_server.models.base_model import ConfigModel
 
 LOGGER = logging.getLogger(__name__)
 

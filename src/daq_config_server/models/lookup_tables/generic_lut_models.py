@@ -3,7 +3,7 @@ from typing import Generic, Self, TypeVar
 
 from pydantic import model_validator
 
-from daq_config_server.models._base_model import ConfigModel
+from daq_config_server.models.base_model import ConfigModel
 from daq_config_server.models.utils import parse_lut_rows
 
 ColumnNameT = TypeVar("ColumnNameT", bound=str)
