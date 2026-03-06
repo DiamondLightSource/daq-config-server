@@ -1,11 +1,14 @@
 import logging
 from collections.abc import Awaitable, Callable
 
+import uvicorn
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import Response
 
-from daq_config_server.app.routes import router
+from daq_config_server.app._config import load_config
+from daq_config_server.app._log import set_up_logging
+from daq_config_server.app._routes import router
 
 LOGGER = logging.getLogger(__name__)
 
@@ -36,3 +39,16 @@ app.add_middleware(
 )
 
 app.include_router(router)
+
+
+def main():
+    config = load_config()
+
+    set_up_logging(config.logging)
+
+    uvicorn.run(
+        "daq_config_server.app.api:app",
+        host="0.0.0.0",
+        port=8555,
+        workers=config.uvicorn.workers,
+    )

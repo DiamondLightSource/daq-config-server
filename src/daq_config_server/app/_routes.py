@@ -1,21 +1,38 @@
+import json
 import os
 from dataclasses import dataclass
 from enum import StrEnum
 from pathlib import Path
+from typing import Any
 
 from fastapi import APIRouter, HTTPException, Request
 from fastapi.responses import JSONResponse, Response
 from starlette import status
 
-from daq_config_server.app.whitelist import get_whitelist
-from daq_config_server.converters._convert import get_converted_file_contents
+from daq_config_server.app._whitelist import path_is_whitelisted
+from daq_config_server.models._base_model import ConfigModel
+
+from ._file_converter_map import FILE_TO_CONVERTER_MAP
 
 
-def path_is_whitelisted(file_path: Path) -> bool:
-    whitelist = get_whitelist()
-    return file_path in whitelist.whitelist_files or any(
-        file_path.is_relative_to(dir) for dir in whitelist.whitelist_dirs
-    )
+class ConverterParseError(Exception): ...
+
+
+def get_converted_file_contents(file_path: Path) -> dict[str, Any]:
+    with file_path.open("r", encoding="utf-8") as f:
+        raw_contents = f.read()
+    if converter := FILE_TO_CONVERTER_MAP.get(str(file_path)):
+        try:
+            contents = converter(raw_contents)
+            if isinstance(contents, ConfigModel):
+                return contents.model_dump()
+            return contents
+        except Exception as e:
+            raise ConverterParseError(
+                f"Unable to parse {str(file_path)} due to the following exception: \
+                {type(e).__name__}: {e}"
+            ) from e
+    return json.loads(raw_contents)
 
 
 router = APIRouter()

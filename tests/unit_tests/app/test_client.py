@@ -8,8 +8,8 @@ import requests
 from fastapi import status
 from httpx import Response
 
-from daq_config_server.app.routes import ENDPOINTS, ValidAcceptHeaders
-from daq_config_server.client import (
+from daq_config_server.app._routes import ENDPOINTS, ValidAcceptHeaders
+from daq_config_server.app.client import (
     ConfigServer,
     TModel,
     TNonModel,
@@ -30,7 +30,7 @@ from daq_config_server.testing import make_test_response
 test_path = Path("test")
 
 
-@patch("daq_config_server.client.requests.get")
+@patch("daq_config_server.app.client.requests.get")
 def test_get_file_contents_default_header(mock_request: MagicMock):
     mock_request.return_value = Response(
         status_code=status.HTTP_200_OK,
@@ -46,7 +46,7 @@ def test_get_file_contents_default_header(mock_request: MagicMock):
     )
 
 
-@patch("daq_config_server.client.requests.get")
+@patch("daq_config_server.app.client.requests.get")
 def test_get_file_contents_with_bytes(mock_request: MagicMock):
     test_str = "test"
     mock_request.return_value = make_test_response(
@@ -60,7 +60,7 @@ def test_get_file_contents_with_bytes(mock_request: MagicMock):
     )
 
 
-@patch("daq_config_server.client.requests.get")
+@patch("daq_config_server.app.client.requests.get")
 def test_get_file_contents_gives_exception_on_invalid_json(
     mock_request: MagicMock,
 ):
@@ -75,7 +75,7 @@ def test_get_file_contents_gives_exception_on_invalid_json(
         server.get_file_contents(test_path, desired_return_type=dict[Any, Any])
 
 
-@patch("daq_config_server.client.requests.get")
+@patch("daq_config_server.app.client.requests.get")
 def test_get_file_contents_caching(
     mock_request: MagicMock,
 ):
@@ -92,7 +92,7 @@ def test_get_file_contents_caching(
     assert server.get_file_contents(test_path, reset_cached_result=False) == "2nd_read"
 
 
-@patch("daq_config_server.client.requests.get")
+@patch("daq_config_server.app.client.requests.get")
 def test_bad_responses_no_details_raises_error(mock_request: MagicMock):
     """Test that a non-200 response raises a RequestException."""
     mock_request.return_value = make_test_response(
@@ -107,7 +107,7 @@ def test_bad_responses_no_details_raises_error(mock_request: MagicMock):
     )
 
 
-@patch("daq_config_server.client.requests.get")
+@patch("daq_config_server.app.client.requests.get")
 def test_bad_responses_with_details_raises_error(mock_request: MagicMock):
     """Test that a non-200 response raises a RequestException."""
 
@@ -126,7 +126,7 @@ def test_bad_responses_with_details_raises_error(mock_request: MagicMock):
     server._log.error.assert_called_once_with(detail)
 
 
-@patch("daq_config_server.client.requests.get")
+@patch("daq_config_server.app.client.requests.get")
 def test_get_file_contents_with_untyped_dict(mock_request: MagicMock):
     content_type = ValidAcceptHeaders.JSON
     good_json = '{"good_dict":"test"}'
@@ -156,7 +156,7 @@ def test_get_mime_type(input: type[TModel | TNonModel], expected: ValidAcceptHea
     assert _get_mime_type(input) == expected
 
 
-@patch("daq_config_server.client.requests.get")
+@patch("daq_config_server.app.client.requests.get")
 def test_get_file_contents_with_force_parser_requests_str_from_server_and_converts(
     mock_request: MagicMock,
 ):
@@ -185,7 +185,7 @@ def test_get_file_contents_with_force_parser_requests_str_from_server_and_conver
         (BeamlinePitchLookupTable, pydantic.ValidationError),
     ],
 )
-@patch("daq_config_server.client.requests.get")
+@patch("daq_config_server.app.client.requests.get")
 def test_get_file_contents_with_force_parser_still_validates_desired_return_type(
     mock_request: MagicMock,
     desired_return_type: type[ConfigModel],
@@ -212,7 +212,7 @@ def test_get_file_contents_with_force_parser_still_validates_desired_return_type
         assert result == expected_result
 
 
-@patch("daq_config_server.client.requests.get")
+@patch("daq_config_server.app.client.requests.get")
 def test_get_file_contents_with_bad_force_parser_errors(
     mock_request: MagicMock,
 ):

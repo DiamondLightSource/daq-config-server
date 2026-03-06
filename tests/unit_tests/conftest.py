@@ -4,7 +4,7 @@ from unittest.mock import patch
 import pytest
 from pytest import FixtureRequest
 
-from daq_config_server.app.whitelist import get_whitelist
+from daq_config_server.app._whitelist import get_whitelist
 from daq_config_server.testing._utils import make_test_response
 from tests.constants import TEST_WHITELIST_RESPONSE
 
@@ -15,7 +15,7 @@ WHITELIST_PATH = Path(__file__).resolve().parents[2] / "whitelist.yaml"
 def test_friendly_whitelist(request: FixtureRequest):
     # Don't launch threads unless we really need to since it slows down testing
 
-    with patch("daq_config_server.app.whitelist.requests.get") as mock_request:
+    with patch("daq_config_server.app._whitelist.requests.get") as mock_request:
         if "test_whitelist.py" in str(request.path):
             with open(WHITELIST_PATH) as f:
                 whitelist_contents = f.read()
@@ -27,14 +27,14 @@ def test_friendly_whitelist(request: FixtureRequest):
 
         if request.node.get_closest_marker("use_threading"):  # type: ignore
             with patch(
-                "daq_config_server.app.whitelist.WHITELIST_REFRESH_RATE_S", new=0
+                "daq_config_server.app._whitelist.WHITELIST_REFRESH_RATE_S", new=0
             ):
                 yield
                 get_whitelist().stop()
         else:
             with (
-                patch("daq_config_server.app.whitelist.Thread"),
-                patch("daq_config_server.app.whitelist.WhitelistFetcher.stop"),
+                patch("daq_config_server.app._whitelist.Thread"),
+                patch("daq_config_server.app._whitelist.WhitelistFetcher.stop"),
             ):
                 yield
 

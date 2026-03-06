@@ -62,3 +62,10 @@ def get_whitelist() -> WhitelistFetcher:
     fetcher = WhitelistFetcher()
     atexit.register(fetcher.stop)
     return fetcher
+
+
+def path_is_whitelisted(file_path: Path) -> bool:
+    whitelist = get_whitelist()
+    return file_path in whitelist.whitelist_files or any(
+        file_path.is_relative_to(dir) for dir in whitelist.whitelist_dirs
+    )
