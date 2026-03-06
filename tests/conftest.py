@@ -5,9 +5,9 @@ from unittest.mock import patch
 import pytest
 import xmltodict
 
-from daq_config_server.models import DisplayConfig
-from daq_config_server.models._base_model import ConfigModel
-from daq_config_server.models.beamline_parameters import (
+from daq_config_server.models import (
+    ConfigModel,
+    DisplayConfig,
     beamline_parameters_to_dict,
 )
 from daq_config_server.models.lookup_tables.insertion_device import (

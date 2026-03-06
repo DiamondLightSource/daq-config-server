@@ -12,8 +12,7 @@ from daq_config_server.app._file_converter_map import (
     FILE_TO_CONVERTER_MAP,
 )
 from daq_config_server.app.client import ConfigServer
-from daq_config_server.models import DisplayConfig
-from daq_config_server.models._base_model import ConfigModel
+from daq_config_server.models import ConfigModel, DisplayConfig
 from daq_config_server.models.lookup_tables import (
     BeamlinePitchLookupTable,
     BeamlineRollLookupTable,

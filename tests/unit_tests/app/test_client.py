@@ -16,8 +16,7 @@ from daq_config_server.app.client import (
     TypeConversionError,
     _get_mime_type,
 )
-from daq_config_server.models import DisplayConfig
-from daq_config_server.models._base_model import ConfigModel
+from daq_config_server.models import ConfigModel, DisplayConfig
 from daq_config_server.models.lookup_tables import (
     BeamlinePitchLookupTable,
     GenericLookupTable,
