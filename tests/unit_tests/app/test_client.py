@@ -10,7 +10,7 @@ from httpx import Response
 
 from daq_config_server.app._routes import ENDPOINTS, ValidAcceptHeaders
 from daq_config_server.app.client import (
-    ConfigServer,
+    ConfigClient,
     TModel,
     TNonModel,
     TypeConversionError,
@@ -37,7 +37,7 @@ def test_get_file_contents_default_header(mock_request: MagicMock):
     )
     mock_request.return_value = make_test_response("test")
     url = "url"
-    server = ConfigServer(url)
+    server = ConfigClient(url)
     assert server.get_file_contents(test_path) == "test"
     mock_request.assert_called_once_with(
         url + ENDPOINTS.CONFIG + "/" + str(test_path),
@@ -52,7 +52,7 @@ def test_get_file_contents_with_bytes(mock_request: MagicMock):
         test_str, content_type=ValidAcceptHeaders.RAW_BYTES
     )
     url = "url"
-    server = ConfigServer(url)
+    server = ConfigClient(url)
     assert (
         server.get_file_contents(test_path, desired_return_type=bytes)
         == test_str.encode()
@@ -69,7 +69,7 @@ def test_get_file_contents_gives_exception_on_invalid_json(
         bad_json, content_type=content_type, json_value=bad_json
     )
     url = "url"
-    server = ConfigServer(url)
+    server = ConfigClient(url)
     with pytest.raises(TypeConversionError):
         server.get_file_contents(test_path, desired_return_type=dict[Any, Any])
 
@@ -85,7 +85,7 @@ def test_get_file_contents_caching(
         make_test_response("3rd_read"),
     ]
     url = "url"
-    server = ConfigServer(url)
+    server = ConfigClient(url)
     assert server.get_file_contents(test_path, reset_cached_result=True) == "1st_read"
     assert server.get_file_contents(test_path, reset_cached_result=True) == "2nd_read"
     assert server.get_file_contents(test_path, reset_cached_result=False) == "2nd_read"
@@ -97,7 +97,7 @@ def test_bad_responses_no_details_raises_error(mock_request: MagicMock):
     mock_request.return_value = make_test_response(
         "1st_read", status.HTTP_204_NO_CONTENT, raise_exc=requests.exceptions.HTTPError
     )
-    server = ConfigServer("url")
+    server = ConfigClient("url")
     server._log.error = MagicMock()
     with pytest.raises(requests.exceptions.HTTPError):
         server.get_file_contents(test_path)
@@ -118,7 +118,7 @@ def test_bad_responses_with_details_raises_error(mock_request: MagicMock):
         json_value="test",
     )
     mock_request.return_value.json = MagicMock(return_value={"detail": detail})
-    server = ConfigServer("url")
+    server = ConfigClient("url")
     server._log.error = MagicMock()
     with pytest.raises(requests.exceptions.HTTPError):
         server.get_file_contents(test_path)
@@ -133,7 +133,7 @@ def test_get_file_contents_with_untyped_dict(mock_request: MagicMock):
         good_json, content_type=content_type, json_value=good_json
     )
     url = "url"
-    server = ConfigServer(url)
+    server = ConfigClient(url)
     assert server.get_file_contents(test_path, desired_return_type=dict) == {
         "good_dict": "test"
     }
@@ -166,7 +166,7 @@ def test_get_file_contents_with_force_parser_requests_str_from_server_and_conver
 
     mock_converter = MagicMock(return_value=mock_converted_result)
 
-    server = ConfigServer("url")
+    server = ConfigClient("url")
     result = server.get_file_contents(test_path, dict, force_parser=mock_converter)
 
     mock_converter.assert_called_once_with(mock_config)
@@ -194,7 +194,7 @@ def test_get_file_contents_with_force_parser_still_validates_desired_return_type
     expected_result = UndulatorEnergyGapLookupTable(rows=[[5700, 5.4606]])
     mock_request.return_value = make_test_response(mock_config)
 
-    server = ConfigServer("url")
+    server = ConfigClient("url")
     if expected_exception:
         with pytest.raises(expected_exception):
             server.get_file_contents(
@@ -218,7 +218,7 @@ def test_get_file_contents_with_bad_force_parser_errors(
     mock_config = "Units eV mm\n5700		5.4606\n#24500		7.2\n"
     mock_request.return_value = make_test_response(mock_config)
 
-    server = ConfigServer("url")
+    server = ConfigClient("url")
     with pytest.raises(ValueError):
         server.get_file_contents(
             test_path,

@@ -38,7 +38,10 @@ def _get_mime_type(
     return ValidAcceptHeaders.PLAIN_TEXT
 
 
-class ConfigServer:
+class ConfigClient:
+    """Client to communicate with a deployed config service with a configurable cache
+    and logger"""
+
     def __init__(
         self,
         url: str = "https://daq-config.diamond.ac.uk",
@@ -47,10 +50,8 @@ class ConfigServer:
         cache_lifetime_s: int = 3600,
     ) -> None:
         """
-        Initialize the ConfigServer client.
-
         Args:
-            url: Base URL of the config server.
+            url: Base URL of the config server. Defaults to central service.
             log: Optional logger instance.
             cache_size: Size of the cache (maximum number of items can be stored).
             cache_lifetime_s: Lifetime of the cache (in seconds).

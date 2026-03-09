@@ -6,9 +6,9 @@ The server is centrally hosted on argus and is accessible anywhere within the Di
 This library provides a python client to easily make requests from Bluesky code. The client can use caching to prevent needlessly making time-consuming requests on data which won't have changed. You can choose the maximum number of items it can hold as well as the lifetime of an item upon instantiation.
 
 ```python
-from daq_config_server import ConfigServer
+from daq_config_server.client import ConfigClient
 
-config_server = ConfigServer("https://daq-config.diamond.ac.uk", cache_size = 10, cache_lifetime_s = 3600)
+config_server = ConfigClient("https://daq-config.diamond.ac.uk", cache_size = 10, cache_lifetime_s = 3600)
 ```
 
 You can then make a request through this client through its `get_file_contents` function. If you are reading a file which may have changed since the client last read it, you should set the appropriate flag to reset the cache for that result - this forces a new request and stores that new result in the cache.
