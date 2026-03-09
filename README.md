@@ -17,7 +17,7 @@ A service to read files on Diamond's filesystem from a BlueAPI container. Curren
 Here is a minimal example to read a file from the centrally hosted service after installing this package
 
 ```python
-from daq_config_server.client import ConfigServer
+from daq_config_server import ConfigServer
 
 config_server = ConfigServer("https://daq-config.diamond.ac.uk")
 
