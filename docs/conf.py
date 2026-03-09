@@ -190,5 +190,5 @@ html_show_copyright = False
 html_logo = "images/dls-logo.svg"
 html_favicon = html_logo
 
-# Allows short hand imports for docs
-autosummary_imported_members = True
+# # Allows short hand imports for docs
+# autosummary_imported_members = True
