@@ -42,4 +42,5 @@ FILE_TO_CONVERTER_MAP: dict[str, Callable[[str], ConfigModel | dict[str, Any]]] 
     "/dls_sw/i03/software/daq_configuration/lookup/BeamLineEnergy_DCM_Roll_converter.txt": parse_beamline_roll_lut,  # noqa: E501
     "/dls_sw/i03/software/daq_configuration/lookup/BeamLine_Undulator_toGap.txt": parse_undulator_energy_gap_lut,  # noqa: E501
     "/dls_sw/i09-1/software/gda/workspace_git/gda-diamond.git/configurations/i09-1-shared/lookupTables/IIDCalibrationTable.txt": parse_i09_hu_undulator_energy_gap_lut,  # noqa: E501
+    "/dls_sw/i04/software/daq_configuration/lookup/BeamLine_Undulator_toGap.txt": parse_undulator_energy_gap_lut,  # noqa: E501
 }
