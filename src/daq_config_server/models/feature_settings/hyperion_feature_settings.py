@@ -24,5 +24,5 @@ class HyperionFeatureSettings(BaseFeatureSettings):
     BEAMSTOP_DIODE_CHECK: bool = False
 
     @classmethod
-    def feature_settings_sources(cls):
+    def feature_settings_sources(cls) -> type[HyperionFeatureSettingsSources]:
         return HyperionFeatureSettingsSources
