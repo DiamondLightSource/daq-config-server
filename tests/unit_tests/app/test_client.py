@@ -35,7 +35,7 @@ def client() -> ConfigClient:
 
 
 @patch("daq_config_server.app.client.requests.get")
-def test_get_file_contents_default_header(
+def test_config_client_get_file_contents_default_header(
     mock_request: MagicMock, client: ConfigClient
 ):
     mock_request.return_value = Response(
@@ -51,7 +51,9 @@ def test_get_file_contents_default_header(
 
 
 @patch("daq_config_server.app.client.requests.get")
-def test_get_file_contents_with_bytes(mock_request: MagicMock, client: ConfigClient):
+def test_config_client_get_file_contents_with_bytes(
+    mock_request: MagicMock, client: ConfigClient
+):
     test_str = "test"
     mock_request.return_value = make_test_response(
         test_str, content_type=ValidAcceptHeaders.RAW_BYTES
@@ -63,7 +65,7 @@ def test_get_file_contents_with_bytes(mock_request: MagicMock, client: ConfigCli
 
 
 @patch("daq_config_server.app.client.requests.get")
-def test_get_file_contents_gives_exception_on_invalid_json(
+def test_config_client_get_file_contents_gives_exception_on_invalid_json(
     mock_request: MagicMock,
     client: ConfigClient,
 ):
@@ -77,7 +79,7 @@ def test_get_file_contents_gives_exception_on_invalid_json(
 
 
 @patch("daq_config_server.app.client.requests.get")
-def test_get_file_contents_caching(
+def test_config_client_get_file_contents_caching(
     mock_request: MagicMock,
     client: ConfigClient,
 ):
@@ -93,7 +95,7 @@ def test_get_file_contents_caching(
 
 
 @patch("daq_config_server.app.client.requests.get")
-def test_bad_responses_no_details_raises_error(
+def test_config_client_bad_responses_no_details_raises_error(
     mock_request: MagicMock, client: ConfigClient
 ):
     """Test that a non-200 response raises a RequestException."""
@@ -109,7 +111,7 @@ def test_bad_responses_no_details_raises_error(
 
 
 @patch("daq_config_server.app.client.requests.get")
-def test_bad_responses_with_details_raises_error(
+def test_config_client_bad_responses_with_details_raises_error(
     mock_request: MagicMock, client: ConfigClient
 ):
     """Test that a non-200 response raises a RequestException."""
@@ -129,7 +131,7 @@ def test_bad_responses_with_details_raises_error(
 
 
 @patch("daq_config_server.app.client.requests.get")
-def test_get_file_contents_with_untyped_dict(
+def test_config_client_get_file_contents_with_untyped_dict(
     mock_request: MagicMock, client: ConfigClient
 ):
     content_type = ValidAcceptHeaders.JSON
@@ -159,7 +161,7 @@ def test_get_mime_type(input: type[TModel | TNonModel], expected: ValidAcceptHea
 
 
 @patch("daq_config_server.app.client.requests.get")
-def test_get_file_contents_with_force_parser_requests_str_from_server_and_converts(
+def test_config_client_get_file_contents_with_force_parser_requests_str_from_server_and_converts(  # noqa: E501
     mock_request: MagicMock,
     client: ConfigClient,
 ):
@@ -188,7 +190,7 @@ def test_get_file_contents_with_force_parser_requests_str_from_server_and_conver
     ],
 )
 @patch("daq_config_server.app.client.requests.get")
-def test_get_file_contents_with_force_parser_still_validates_desired_return_type(
+def test_config_client_get_file_contents_with_force_parser_still_validates_desired_return_type(  # noqa: E501
     mock_request: MagicMock,
     client: ConfigClient,
     desired_return_type: type[ConfigModel],
@@ -215,7 +217,7 @@ def test_get_file_contents_with_force_parser_still_validates_desired_return_type
 
 
 @patch("daq_config_server.app.client.requests.get")
-def test_get_file_contents_with_bad_force_parser_errors(
+def test_config_client_get_file_contents_with_bad_force_parser_errors(
     mock_request: MagicMock, client: ConfigClient
 ):
     mock_config = "Units eV mm\n5700		5.4606\n#24500		7.2\n"
