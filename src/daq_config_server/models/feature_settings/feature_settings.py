@@ -3,6 +3,8 @@ from abc import abstractmethod
 from enum import StrEnum
 from typing import Any, Self
 
+from pydantic import model_validator
+
 from daq_config_server.models.base_model import ConfigModel
 from daq_config_server.models.utils import parse_value, remove_comments
 
@@ -17,6 +19,18 @@ class FeatureSettingSources(StrEnum):
 
 
 class BaseFeatureSettings(ConfigModel):
+    @model_validator(mode="before")
+    @classmethod
+    def _verify_features_against_sources(cls, data: Any) -> Any:
+        sources_keys = {feature.name for feature in cls.feature_settings_sources()}
+        feature_dc_keys = set(cls.model_fields)
+        if sources_keys != feature_dc_keys:
+            raise ValueError(
+                "Model field names do not match source setting names: "
+                f"{feature_dc_keys} != {sources_keys}"
+            )
+        return data
+
     @classmethod
     def from_domain_properties(cls, contents: str) -> Self:
         # From a domain.properties file
