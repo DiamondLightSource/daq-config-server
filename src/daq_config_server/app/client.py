@@ -142,6 +142,9 @@ class ConfigClient:
 
         return content
 
+    def reset_cache(self):
+        self._cache.clear()
+
     @overload
     def get_file_contents(
         self,
