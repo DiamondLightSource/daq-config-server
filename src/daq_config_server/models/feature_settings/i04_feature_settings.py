@@ -15,6 +15,6 @@ class I04FeatureSettings(BaseFeatureSettings):
     XRC_UNSCALED_TRANSMISSION_FRAC: int
     XRC_UNSCALED_EXPOSURE_TIME_S: float
 
-    @classmethod
-    def feature_settings_sources(cls) -> type[I04FeatureSettingsSources]:
+    @staticmethod
+    def feature_settings_sources() -> type[I04FeatureSettingsSources]:
         return I04FeatureSettingsSources

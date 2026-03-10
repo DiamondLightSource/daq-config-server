@@ -19,7 +19,7 @@ def test_hyperion_feature_flags():
         DETECTOR_DISTANCE_LIMIT_MIN_MM=150.0,
         BEAMSTOP_DIODE_CHECK=False,
     )
-    config = HyperionFeatureSettings.from_contents(contents)
+    config = HyperionFeatureSettings.from_domain_properties(contents)
     assert config == expected
 
 
@@ -31,5 +31,5 @@ def test_i04_feature_flags():
         XRC_UNSCALED_TRANSMISSION_FRAC=1,
         XRC_UNSCALED_EXPOSURE_TIME_S=0.007,
     )
-    config = I04FeatureSettings.from_contents(contents)
+    config = I04FeatureSettings.from_domain_properties(contents)
     assert config == expected

@@ -10,8 +10,6 @@ LOGGER = logging.getLogger(__name__)
 
 
 class FeatureSettingSources(StrEnum):
-    ...
-
     # List of features and the name of that property in domain.properties
     @classmethod
     def to_dict(cls) -> dict[str, str]:
@@ -20,29 +18,29 @@ class FeatureSettingSources(StrEnum):
 
 class BaseFeatureSettings(ConfigModel):
     @classmethod
-    def from_contents(cls, contents: str) -> Self:
+    def from_domain_properties(cls, contents: str) -> Self:
+        # From a domain.properties file
         lines = contents.splitlines()
         sources = cls.feature_settings_sources().to_dict()
-        settings: dict[str, Any] = {}
         pairs: list[tuple[str, str]] = []
         for line in remove_comments(lines):
             setting, value = line.split("=", 1)
             pairs.append((setting.strip(), value.strip()))
 
-        for key, setting_name in sources.items():
+        feature_settings: dict[str, Any] = {}
+        for feature, gda_name in sources.items():
             for setting, value in pairs:
-                if setting_name == setting.strip():
-                    settings[key] = parse_value(value)
+                if gda_name == setting:
+                    feature_settings[feature] = parse_value(value)
                     break
-            if key not in settings:
+            if feature not in feature_settings:
                 LOGGER.warning(
-                    f"Could not find {setting_name} in file. "
-                    f"Will use a default for {key} if present"
+                    f"Could not find {gda_name} in contents. "
+                    f"Will use a default for {feature} if present."
                 )
+        return cls.model_validate(feature_settings)
 
-        return cls.model_validate(settings)
-
-    @classmethod
+    @staticmethod
     @abstractmethod
-    def feature_settings_sources(cls) -> type[FeatureSettingSources]:
+    def feature_settings_sources() -> type[FeatureSettingSources]:
         raise NotImplementedError("Define a method to get feature settings sources")

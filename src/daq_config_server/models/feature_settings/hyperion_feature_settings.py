@@ -23,6 +23,6 @@ class HyperionFeatureSettings(BaseFeatureSettings):
     DETECTOR_DISTANCE_LIMIT_MIN_MM: float
     BEAMSTOP_DIODE_CHECK: bool = False
 
-    @classmethod
-    def feature_settings_sources(cls) -> type[HyperionFeatureSettingsSources]:
+    @staticmethod
+    def feature_settings_sources() -> type[HyperionFeatureSettingsSources]:
         return HyperionFeatureSettingsSources
