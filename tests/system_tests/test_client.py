@@ -32,22 +32,22 @@ DEPLOYED_SERVER_ADDRESS = "https://daq-config.diamond.ac.uk"
 
 
 @pytest.fixture
-def server():
+def client():
     return ConfigClient(SERVER_ADDRESS)
 
 
 @pytest.fixture
-def deployed_server():
+def deployed_client():
     return ConfigClient(DEPLOYED_SERVER_ADDRESS)
 
 
 @pytest.mark.requires_local_server
-def test_read_unformatted_file_as_plain_text(server: ConfigClient):
+def test_read_unformatted_file_as_plain_text(client: ConfigClient):
     with open(TestDataPaths.TEST_BEAMLINE_PARAMETERS_PATH) as f:
         expected_response = f.read()
 
     assert (
-        server.get_file_contents(
+        client.get_file_contents(
             ServerFilePaths.BEAMLINE_PARAMETERS,
         )
         == expected_response
@@ -55,12 +55,12 @@ def test_read_unformatted_file_as_plain_text(server: ConfigClient):
 
 
 @pytest.mark.requires_local_server
-def test_read_file_as_bytes(server: ConfigClient):
+def test_read_file_as_bytes(client: ConfigClient):
     with open(TestDataPaths.TEST_BEAMLINE_PARAMETERS_PATH, "rb") as f:
         expected_response = f.read()
 
     assert (
-        server.get_file_contents(
+        client.get_file_contents(
             ServerFilePaths.BEAMLINE_PARAMETERS,
             bytes,
         )
@@ -69,12 +69,12 @@ def test_read_file_as_bytes(server: ConfigClient):
 
 
 @pytest.mark.requires_local_server
-def test_read_good_json_as_dict(server: ConfigClient):
+def test_read_good_json_as_dict(client: ConfigClient):
     with open(TestDataPaths.TEST_GOOD_JSON_PATH) as f:
         expected_response = json.loads(f.read())
 
     assert (
-        server.get_file_contents(
+        client.get_file_contents(
             ServerFilePaths.GOOD_JSON_FILE,
             dict[Any, Any],
         )
@@ -83,12 +83,12 @@ def test_read_good_json_as_dict(server: ConfigClient):
 
 
 @pytest.mark.requires_local_server
-def test_read_good_json_as_untyped_dict(server: ConfigClient):
+def test_read_good_json_as_untyped_dict(client: ConfigClient):
     with open(TestDataPaths.TEST_GOOD_JSON_PATH) as f:
         expected_response = json.loads(f.read())
 
     assert (
-        server.get_file_contents(
+        client.get_file_contents(
             ServerFilePaths.GOOD_JSON_FILE,
             dict,
         )
@@ -97,7 +97,7 @@ def test_read_good_json_as_untyped_dict(server: ConfigClient):
 
 
 @pytest.mark.requires_local_server
-def test_bad_json_gives_http_error_with_details(server: ConfigClient):
+def test_bad_json_gives_http_error_with_details(client: ConfigClient):
     file_path = ServerFilePaths.BAD_JSON_FILE
     file_name = os.path.basename(file_path)
     expected_detail = (
@@ -105,43 +105,43 @@ def test_bad_json_gives_http_error_with_details(server: ConfigClient):
         "Try requesting this file as a different type."
     )
 
-    server._log.error = MagicMock()
+    client._log.error = MagicMock()
     with pytest.raises(requests.exceptions.HTTPError):
-        server.get_file_contents(
+        client.get_file_contents(
             file_path,
             dict[Any, Any],
         )
-    server._log.error.assert_called_once_with(expected_detail)
+    client._log.error.assert_called_once_with(expected_detail)
 
 
 @pytest.mark.requires_local_server
-def test_request_with_file_not_on_whitelist(server: ConfigClient):
+def test_request_with_file_not_on_whitelist(client: ConfigClient):
     file_path = "/not_allowed_file_location"
     with pytest.raises(
         requests.exceptions.HTTPError, match=f"{file_path} is not a whitelisted file."
     ):
-        server.get_file_contents(
+        client.get_file_contents(
             file_path,
         )
 
 
 @pytest.mark.requires_local_server
-def test_request_for_file_with_converter_works(server: ConfigClient):
+def test_request_for_file_with_converter_works(client: ConfigClient):
     expected = {
         "rows": [[5700, 5.4606], [5760, 5.5], [6000, 5.681], [6500, 6.045]],
     }
-    result = server.get_file_contents(ServerFilePaths.GOOD_LUT, dict)
+    result = client.get_file_contents(ServerFilePaths.GOOD_LUT, dict)
     assert result == expected
 
 
 @pytest.mark.requires_local_server
 def test_request_for_file_with_converter_works_with_pydantic_model(
-    server: ConfigClient,
+    client: ConfigClient,
 ):
     expected = UndulatorEnergyGapLookupTable(
         rows=[[5700, 5.4606], [5760, 5.5], [6000, 5.681], [6500, 6.045]],
     )
-    result = server.get_file_contents(
+    result = client.get_file_contents(
         ServerFilePaths.GOOD_LUT, UndulatorEnergyGapLookupTable
     )
     assert isinstance(result, UndulatorEnergyGapLookupTable)
@@ -150,10 +150,10 @@ def test_request_for_file_with_converter_works_with_pydantic_model(
 
 @pytest.mark.requires_local_server
 def test_request_for_file_with_converter_with_wrong_pydantic_model_errors(
-    server: ConfigClient,
+    client: ConfigClient,
 ):
     with pytest.raises(ValidationError):
-        server.get_file_contents(ServerFilePaths.GOOD_LUT, DisplayConfig)
+        client.get_file_contents(ServerFilePaths.GOOD_LUT, DisplayConfig)
 
 
 @pytest.mark.parametrize(
@@ -178,7 +178,7 @@ def test_request_for_file_with_converter_with_wrong_pydantic_model_errors(
 )
 @pytest.mark.requires_local_server
 def test_get_file_contents_with_force_parser_option_overides_converter_to_config_map(
-    server: ConfigClient,
+    client: ConfigClient,
     mock_file_converter_map: dict[str, Callable[[str], Any]],
     file_converter_map_entry: Callable[[str], Any] | None,
     desired_return_type: type[ConfigModel],
@@ -191,7 +191,7 @@ def test_get_file_contents_with_force_parser_option_overides_converter_to_config
     else:
         mock_file_converter_map[str(filepath)] = file_converter_map_entry
 
-    result = server.get_file_contents(
+    result = client.get_file_contents(
         filepath,
         desired_return_type,
         force_parser=converter,
@@ -201,18 +201,18 @@ def test_get_file_contents_with_force_parser_option_overides_converter_to_config
 
 @pytest.mark.requires_deployed_server
 def test_all_files_in_file_converter_map_can_be_converted_to_dict(
-    deployed_server: ConfigClient,
+    deployed_client: ConfigClient,
 ):
     for filename in FILE_TO_CONVERTER_MAP.keys():
         if filename.startswith("/tests/test_data/"):
             continue
-        result = deployed_server.get_file_contents(filename, dict)
+        result = deployed_client.get_file_contents(filename, dict)
         assert isinstance(result, dict)
 
 
 @pytest.mark.requires_deployed_server
 def test_all_files_in_file_converter_map_can_be_converted_to_target_type(
-    deployed_server: ConfigClient,
+    deployed_client: ConfigClient,
 ):
     with patch(
         "daq_config_server.app._file_converter_map.xmltodict.parse.__annotations__",
@@ -223,5 +223,5 @@ def test_all_files_in_file_converter_map_can_be_converted_to_target_type(
                 continue
             return_type = get_type_hints(converter)["return"]
             assert return_type is dict or issubclass(return_type, ConfigModel)
-            result = deployed_server.get_file_contents(filename, return_type)
+            result = deployed_client.get_file_contents(filename, return_type)
             assert isinstance(result, return_type)
