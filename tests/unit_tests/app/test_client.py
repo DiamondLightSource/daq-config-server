@@ -29,32 +29,35 @@ from daq_config_server.testing import make_test_response
 test_path = Path("test")
 
 
+@pytest.fixture
+def client() -> ConfigClient:
+    return ConfigClient("url")
+
+
 @patch("daq_config_server.app.client.requests.get")
-def test_get_file_contents_default_header(mock_request: MagicMock):
+def test_get_file_contents_default_header(
+    mock_request: MagicMock, client: ConfigClient
+):
     mock_request.return_value = Response(
         status_code=status.HTTP_200_OK,
         content="test",
     )
     mock_request.return_value = make_test_response("test")
-    url = "url"
-    server = ConfigClient(url)
-    assert server.get_file_contents(test_path) == "test"
+    assert client.get_file_contents(test_path) == "test"
     mock_request.assert_called_once_with(
-        url + ENDPOINTS.CONFIG + "/" + str(test_path),
+        client._url + ENDPOINTS.CONFIG + "/" + str(test_path),
         headers={"Accept": ValidAcceptHeaders.PLAIN_TEXT},
     )
 
 
 @patch("daq_config_server.app.client.requests.get")
-def test_get_file_contents_with_bytes(mock_request: MagicMock):
+def test_get_file_contents_with_bytes(mock_request: MagicMock, client: ConfigClient):
     test_str = "test"
     mock_request.return_value = make_test_response(
         test_str, content_type=ValidAcceptHeaders.RAW_BYTES
     )
-    url = "url"
-    server = ConfigClient(url)
     assert (
-        server.get_file_contents(test_path, desired_return_type=bytes)
+        client.get_file_contents(test_path, desired_return_type=bytes)
         == test_str.encode()
     )
 
@@ -62,21 +65,21 @@ def test_get_file_contents_with_bytes(mock_request: MagicMock):
 @patch("daq_config_server.app.client.requests.get")
 def test_get_file_contents_gives_exception_on_invalid_json(
     mock_request: MagicMock,
+    client: ConfigClient,
 ):
     content_type = ValidAcceptHeaders.JSON
     bad_json = "bad_dict}"
     mock_request.return_value = make_test_response(
         bad_json, content_type=content_type, json_value=bad_json
     )
-    url = "url"
-    server = ConfigClient(url)
     with pytest.raises(TypeConversionError):
-        server.get_file_contents(test_path, desired_return_type=dict[Any, Any])
+        client.get_file_contents(test_path, desired_return_type=dict[Any, Any])
 
 
 @patch("daq_config_server.app.client.requests.get")
 def test_get_file_contents_caching(
     mock_request: MagicMock,
+    client: ConfigClient,
 ):
     """Test reset_cached_result=False and reset_cached_result=True."""
     mock_request.side_effect = [
@@ -84,30 +87,31 @@ def test_get_file_contents_caching(
         make_test_response("2nd_read"),
         make_test_response("3rd_read"),
     ]
-    url = "url"
-    server = ConfigClient(url)
-    assert server.get_file_contents(test_path, reset_cached_result=True) == "1st_read"
-    assert server.get_file_contents(test_path, reset_cached_result=True) == "2nd_read"
-    assert server.get_file_contents(test_path, reset_cached_result=False) == "2nd_read"
+    assert client.get_file_contents(test_path, reset_cached_result=True) == "1st_read"
+    assert client.get_file_contents(test_path, reset_cached_result=True) == "2nd_read"
+    assert client.get_file_contents(test_path, reset_cached_result=False) == "2nd_read"
 
 
 @patch("daq_config_server.app.client.requests.get")
-def test_bad_responses_no_details_raises_error(mock_request: MagicMock):
+def test_bad_responses_no_details_raises_error(
+    mock_request: MagicMock, client: ConfigClient
+):
     """Test that a non-200 response raises a RequestException."""
     mock_request.return_value = make_test_response(
         "1st_read", status.HTTP_204_NO_CONTENT, raise_exc=requests.exceptions.HTTPError
     )
-    server = ConfigClient("url")
-    server._log.error = MagicMock()
+    client._log.error = MagicMock()
     with pytest.raises(requests.exceptions.HTTPError):
-        server.get_file_contents(test_path)
-    server._log.error.assert_called_once_with(
+        client.get_file_contents(test_path)
+    client._log.error.assert_called_once_with(
         "Response raised HTTP error but no details provided"
     )
 
 
 @patch("daq_config_server.app.client.requests.get")
-def test_bad_responses_with_details_raises_error(mock_request: MagicMock):
+def test_bad_responses_with_details_raises_error(
+    mock_request: MagicMock, client: ConfigClient
+):
     """Test that a non-200 response raises a RequestException."""
 
     detail = "test detail"
@@ -118,23 +122,22 @@ def test_bad_responses_with_details_raises_error(mock_request: MagicMock):
         json_value="test",
     )
     mock_request.return_value.json = MagicMock(return_value={"detail": detail})
-    server = ConfigClient("url")
-    server._log.error = MagicMock()
+    client._log.error = MagicMock()
     with pytest.raises(requests.exceptions.HTTPError):
-        server.get_file_contents(test_path)
-    server._log.error.assert_called_once_with(detail)
+        client.get_file_contents(test_path)
+    client._log.error.assert_called_once_with(detail)
 
 
 @patch("daq_config_server.app.client.requests.get")
-def test_get_file_contents_with_untyped_dict(mock_request: MagicMock):
+def test_get_file_contents_with_untyped_dict(
+    mock_request: MagicMock, client: ConfigClient
+):
     content_type = ValidAcceptHeaders.JSON
     good_json = '{"good_dict":"test"}'
     mock_request.return_value = make_test_response(
         good_json, content_type=content_type, json_value=good_json
     )
-    url = "url"
-    server = ConfigClient(url)
-    assert server.get_file_contents(test_path, desired_return_type=dict) == {
+    assert client.get_file_contents(test_path, desired_return_type=dict) == {
         "good_dict": "test"
     }
 
@@ -158,6 +161,7 @@ def test_get_mime_type(input: type[TModel | TNonModel], expected: ValidAcceptHea
 @patch("daq_config_server.app.client.requests.get")
 def test_get_file_contents_with_force_parser_requests_str_from_server_and_converts(
     mock_request: MagicMock,
+    client: ConfigClient,
 ):
     mock_config = "mock_config"
     mock_request.return_value = make_test_response(mock_config)
@@ -166,8 +170,7 @@ def test_get_file_contents_with_force_parser_requests_str_from_server_and_conver
 
     mock_converter = MagicMock(return_value=mock_converted_result)
 
-    server = ConfigClient("url")
-    result = server.get_file_contents(test_path, dict, force_parser=mock_converter)
+    result = client.get_file_contents(test_path, dict, force_parser=mock_converter)
 
     mock_converter.assert_called_once_with(mock_config)
     mock_request.assert_called_once_with(
@@ -187,6 +190,7 @@ def test_get_file_contents_with_force_parser_requests_str_from_server_and_conver
 @patch("daq_config_server.app.client.requests.get")
 def test_get_file_contents_with_force_parser_still_validates_desired_return_type(
     mock_request: MagicMock,
+    client: ConfigClient,
     desired_return_type: type[ConfigModel],
     expected_exception: type[Exception] | None,
 ):
@@ -194,16 +198,15 @@ def test_get_file_contents_with_force_parser_still_validates_desired_return_type
     expected_result = UndulatorEnergyGapLookupTable(rows=[[5700, 5.4606]])
     mock_request.return_value = make_test_response(mock_config)
 
-    server = ConfigClient("url")
     if expected_exception:
         with pytest.raises(expected_exception):
-            server.get_file_contents(
+            client.get_file_contents(
                 test_path,
                 desired_return_type,
                 force_parser=UndulatorEnergyGapLookupTable.from_contents,
             )
     else:
-        result = server.get_file_contents(
+        result = client.get_file_contents(
             test_path,
             desired_return_type,
             force_parser=UndulatorEnergyGapLookupTable.from_contents,
@@ -213,14 +216,13 @@ def test_get_file_contents_with_force_parser_still_validates_desired_return_type
 
 @patch("daq_config_server.app.client.requests.get")
 def test_get_file_contents_with_bad_force_parser_errors(
-    mock_request: MagicMock,
+    mock_request: MagicMock, client: ConfigClient
 ):
     mock_config = "Units eV mm\n5700		5.4606\n#24500		7.2\n"
     mock_request.return_value = make_test_response(mock_config)
 
-    server = ConfigClient("url")
     with pytest.raises(ValueError):
-        server.get_file_contents(
+        client.get_file_contents(
             test_path,
             DisplayConfig,
             force_parser=DisplayConfig.from_contents,
