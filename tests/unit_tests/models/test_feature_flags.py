@@ -1,3 +1,10 @@
+import pytest
+from pydantic import ValidationError
+
+from daq_config_server.models.feature_settings.feature_settings import (
+    BaseFeatureSettings,
+    FeatureSettingSources,
+)
 from daq_config_server.models.feature_settings.hyperion_feature_settings import (
     HyperionFeatureSettings,
 )
@@ -33,3 +40,39 @@ def test_i04_feature_flags():
     )
     config = I04FeatureSettings.from_domain_properties(contents)
     assert config == expected
+
+
+def test_error_raised_when_feature_settings():
+    class BadFeatureSettingsSources(FeatureSettingSources):
+        USE_GPU_RESULTS = "gda.mx.hyperion.xrc.use_gpu_results"
+        USE_ZEBRA_FOR_GRIDSCAN = "gda.mx.hyperion.use_panda_for_gridscans"
+        SET_STUB_OFFSETS = "gda.mx.hyperion.do_stub_offsets"
+
+    class BadFeatureSettings(BaseFeatureSettings):
+        USE_GPU_RESULTS: bool = False
+
+        @staticmethod
+        def feature_settings_sources():
+            return BadFeatureSettingsSources
+
+    with pytest.raises(ValidationError):
+        BadFeatureSettings.from_domain_properties("")
+
+    with pytest.raises(ValidationError):
+        BadFeatureSettings(USE_GPU_RESULTS=True)
+
+
+def test_warning_logged_when_fields_missing_in_source_file(
+    caplog: pytest.LogCaptureFixture,
+):
+    caplog.set_level("WARNING")
+    I04FeatureSettings.from_domain_properties("")
+    expected_messages = [
+        "Could not find gda.px.expttable.default.wavelength",
+        "Could not find gda.mx.bluesky.i04.xrc.unscaled_transmission_frac",
+        "Could not find gda.mx.bluesky.i04.xrc.unscaled_exposure_time_s",
+    ]
+    assert all(
+        any(expected_message in message for message in caplog.messages)
+        for expected_message in expected_messages
+    )
