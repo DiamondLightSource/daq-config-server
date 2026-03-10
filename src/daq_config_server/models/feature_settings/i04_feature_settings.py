@@ -11,9 +11,10 @@ class I04FeatureSettingsSources(FeatureSettingSources):
 
 
 class I04FeatureSettings(BaseFeatureSettings):
-    ASSUMED_WAVELENGTH_IN_A: float
-    XRC_UNSCALED_TRANSMISSION_FRAC: int
-    XRC_UNSCALED_EXPOSURE_TIME_S: float
+    # Defaults used if they don't exist in config file
+    ASSUMED_WAVELENGTH_IN_A: float = 0.95373
+    XRC_UNSCALED_TRANSMISSION_FRAC: int = 1
+    XRC_UNSCALED_EXPOSURE_TIME_S: float = 0.007
 
     @staticmethod
     def feature_settings_sources() -> type[I04FeatureSettingsSources]:

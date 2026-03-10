@@ -15,12 +15,13 @@ class HyperionFeatureSettingsSources(FeatureSettingSources):
 
 
 class HyperionFeatureSettings(BaseFeatureSettings):
-    USE_GPU_RESULTS: bool
-    USE_PANDA_FOR_GRIDSCAN: bool
-    SET_STUB_OFFSETS: bool
-    PANDA_RUNUP_DISTANCE_MM: float
-    DETECTOR_DISTANCE_LIMIT_MAX_MM: float
-    DETECTOR_DISTANCE_LIMIT_MIN_MM: float
+    # Defaults used if they don't exist in config file
+    USE_GPU_RESULTS: bool = True
+    USE_PANDA_FOR_GRIDSCAN: bool = False
+    SET_STUB_OFFSETS: bool = False
+    PANDA_RUNUP_DISTANCE_MM: float = 0.16
+    DETECTOR_DISTANCE_LIMIT_MAX_MM: float = 700
+    DETECTOR_DISTANCE_LIMIT_MIN_MM: float = 250
     BEAMSTOP_DIODE_CHECK: bool = False
 
     @staticmethod
