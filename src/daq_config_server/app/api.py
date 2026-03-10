@@ -6,9 +6,9 @@ from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import Response
 
-from daq_config_server.app._config import load_config
-from daq_config_server.app._log import set_up_logging
-from daq_config_server.app._routes import router
+from ._config import load_config
+from ._log import set_up_logging
+from ._routes import router
 
 LOGGER = logging.getLogger(__name__)
 
