@@ -59,5 +59,4 @@ class BaseFeatureSettings(ConfigModel):
 
     @staticmethod
     @abstractmethod
-    def feature_settings_sources() -> type[FeatureSettingSources]:
-        raise NotImplementedError("Define a method to get feature settings sources")
+    def feature_settings_sources() -> type[FeatureSettingSources]: ...
