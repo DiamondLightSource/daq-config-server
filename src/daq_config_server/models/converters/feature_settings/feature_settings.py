@@ -18,7 +18,7 @@ class FeatureSettingSources(StrEnum):
     # List of features and the name of that property in domain.properties
     @classmethod
     def to_dict(cls) -> dict[str, str]:
-        return {member.name: member.value for member in cls}
+        return {member.value: member.name for member in cls}
 
 
 class BaseFeatureSettings(ConfigModel):
@@ -39,17 +39,13 @@ class BaseFeatureSettings(ConfigModel):
         # From a domain.properties file
         lines = contents.splitlines()
         sources = cls.feature_settings_sources().to_dict()
-        pairs: list[tuple[str, str]] = []
+        feature_settings: dict[str, Any] = {}
         for line in remove_comments(lines):
             setting, value = line.split("=", 1)
-            pairs.append((setting.strip(), value.strip()))
+            if feature := sources.get(setting.strip()):
+                feature_settings[feature] = parse_value(value)
 
-        feature_settings: dict[str, Any] = {}
-        for feature, gda_name in sources.items():
-            for setting, value in pairs:
-                if gda_name == setting:
-                    feature_settings[feature] = parse_value(value)
-                    break
+        for gda_name, feature in sources.items():
             if feature not in feature_settings:
                 LOGGER.warning(
                     f"Could not find {gda_name} in contents. "
