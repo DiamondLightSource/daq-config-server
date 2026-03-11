@@ -5,6 +5,12 @@ import xmltodict
 
 from daq_config_server.models import DisplayConfig, beamline_parameters_to_dict
 from daq_config_server.models.base_model import ConfigModel
+from daq_config_server.models.converters.feature_settings.hyperion_feature_settings import (
+    HyperionFeatureSettings,
+)
+from daq_config_server.models.converters.feature_settings.i04_feature_settings import (
+    I04FeatureSettings,
+)
 from daq_config_server.models.lookup_tables import (
     BeamlinePitchLookupTable,
     BeamlineRollLookupTable,
@@ -39,4 +45,6 @@ FILE_TO_CONVERTER_MAP: dict[str, Callable[[str], ConfigModel | dict[str, Any]]] 
     "/dls_sw/i03/software/daq_configuration/lookup/BeamLine_Undulator_toGap.txt": UndulatorEnergyGapLookupTable.from_contents,  # noqa: E501
     "/dls_sw/i04/software/daq_configuration/lookup/BeamLine_Undulator_toGap.txt": UndulatorEnergyGapLookupTable.from_contents,  # noqa: E501
     "/dls_sw/i09-1/software/gda/workspace_git/gda-diamond.git/configurations/i09-1-shared/lookupTables/IIDCalibrationTable.txt": parse_i09_hu_undulator_energy_gap_lut,  # noqa: E501
+    "/dls_sw/i04/software/daq_configuration/domain/domain.properties": I04FeatureSettings.from_domain_properties,  # noqa: E501
+    "/dls_sw/i03/software/daq_configuration/domain/domain.properties": HyperionFeatureSettings.from_domain_properties,  # noqa: E501
 }
