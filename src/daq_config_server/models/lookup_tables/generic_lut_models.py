@@ -83,10 +83,6 @@ class LookupTableBase(ConfigModel, Generic[ColumnNameT]):
         self,
     ) -> list[ColumnNameT]: ...
 
-    @classmethod
-    @abstractmethod
-    def from_contents(cls, contents: str) -> Self: ...
-
 
 class GenericLookupTable(LookupTableBase[str]):
     column_names: list[str]
@@ -102,7 +98,7 @@ class GenericLookupTable(LookupTableBase[str]):
         column and the rows as a 2D list.
 
         Any args after the contents provide the column names and optionally, python
-        types for values in a column to be converted to. e.g: ("energy_EV", float),
+        types for values in a column to be converted to. e.g: ("energy_ev", float),
         ("pixels", int). If a type is provided, the values in that column will be
         converted to that type. Otherwise, the type will be inferred. Units should be
         included in the column name.
