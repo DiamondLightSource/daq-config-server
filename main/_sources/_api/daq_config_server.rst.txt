@@ -1,5 +1,6 @@
 ﻿``daq_config_server``
 =====================
+        
 
 .. automodule:: daq_config_server
     :members:
@@ -9,5 +10,12 @@
     
 
     
+    
+    .. rubric:: Members
+
+    .. autosummary::
+        :nosignatures:
+    
+        ConfigClient
     
     

@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>daq_config_server &#8212; daq-config-server 1.2.1.dev1+g5952ade93 documentation</title>
+    <title>daq_config_server &#8212; daq-config-server 1.2.1.dev2+g6df72511f documentation</title>
   
   
   
@@ -41,7 +41,7 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../_static/documentation_options.js?v=dd48df10"></script>
+    <script src="../_static/documentation_options.js?v=0dfda266"></script>
     <script src="../_static/doctools.js?v=9bcbadda"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -470,6 +470,61 @@
 <dd><p>Version number as calculated by <a class="github reference external" href="https://github.com/pypa/setuptools_scm">pypa/setuptools_scm</a></p>
 </dd></dl>
 
+<p class="rubric">Members</p>
+<div class="pst-scrollable-table-container"><table class="autosummary longtable table">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#daq_config_server.ConfigClient" title="daq_config_server.ConfigClient"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ConfigClient</span></code></a></p></td>
+<td><p>Client to communicate with a deployed config service with a configurable cache and logger</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<dl class="py class">
+<dt class="sig sig-object py" id="daq_config_server.ConfigClient">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">daq_config_server.</span></span><span class="sig-name descname"><span class="pre">ConfigClient</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">url</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'https://daq-config.diamond.ac.uk'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">log</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/logging.html#logging.Logger" title="(in Python v3.14)"><span class="pre">Logger</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cache_size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cache_lifetime_s</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">3600</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/daq_config_server/app/client.html#ConfigClient"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#daq_config_server.ConfigClient" title="Link to this definition">#</a></dt>
+<dd><p>Client to communicate with a deployed config service with a configurable cache
+and logger</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>url</strong> – Base URL of the config server. Defaults to central service.</p></li>
+<li><p><strong>log</strong> – Optional logger instance.</p></li>
+<li><p><strong>cache_size</strong> – Size of the cache (maximum number of items can be stored).</p></li>
+<li><p><strong>cache_lifetime_s</strong> – Lifetime of the cache (in seconds).</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="daq_config_server.ConfigClient.get_file_contents">
+<span class="sig-name descname"><span class="pre">get_file_contents</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">file_path:</span> <span class="pre">str</span> <span class="pre">|</span> <span class="pre">~pathlib.Path,</span> <span class="pre">desired_return_type:</span> <span class="pre">type[~typing.Any]</span> <span class="pre">=</span> <span class="pre">&lt;class</span> <span class="pre">'str'&gt;,</span> <span class="pre">reset_cached_result:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">False,</span> <span class="pre">force_parser:</span> <span class="pre">~collections.abc.Callable[[str],</span> <span class="pre">~typing.Any]</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><span class="pre">Any</span></a></span></span><a class="reference internal" href="../_modules/daq_config_server/app/client.html#ConfigClient.get_file_contents"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#daq_config_server.ConfigClient.get_file_contents" title="Link to this definition">#</a></dt>
+<dd><p>Get contents of a file from the config server in the format specified.
+Optionally look for cached result before making request.</p>
+<p>Current supported return types are: str, bytes, dict. This option will
+determine how the server attempts to decode the file. Note that only untyped
+dictionaries are currently supported</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>file_path</strong> – Path to the file.</p></li>
+<li><p><strong>desired_return_type</strong> – Specify how to parse the response.</p></li>
+<li><p><strong>reset_cached_result</strong> – If true, make a request and store response in cache,
+otherwise look for cached response before making new request</p></li>
+<li><p><strong>force_parser</strong> – Optionally provide a function to convert the contents of a
+config file to the desired return type. This overides whatever converter
+is specified for that file in the FILE_TO_CONVERTER_MAP, and can be used
+if the config file isn’t in the FILE_TO_CONVERTER_MAP at all. This
+should only be used for testing or when waiting on a release that will
+add the file to the FILE_TO_CONVERTER_MAP.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The file contents, in the format specified.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
 </section>
 
 
@@ -520,6 +575,10 @@
   <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#daq_config_server.__version__"><code class="docutils literal notranslate"><span class="pre">__version__</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#daq_config_server.ConfigClient"><code class="docutils literal notranslate"><span class="pre">ConfigClient</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#daq_config_server.ConfigClient.get_file_contents"><code class="docutils literal notranslate"><span class="pre">ConfigClient.get_file_contents()</span></code></a></li>
+</ul>
+</li>
 </ul>
   </nav></div>
 
