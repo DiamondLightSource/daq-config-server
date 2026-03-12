@@ -6,7 +6,7 @@ from typing import Any, Self
 from pydantic import model_validator
 
 from daq_config_server.models import ConfigModel
-from daq_config_server.models.converters._converter_utils import (
+from daq_config_server.models.utils import (
     remove_comments,
 )
 

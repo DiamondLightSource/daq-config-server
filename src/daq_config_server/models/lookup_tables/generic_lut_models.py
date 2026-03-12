@@ -84,8 +84,8 @@ class LookupTableBase(ConfigModel, Generic[ColumnNameT]):
     ) -> list[ColumnNameT]: ...
 
     @classmethod
-    def from_contents(cls, contents: str) -> Self:
-        return cls(rows=parse_lut_rows(contents))
+    @abstractmethod
+    def from_contents(cls, contents: str) -> Self: ...
 
 
 class GenericLookupTable(LookupTableBase[str]):
@@ -95,7 +95,9 @@ class GenericLookupTable(LookupTableBase[str]):
         return self.column_names
 
     @classmethod
-    def from_contents(cls, contents: str, *params: tuple[str, type | None]) -> Self:
+    def from_contents(
+        cls, contents: str, *params: tuple[str, type[int] | type[float]]
+    ) -> Self:
         """Converts a lookup table to a pydantic model, containing the names of each
         column and the rows as a 2D list.
 

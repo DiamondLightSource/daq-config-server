@@ -1,5 +1,6 @@
 import re
 from collections.abc import Iterable
+from typing import Any
 
 
 def remove_comments(lines: Iterable[str]) -> list[str]:
@@ -19,14 +20,12 @@ DEFAULT_IGNORE_LINES_STARTING_WITH = ("Units", "ScannableUnits", "ScannableNames
 
 def parse_lut_rows(
     contents: str,
-    types: list[type],
+    types: list[type[int] | type[float]],
     ignore_lines_starting_with: tuple[str, ...] = DEFAULT_IGNORE_LINES_STARTING_WITH,
-) -> list[list[Any]]:
+) -> list[list[int | float]]:
     rows: list[list[Any]] = []
     for line in remove_comments(contents.splitlines()):
         if line.startswith(ignore_lines_starting_with):
             continue
-        rows.append(
-            [parse_value(value, types[i]) for i, value in enumerate(line.split())]
-        )
+        rows.append([types[i](value) for i, value in enumerate(line.split())])
     return rows

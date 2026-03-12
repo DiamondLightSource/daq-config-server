@@ -5,10 +5,10 @@ import xmltodict
 
 from daq_config_server.models import DisplayConfig, beamline_parameters_to_dict
 from daq_config_server.models.base_model import ConfigModel
-from daq_config_server.models.converters.feature_settings.hyperion_feature_settings import (
+from daq_config_server.models.feature_settings.hyperion_feature_settings import (
     HyperionFeatureSettings,
 )
-from daq_config_server.models.converters.feature_settings.i04_feature_settings import (
+from daq_config_server.models.feature_settings.i04_feature_settings import (
     I04FeatureSettings,
 )
 from daq_config_server.models.lookup_tables import (

@@ -1,17 +1,17 @@
 import pytest
 from pydantic import ValidationError
-from tests.constants import TestDataPaths
 
-from daq_config_server.models.converters.feature_settings.feature_settings import (
+from daq_config_server.models.feature_settings.feature_settings import (
     BaseFeatureSettings,
     FeatureSettingSources,
 )
-from daq_config_server.models.converters.feature_settings.hyperion_feature_settings import (  # noqa: E501
+from daq_config_server.models.feature_settings.hyperion_feature_settings import (
     HyperionFeatureSettings,
 )
-from daq_config_server.models.converters.feature_settings.i04_feature_settings import (
+from daq_config_server.models.feature_settings.i04_feature_settings import (
     I04FeatureSettings,
 )
+from tests.constants import TestDataPaths
 
 
 def test_hyperion_feature_flags():
