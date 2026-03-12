@@ -5,7 +5,6 @@ from pydantic import model_validator
 from daq_config_server.models.base_model import ConfigModel
 from daq_config_server.models.utils import (
     camel_to_snake_case,
-    parse_value,
     remove_comments,
 )
 
@@ -57,7 +56,7 @@ class DisplayConfig(ConfigModel):
             assert key not in config_dict[zoom_level].keys(), (
                 "File can't have repeated keys for a given zoom level"
             )
-            config_dict[zoom_level][key] = parse_value(value)
+            config_dict[zoom_level][key] = float(value)
 
         zoom_levels = {
             key: DisplayConfigData.model_validate(value)

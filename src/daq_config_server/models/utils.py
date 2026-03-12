@@ -38,7 +38,7 @@ DEFAULT_IGNORE_LINES_STARTING_WITH = ("Units", "ScannableUnits", "ScannableNames
 
 def parse_lut_rows(
     contents: str,
-    types: list[type | None] | None = None,
+    types: list[type],
     ignore_lines_starting_with: tuple[str, ...] = DEFAULT_IGNORE_LINES_STARTING_WITH,
 ) -> list[list[Any]]:
     rows: list[list[Any]] = []
@@ -46,9 +46,6 @@ def parse_lut_rows(
         if line.startswith(ignore_lines_starting_with):
             continue
         rows.append(
-            [
-                parse_value(value, types[i] if types else None)
-                for i, value in enumerate(line.split())
-            ]
+            [parse_value(value, types[i]) for i, value in enumerate(line.split())]
         )
     return rows

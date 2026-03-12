@@ -7,7 +7,6 @@ from pydantic import model_validator
 
 from daq_config_server.models import ConfigModel
 from daq_config_server.models.converters._converter_utils import (
-    parse_value,
     remove_comments,
 )
 
@@ -43,7 +42,7 @@ class BaseFeatureSettings(ConfigModel):
         for line in remove_comments(lines):
             setting, value = line.split("=", 1)
             if feature := sources.get(setting.strip()):
-                feature_settings[feature] = parse_value(value)
+                feature_settings[feature] = value
 
         for gda_name, feature in sources.items():
             if feature not in feature_settings:
