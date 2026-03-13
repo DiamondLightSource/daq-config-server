@@ -3,6 +3,7 @@ import operator
 from collections.abc import Callable
 from logging import Logger, getLogger
 from pathlib import Path
+from threading import RLock
 from typing import Any, TypeVar, get_origin, overload
 
 import requests
@@ -62,8 +63,11 @@ class ConfigClient:
         self._cache: TTLCache[tuple[str, str, Path], Response] = TTLCache(
             maxsize=cache_size, ttl=cache_lifetime_s
         )
+        self._lock = RLock()
 
-    @cachedmethod(cache=operator.attrgetter("_cache"))
+    @cachedmethod(
+        cache=operator.attrgetter("_cache"), lock=operator.attrgetter("_lock")
+    )
     def _cached_get(
         self,
         endpoint: str,
@@ -112,13 +116,13 @@ class ConfigClient:
         the content-type response header to format the return value.
         If data parsing fails, return the response contents in bytes
         """
-        if (
-            endpoint,
-            accept_header,
-            file_path,
-        ) in self._cache and reset_cached_result:
-            del self._cache[(endpoint, accept_header, file_path)]
-        r = self._cached_get(endpoint, accept_header, file_path)
+        cache_key = (endpoint, accept_header, file_path)
+        if reset_cached_result:
+            with self._lock:
+                if cache_key in self._cache:
+                    del self._cache[cache_key]
+
+        r = self._cached_get(*cache_key)
 
         content_type = r.headers["content-type"].split(";")[0].strip()
 
@@ -142,6 +146,10 @@ class ConfigClient:
             ) from e
 
         return content
+
+    def reset_cache(self):
+        with self._lock:
+            self._cache.clear()
 
     @overload
     def get_file_contents(

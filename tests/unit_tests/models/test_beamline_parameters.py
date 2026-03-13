@@ -1,8 +1,10 @@
 import json
+from typing import Any
 
 import pytest
 
 from daq_config_server.models.beamline_parameters import (
+    _parse_value,
     beamline_parameters_to_dict,
 )
 from tests.constants import TestDataPaths
@@ -28,3 +30,17 @@ def test_beam_line_parameters_with_repeated_key_causes_error():
     input = "thing = 1\nthing = 2"
     with pytest.raises(ValueError, match="Repeated key in parameters: thing"):
         beamline_parameters_to_dict(input)
+
+
+@pytest.mark.parametrize(
+    "value, expected_parsed_value",
+    [
+        ("  2.0   ", 2.0),
+        (" 3 ", 3),
+        ("5.0", 5.0),
+    ],
+)
+def test_parse_value_works_as_expected(value: str, expected_parsed_value: Any):
+    parsed_value = _parse_value(value)
+    assert parsed_value == expected_parsed_value
+    assert type(parsed_value) is type(expected_parsed_value)

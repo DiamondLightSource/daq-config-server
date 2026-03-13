@@ -229,3 +229,26 @@ def test_config_client_get_file_contents_with_bad_force_parser_errors(
             DisplayConfig,
             force_parser=DisplayConfig.from_contents,
         )
+
+
+@patch("daq_config_server.app.client.requests.get")
+def test_reset_cache(
+    mock_request: MagicMock,
+):
+    mock_config = "Units eV mm\n5700		5.4606\n#24500		7.2\n"
+    mock_request.return_value = make_test_response(mock_config)
+    server = ConfigClient("url")
+    result = server.get_file_contents(
+        test_path,
+        str,
+    )
+    assert server._cache.currsize == 1
+    server.reset_cache()
+    assert server._cache.currsize == 0
+    new_mock_config = "Units eV mm\n6800		5.4606\n#24500		7.2\n"
+    mock_request.return_value = make_test_response(new_mock_config)
+    new_result = server.get_file_contents(
+        test_path,
+        str,
+    )
+    assert result != new_result

@@ -43,6 +43,12 @@ class TestDataPaths:
     EXPECTED_BEAMLINE_PARAMETERS_JSON_PATH = TEST_DATA_DIR_PATH.joinpath(
         "expected_beamline_parameters.json"
     )
+    TEST_HYPERION_DOMAIN_PROPERTIES = TEST_DATA_DIR_PATH.joinpath(
+        "test_hyperion_domain.properties"
+    )
+    TEST_I04_DOMAIN_PROPERTIES = TEST_DATA_DIR_PATH.joinpath(
+        "test_i04_domain.properties"
+    )
 
 
 # These are the file locations accessible from the server running in a container

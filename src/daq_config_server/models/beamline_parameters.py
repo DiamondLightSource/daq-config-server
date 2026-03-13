@@ -1,8 +1,16 @@
+import ast
 from typing import Any
 
-from daq_config_server.models.utils import parse_value, remove_comments
+from daq_config_server.models.utils import remove_comments
 
 ALLOWED_BEAMLINE_PARAMETER_STRINGS = ["FB", "FULL", "deadtime"]
+
+
+def _parse_value(
+    value: str,
+) -> Any:
+    replacements = {"yes": "True", "no": "False", "true": "True", "false": "False"}
+    return ast.literal_eval(replacements.get(value.lower(), value))
 
 
 def beamline_parameters_to_dict(contents: str) -> dict[str, Any]:
@@ -24,5 +32,5 @@ def beamline_parameters_to_dict(contents: str) -> dict[str, Any]:
     # Parse each value
     for param, value in config_pairs.items():
         if value not in ALLOWED_BEAMLINE_PARAMETER_STRINGS:
-            config_pairs[param] = parse_value(value)
+            config_pairs[param] = _parse_value(value)
     return dict(config_pairs)
