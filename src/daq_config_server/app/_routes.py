@@ -50,7 +50,37 @@ class ENDPOINTS:
     HEALTH = "/healthz"
 
 
-@router.get(ENDPOINTS.CONFIG + "/{file_path:path}")
+@router.get(
+    ENDPOINTS.CONFIG + "/{file_path:path}",
+    responses={
+        200: {
+            "description": "Returns JSON, plain text, or binary file.",
+            "content": {
+                "application/json": {
+                    "schema": {
+                        "type": "object",
+                        "additionalProperties": True,
+                        "example": {
+                            "key": "value",
+                            "list": [1, 2, 3],
+                            "nested": {"a": 1},
+                        },
+                    }
+                },
+                "text/plain": {
+                    "schema": {
+                        "type": "string",
+                        "example": "This is a plain text response",
+                    }
+                },
+                "application/octet-stream": {
+                    "schema": {"type": "string", "format": "binary"},
+                },
+            },
+        },
+    },
+    response_class=Response,
+)
 def get_configuration(file_path: Path, request: Request):
     if not file_path.is_absolute():
         raise HTTPException(
