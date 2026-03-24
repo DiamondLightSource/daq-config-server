@@ -16,6 +16,7 @@ whitelist_files:
 - /dls_sw/i04/software/bluesky/scratch/display.configuration
 - /dls_sw/i23/software/aithre/aithre_display.configuration
 - /dls_sw/i24/software/gda_versions/var/display.configuration
+- /dls_sw/i15-1/software/gda_var/xpdfLocalParameters.xml
 
 #For long-term directories with frequently changing files
 whitelist_dirs:
