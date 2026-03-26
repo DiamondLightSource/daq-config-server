@@ -97,6 +97,7 @@ def test_robot_load_devices_config_model():
     with open(TestDataPaths.TEST_I15_1_XPDF_LOCAL_PARAMETERS) as f:
         contents = f.read()
     result = TemperatureControllersConfig.from_xpdf_parameters(contents)
+    print(result)
     assert result == TemperatureControllersConfig(
         cobra=TemperatureControllerParams(
             beam_position=461.5,
@@ -119,5 +120,16 @@ def test_robot_load_devices_config_model():
             use_calibration=True,
             use_fast_cool=None,
             calibration_file="blower_cal_10_03_2026.txt",
+        ),
+        cryostream=TemperatureControllerParams(
+            beam_position=469.9,
+            safe_position=0.0,
+            settle_time=600,
+            tolerance=0.5,
+            units="K",
+            ramp_units="/h",
+            use_calibration=True,
+            use_fast_cool=None,
+            calibration_file="cryostream_cal_2025-01-23.txt",
         ),
     )

@@ -21,6 +21,7 @@ class TemperatureControllerParams(ConfigModel):
 class TemperatureControllersConfig(ConfigModel):
     cobra: TemperatureControllerParams
     blower: TemperatureControllerParams
+    cryostream: TemperatureControllerParams
 
     @classmethod
     def from_xpdf_parameters(cls, contents: str) -> Self:
@@ -31,4 +32,7 @@ class TemperatureControllersConfig(ConfigModel):
         blower = TemperatureControllerParams.model_validate(
             config_dict["configuration"]["devices"]["blower"]
         )
-        return cls(cobra=cobra, blower=blower)
+        cryostream = TemperatureControllerParams.model_validate(
+            config_dict["configuration"]["devices"]["cryostream"]
+        )
+        return cls(cobra=cobra, blower=blower, cryostream=cryostream)
