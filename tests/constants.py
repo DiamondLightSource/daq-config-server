@@ -49,6 +49,9 @@ class TestDataPaths:
     TEST_I04_DOMAIN_PROPERTIES = TEST_DATA_DIR_PATH.joinpath(
         "test_i04_domain.properties"
     )
+    TEST_I15_1_XPDF_LOCAL_PARAMETERS = TEST_DATA_DIR_PATH.joinpath(
+        "test_xpdfLocalParameters.xml"
+    )
 
 
 # These are the file locations accessible from the server running in a container
