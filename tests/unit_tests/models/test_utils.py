@@ -32,7 +32,8 @@ def test_remove_comments_works_as_expected():
         ("camelCase", "camel_case"),
         ("_Camel_Case", "_camel_case"),
         ("CAMELCASE", "camelcase"),
-        ("CAMELCAsE", "camelcas_e"),
+        ("CAMELCAsE", "camelc_as_e"),
+        ("micronsPerXPixel", "microns_per_x_pixel"),
     ],
 )
 def test_camel_to_snake_case_works_as_expected(camel_case: str, snake_case: str):

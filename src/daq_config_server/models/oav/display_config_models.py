@@ -1,12 +1,8 @@
 from typing import Self
 
-from pydantic import model_validator
-
 from daq_config_server.models.base_model import ConfigModel
-from daq_config_server.models.utils import (
-    camel_to_snake_case,
-    remove_comments,
-)
+from daq_config_server.models.oav.per_zoom_level import PerZoomLevel
+from daq_config_server.models.utils import camel_to_snake_case, remove_comments
 
 
 class DisplayConfigData(ConfigModel):
@@ -18,23 +14,7 @@ class DisplayConfigData(ConfigModel):
     bottom_right_y: int
 
 
-class DisplayConfig(ConfigModel):
-    zoom_levels: dict[float, DisplayConfigData]
-    required_zoom_levels: set[float] | None = None
-
-    @model_validator(mode="after")
-    def check_zoom_levels_match_required(self):
-        existing_keys = set(self.zoom_levels.keys())
-        if (
-            self.required_zoom_levels is not None
-            and self.required_zoom_levels != existing_keys
-        ):
-            raise ValueError(
-                f"Zoom levels {existing_keys} "
-                f"do not match required zoom levels: {self.required_zoom_levels}"
-            )
-        return self
-
+class DisplayConfig(PerZoomLevel[DisplayConfigData]):
     @classmethod
     def from_contents(cls, contents: str) -> Self:
         lines = contents.splitlines()
