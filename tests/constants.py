@@ -52,6 +52,9 @@ class TestDataPaths:
     TEST_I15_1_XPDF_LOCAL_PARAMETERS = TEST_DATA_DIR_PATH.joinpath(
         "test_xpdfLocalParameters.xml"
     )
+    TEST_JCAMERA_MAN_ZOOM_LEVELS = TEST_DATA_DIR_PATH.joinpath(
+        "test_jCameraManZoomLevels.xml"
+    )
 
 
 # These are the file locations accessible from the server running in a container

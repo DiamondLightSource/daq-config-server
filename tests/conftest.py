@@ -7,12 +7,12 @@ import xmltodict
 
 from daq_config_server.models import (
     ConfigModel,
-    DisplayConfig,
     beamline_parameters_to_dict,
 )
 from daq_config_server.models.lookup_tables.insertion_device import (
     UndulatorEnergyGapLookupTable,
 )
+from daq_config_server.models.oav import DisplayConfig
 from tests.constants import ServerFilePaths, TestDataPaths
 
 

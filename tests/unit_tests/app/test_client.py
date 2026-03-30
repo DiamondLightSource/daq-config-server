@@ -16,7 +16,7 @@ from daq_config_server.app.client import (
     TypeConversionError,
     _get_mime_type,
 )
-from daq_config_server.models import ConfigModel, DisplayConfig
+from daq_config_server.models import ConfigModel
 from daq_config_server.models.lookup_tables import (
     BeamlinePitchLookupTable,
     GenericLookupTable,
@@ -24,6 +24,7 @@ from daq_config_server.models.lookup_tables import (
 from daq_config_server.models.lookup_tables.insertion_device import (
     UndulatorEnergyGapLookupTable,
 )
+from daq_config_server.models.oav import DisplayConfig
 from daq_config_server.testing import make_test_response
 
 test_path = Path("test")

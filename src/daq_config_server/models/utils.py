@@ -12,7 +12,9 @@ def remove_comments(lines: Iterable[str]) -> list[str]:
 
 
 def camel_to_snake_case(value: str) -> str:
-    return re.sub(r"([a-z])([A-Z])", r"\1_\2", value).lower()
+    value = re.sub(r"([A-Z]+)([A-Z][a-z])", r"\1_\2", value)
+    value = re.sub(r"([a-z0-9])([A-Z])", r"\1_\2", value)
+    return value.lower()
 
 
 DEFAULT_IGNORE_LINES_STARTING_WITH = ("Units", "ScannableUnits", "ScannableNames")
