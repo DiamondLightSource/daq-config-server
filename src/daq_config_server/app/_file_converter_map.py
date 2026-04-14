@@ -1,4 +1,5 @@
 from collections.abc import Callable
+from pathlib import Path
 from typing import Any
 
 import xmltodict
@@ -22,7 +23,7 @@ from daq_config_server.models.lookup_tables.insertion_device import (
     parse_i09_hu_undulator_energy_gap_lut,
 )
 
-FILE_TO_CONVERTER_MAP: dict[str, Callable[[str], ConfigModel | dict[str, Any]]] = {  # type: ignore
+DEFAULT_CONVERTER_MAP: dict[str, Callable[[str], ConfigModel | dict[str, Any]]] = {  # type: ignore
     "/tests/test_data/test_good_lut.txt": UndulatorEnergyGapLookupTable.from_contents,  # For system tests # noqa: E501
     "/dls_sw/i23/software/aithre/aithre_display.configuration": DisplayConfig.from_contents,  # noqa: E501
     "/dls_sw/i03/software/gda_versions/var/display.configuration": DisplayConfig.from_contents,  # noqa: E501
@@ -51,3 +52,15 @@ FILE_TO_CONVERTER_MAP: dict[str, Callable[[str], ConfigModel | dict[str, Any]]] 
     "/dls_sw/i15-1/software/gda_var/xpdfLocalParameters.xml": TemperatureControllersConfig.from_xpdf_parameters,  # noqa: E501
     "/dls_sw/i23/software/aithre/aithre_oav.xml": xmltodict.parse,  # noqa: E501
 }
+
+
+def get_converter(path: Path) -> Callable[[str], Any] | None:
+    """Obtain a converter for converting the specified file to a format for return by the config server.
+    Args:
+        path (Path): path to the file to be converted
+    Returns:
+        Callable[[str], Any]: the converter which converts a text file to either an instance of
+            ConfigModel or something that can be accepted by json.dumps(). If the converter cannot be resolved then
+            None is returned.
+    """
+    return DEFAULT_CONVERTER_MAP.get(str(path))

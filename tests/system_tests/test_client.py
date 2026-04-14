@@ -9,7 +9,7 @@ import requests
 from pydantic import ValidationError
 
 from daq_config_server.app._file_converter_map import (
-    FILE_TO_CONVERTER_MAP,
+    DEFAULT_CONVERTER_MAP,
 )
 from daq_config_server.app.client import ConfigClient
 from daq_config_server.models import ConfigModel, DisplayConfig
@@ -203,7 +203,7 @@ def test_get_file_contents_with_force_parser_option_overides_converter_to_config
 def test_all_files_in_file_converter_map_can_be_converted_to_dict(
     deployed_client: ConfigClient,
 ):
-    for filename in FILE_TO_CONVERTER_MAP.keys():
+    for filename in DEFAULT_CONVERTER_MAP.keys():
         if filename.startswith("/tests/test_data/"):
             continue
         result = deployed_client.get_file_contents(filename, dict)
@@ -218,7 +218,7 @@ def test_all_files_in_file_converter_map_can_be_converted_to_target_type(
         "daq_config_server.app._file_converter_map.xmltodict.parse.__annotations__",
         {"return": dict},  # Force a return type for xmltodict.parse()
     ):
-        for filename, converter in FILE_TO_CONVERTER_MAP.items():
+        for filename, converter in DEFAULT_CONVERTER_MAP.items():
             if filename.startswith("/tests/test_data/"):
                 continue
             return_type = get_type_hints(converter)["return"]
