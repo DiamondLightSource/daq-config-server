@@ -8,6 +8,7 @@ from daq_config_server.app._log import LoggingConfig
 CONFIG_PATH = "/etc/config/config.yaml"
 DEFAULT_WHITELIST_PATH = "/etc/config/whitelist.yaml"
 
+
 class UvicornConfig(BaseModel):
     workers: int = 2
 
@@ -18,6 +19,7 @@ class WhitelistConfig(BaseModel):
 
 class ConverterConfig(BaseModel):
     config_file: str | None = None
+
 
 class AppConfig(BaseModel):
     logging: LoggingConfig = LoggingConfig()
