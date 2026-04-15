@@ -78,7 +78,8 @@ def default_converter_map(path: Path) -> Converter | None:
 
 def init_converter_map(config: ConverterConfig):
     if config.config_file:
-        load_converter_map_from_config_file(Path(config.config_file))
+        global _converter_map
+        _converter_map = load_converter_map_from_config_file(Path(config.config_file))
     # else leave at the default
 
 
