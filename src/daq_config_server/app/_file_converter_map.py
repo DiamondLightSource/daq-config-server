@@ -77,10 +77,11 @@ def default_converter_map(path: Path) -> Converter | None:
 
 
 def init_converter_map(config: ConverterConfig):
+    global _converter_map
     if config.config_file:
-        global _converter_map
         _converter_map = load_converter_map_from_config_file(Path(config.config_file))
-    # else leave at the default
+    else:
+        _converter_map = default_converter_map
 
 
 CONVERTER_FUNCS: dict[str, Converter] = {
@@ -112,11 +113,6 @@ def load_converter_map_from_config_file(config_path: Path) -> ConverterMap:
         return CONVERTER_FUNCS.get(converter_name) if converter_name else None
 
     return get_converter_func
-
-
-def set_converter_map(converter_map: ConverterMap):
-    global _converter_map
-    _converter_map = converter_map
 
 
 _converter_map: ConverterMap = default_converter_map

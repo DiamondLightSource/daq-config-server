@@ -2,8 +2,11 @@ from pathlib import Path
 
 import pytest
 
+from daq_config_server.app._config import ConverterConfig
 from daq_config_server.app._file_converter_map import (
     ConverterMap,
+    get_converter,
+    init_converter_map,
     load_converter_map_from_config_file,
 )
 from daq_config_server.models import DisplayConfig
@@ -62,3 +65,16 @@ def test_filesystem_converter_map_returns_none_for_unmapped_file(
     converter_map_from_config: ConverterMap,
 ):
     assert converter_map_from_config(Path("/this/path/does/not/exist")) is None
+
+
+def test_init_converter_map_updates_converter():
+    initial_conversion = get_converter(Path("tests/test_data/test_xml.xml"))
+    assert initial_conversion is None
+    init_converter_map(
+        ConverterConfig(config_file="tests/test_data/test_converter_map.yaml")
+    )
+    new_conversion = get_converter(Path("tests/test_data/test_xml.xml"))
+    assert callable(new_conversion)
+
+    init_converter_map(ConverterConfig())
+    assert get_converter(Path("tests/test_data/test_xml.xml")) is None
