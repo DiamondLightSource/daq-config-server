@@ -1,0 +1,4 @@
+# distance beamY beamX (values from mosflm)
+Units mm mm mm
+150 152.2 166.26
+800 152.08 160.96

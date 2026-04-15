@@ -1,0 +1,10 @@
+#       Bragg	pitch
+#	Degree	values	for	pitch	are	interpreted	as	mrad
+#	The	values	cannot	change	direction.
+#       last update 2025/01/15 NP
+Units Deg mrad
+Units Deg Deg
+16.40956 -0.62681
+14.31123 -0.61833
+12.69285 -0.61243
+11.40557 -0.60849
