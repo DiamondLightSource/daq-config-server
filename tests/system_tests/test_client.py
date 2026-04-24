@@ -1,16 +1,16 @@
 import json
 import os
 from collections.abc import Callable
+from pathlib import Path
 from typing import Any, get_type_hints
 from unittest.mock import MagicMock, patch
 
 import pytest
 import requests
+import yaml
 from pydantic import ValidationError
 
-from daq_config_server.app._file_converter_map import (
-    DEFAULT_CONVERTER_MAP,
-)
+from daq_config_server.app._file_converter_map import CONVERTER_FUNCS
 from daq_config_server.app.client import ConfigClient
 from daq_config_server.models import ConfigModel, DisplayConfig
 from daq_config_server.models.lookup_tables import (
@@ -39,6 +39,14 @@ def client():
 @pytest.fixture
 def deployed_client():
     return ConfigClient(DEPLOYED_SERVER_ADDRESS)
+
+
+@pytest.fixture
+def default_converter_map():
+    config_path = Path("helm/daq_config_server/converter_map.yaml")
+    with config_path.open() as stream:
+        yaml_blob = yaml.safe_load(stream)
+        return {entry["path"]: entry["converter"] for entry in yaml_blob}
 
 
 @pytest.mark.requires_local_server
@@ -201,9 +209,10 @@ def test_get_file_contents_with_force_parser_option_overides_converter_to_config
 
 @pytest.mark.requires_deployed_server
 def test_all_files_in_file_converter_map_can_be_converted_to_dict(
+    default_converter_map: dict[str, str],
     deployed_client: ConfigClient,
 ):
-    for filename in DEFAULT_CONVERTER_MAP.keys():
+    for filename in default_converter_map.keys():
         if filename.startswith("/tests/test_data/"):
             continue
         result = deployed_client.get_file_contents(filename, dict)
@@ -212,13 +221,15 @@ def test_all_files_in_file_converter_map_can_be_converted_to_dict(
 
 @pytest.mark.requires_deployed_server
 def test_all_files_in_file_converter_map_can_be_converted_to_target_type(
+    default_converter_map: dict[str, str],
     deployed_client: ConfigClient,
 ):
     with patch(
         "daq_config_server.app._file_converter_map.xmltodict.parse.__annotations__",
         {"return": dict},  # Force a return type for xmltodict.parse()
     ):
-        for filename, converter in DEFAULT_CONVERTER_MAP.items():
+        for filename, converter_name in default_converter_map.items():
+            converter = CONVERTER_FUNCS.get(converter_name)
             if filename.startswith("/tests/test_data/"):
                 continue
             return_type = get_type_hints(converter)["return"]

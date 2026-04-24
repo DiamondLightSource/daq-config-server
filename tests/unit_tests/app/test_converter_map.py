@@ -75,6 +75,3 @@ def test_init_converter_map_updates_converter():
     )
     new_conversion = get_converter(Path("tests/test_data/test_xml.xml"))
     assert callable(new_conversion)
-
-    init_converter_map(ConverterConfig())
-    assert get_converter(Path("tests/test_data/test_xml.xml")) is None

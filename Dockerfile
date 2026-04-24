@@ -63,5 +63,6 @@ ENV PATH=/app/.venv/bin:$PATH
 
 # Copy the default configuration files
 COPY helm/daq-config-server/whitelist.yaml /etc/config/whitelist.yaml
+COPY helm/daq-config-server/converter_map.yaml /etc/config/converter_map.yaml
 
 ENTRYPOINT ["daq-config-server"]

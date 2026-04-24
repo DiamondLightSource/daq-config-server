@@ -3,5 +3,7 @@ kind: ConfigMap
 metadata:
   name: {{ include "daq-config-server.fullname" . }}-config
 data:
+  converter_map.yaml: |-
+    {{- .Files.Get "converter_map.yaml" | nindent 4 }}
   config.yaml: |-
     {{- toYaml .Values.config | nindent 4 }}

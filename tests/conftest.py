@@ -1,4 +1,5 @@
 from collections.abc import Callable, Generator, Mapping
+from pathlib import Path
 from typing import Any
 from unittest.mock import patch
 
@@ -20,20 +21,21 @@ from tests.constants import ServerFilePaths, TestDataPaths
 def mock_file_converter_map() -> Generator[
     Mapping[str, Callable[[str], ConfigModel | dict[str, Any]]], None, None
 ]:
+    converter_map = {
+        str(TestDataPaths.TEST_GOOD_XML_PATH): xmltodict.parse,
+        str(TestDataPaths.TEST_BEAMLINE_PARAMETERS_PATH): beamline_parameters_to_dict,
+        str(
+            TestDataPaths.TEST_GOOD_LUT_PATH
+        ): UndulatorEnergyGapLookupTable.from_contents,
+        str(TestDataPaths.TEST_GOOD_DISPLAY_CONFIG_PATH): DisplayConfig.from_contents,
+        str(ServerFilePaths.GOOD_LUT): UndulatorEnergyGapLookupTable.from_contents,
+    }
+
+    def resolve_converter(path: Path):
+        path_str = str(path)
+        return converter_map.get(path_str)
+
     with patch(
-        "daq_config_server.app._file_converter_map.DEFAULT_CONVERTER_MAP",
-        {
-            str(TestDataPaths.TEST_GOOD_XML_PATH): xmltodict.parse,
-            str(
-                TestDataPaths.TEST_BEAMLINE_PARAMETERS_PATH
-            ): beamline_parameters_to_dict,
-            str(
-                TestDataPaths.TEST_GOOD_LUT_PATH
-            ): UndulatorEnergyGapLookupTable.from_contents,
-            str(
-                TestDataPaths.TEST_GOOD_DISPLAY_CONFIG_PATH
-            ): DisplayConfig.from_contents,
-            str(ServerFilePaths.GOOD_LUT): UndulatorEnergyGapLookupTable.from_contents,
-        },
-    ) as mock_map:
-        yield mock_map
+        "daq_config_server.app._file_converter_map._converter_map", resolve_converter
+    ):
+        yield converter_map
