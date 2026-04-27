@@ -66,8 +66,6 @@ config:
     stream:
       enabled: true
       level: "DEBUG"
-    converter_map:
-      config_file: /etc/config/converter_map.yaml
 
 volumeMounts: []
 volumes: []
