@@ -49,4 +49,5 @@ FILE_TO_CONVERTER_MAP: dict[str, Callable[[str], ConfigModel | dict[str, Any]]] 
     "/dls_sw/i04/software/daq_configuration/domain/domain.properties": I04FeatureSettings.from_domain_properties,  # noqa: E501
     "/dls_sw/i03/software/daq_configuration/domain/domain.properties": HyperionFeatureSettings.from_domain_properties,  # noqa: E501
     "/dls_sw/i15-1/software/gda_var/xpdfLocalParameters.xml": TemperatureControllersConfig.from_xpdf_parameters,  # noqa: E501
+    "/dls_sw/i23/software/aithre/aithre_oav.xml": xmltodict.parse,  # noqa: E501
 }
