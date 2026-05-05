@@ -12,7 +12,7 @@ from daq_config_server.app._file_converter_map import (
     FILE_TO_CONVERTER_MAP,
 )
 from daq_config_server.app.client import ConfigClient
-from daq_config_server.models import ConfigModel, DisplayConfig
+from daq_config_server.models import ConfigModel
 from daq_config_server.models.lookup_tables import (
     BeamlinePitchLookupTable,
     BeamlineRollLookupTable,
@@ -20,6 +20,7 @@ from daq_config_server.models.lookup_tables import (
 from daq_config_server.models.lookup_tables.insertion_device import (
     UndulatorEnergyGapLookupTable,
 )
+from daq_config_server.models.oav import DisplayConfig
 from tests.constants import (
     ServerFilePaths,
     TestDataPaths,

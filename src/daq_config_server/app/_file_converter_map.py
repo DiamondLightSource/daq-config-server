@@ -3,7 +3,7 @@ from typing import Any
 
 import xmltodict
 
-from daq_config_server.models import DisplayConfig, beamline_parameters_to_dict
+from daq_config_server.models import beamline_parameters_to_dict
 from daq_config_server.models.base_model import ConfigModel
 from daq_config_server.models.feature_settings.hyperion_feature_settings import (
     HyperionFeatureSettings,
@@ -21,6 +21,7 @@ from daq_config_server.models.lookup_tables.insertion_device import (
     UndulatorEnergyGapLookupTable,
     parse_i09_hu_undulator_energy_gap_lut,
 )
+from daq_config_server.models.oav import DisplayConfig
 
 FILE_TO_CONVERTER_MAP: dict[str, Callable[[str], ConfigModel | dict[str, Any]]] = {  # type: ignore
     "/tests/test_data/test_good_lut.txt": UndulatorEnergyGapLookupTable.from_contents,  # For system tests # noqa: E501
