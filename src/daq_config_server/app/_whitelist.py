@@ -1,7 +1,6 @@
 import atexit
 import logging
 import time
-from abc import abstractmethod
 from pathlib import Path
 from threading import Event, Thread
 
@@ -14,15 +13,16 @@ LOGGER = logging.getLogger(__name__)
 
 WHITELIST_REFRESH_RATE_S = 300
 
-_whitelist: "WhitelistFetcher"
+_whitelist: "FilesystemWhitelist"
 
 
-class WhitelistFetcher:
-    """Read the whitelist from the implementation-specific source, and check for
+class FilesystemWhitelist:
+    """Read the whitelist from a configuration file, and check for
     updates every 5 minutes. This lets the deployed server see updates to the whitelist
     without requiring a new release or a restart"""
 
-    def __init__(self):
+    def __init__(self, path: Path):
+        self._path = path
         self._initial_load()
         self._stop = Event()
         self.update_in_background_thread = Thread(
@@ -30,12 +30,13 @@ class WhitelistFetcher:
         )
         self.update_in_background_thread.start()
 
-    @abstractmethod
     def _fetch(self) -> str:
-        """Implement in derived classes to fetch the whitelist.
+        """Read the whitelist from a configuration file.
         Returns:
             str: The whitelist YAML
         """
+        with self._path.open() as f:
+            return f.read()
 
     def _fetch_and_update(self):
         text = self._fetch()
@@ -65,19 +66,7 @@ class WhitelistFetcher:
         self.update_in_background_thread.join(timeout=1)
 
 
-class FilesystemWhitelist(WhitelistFetcher):
-    """Read the whitelist from a configuration file"""
-
-    def __init__(self, path: Path):
-        self._path = path
-        super().__init__()
-
-    def _fetch(self) -> str:
-        with self._path.open() as f:
-            return f.read()
-
-
-def get_whitelist() -> WhitelistFetcher:
+def get_whitelist() -> FilesystemWhitelist:
     return _whitelist
 
 

@@ -9,7 +9,6 @@ from _pytest.fixtures import FixtureRequest
 from daq_config_server.app._config import WhitelistConfig
 from daq_config_server.app._whitelist import (
     FilesystemWhitelist,
-    WhitelistFetcher,
     get_whitelist,
     init_whitelist,
 )
@@ -35,7 +34,7 @@ def inject_whitelist(
 ) -> Generator[None, None, None]:
     with (
         patch("daq_config_server.app._whitelist.Thread"),
-        patch("daq_config_server.app._whitelist.WhitelistFetcher.stop"),
+        patch("daq_config_server.app._whitelist.FilesystemWhitelist.stop"),
     ):
         init_whitelist(WhitelistConfig(config_file=str(request.param)))
         yield
@@ -79,7 +78,7 @@ def test_initial_load_on_successful_fetch(
 @patch("daq_config_server.app._whitelist.LOGGER.error")
 def test_initial_load_on_failed_fetch(mock_log_error: MagicMock):
     with patch.object(
-        WhitelistFetcher, "_fetch_and_update", side_effect=Exception("blah")
+        FilesystemWhitelist, "_fetch_and_update", side_effect=Exception("blah")
     ):
         # Expect a RuntimeError because _initial_load wraps _fetch_and_update failures
         with pytest.raises(
@@ -93,13 +92,13 @@ def test_initial_load_on_failed_fetch(mock_log_error: MagicMock):
 @patch("daq_config_server.app._whitelist.WHITELIST_REFRESH_RATE_S", new=0)
 @patch("daq_config_server.app._whitelist.LOGGER.error")
 def test_periodically_update_whitelist_on_failed_update(mock_log_error: MagicMock):
-    with patch.object(WhitelistFetcher, "_initial_load"):
+    with patch.object(FilesystemWhitelist, "_initial_load"):
         with patch.object(
-            WhitelistFetcher,
+            FilesystemWhitelist,
             "_fetch_and_update",
             side_effect=Exception("blah"),
         ):
-            whitelist = WhitelistFetcher()
+            whitelist = FilesystemWhitelist(Path("/test/path"))
 
             # Stop the thread immediately to prevent looping
             whitelist.stop()

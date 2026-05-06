@@ -30,7 +30,7 @@ def patch_whitelist_fetch(tmp_whitelist: Path, request: FixtureRequest):
     if "test_whitelist.py" not in str(test_module_path):
         with (
             patch("daq_config_server.app._whitelist.Thread"),
-            patch("daq_config_server.app._whitelist.WhitelistFetcher.stop"),
+            patch("daq_config_server.app._whitelist.FilesystemWhitelist.stop"),
         ):
             init_whitelist(WhitelistConfig(config_file=str(tmp_whitelist)))
             yield
