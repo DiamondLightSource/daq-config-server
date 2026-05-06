@@ -2,40 +2,37 @@ from pathlib import Path
 from unittest.mock import patch
 
 import pytest
+from _pytest.tmpdir import TempPathFactory
 from pytest import FixtureRequest
 
-from daq_config_server.app._whitelist import get_whitelist
-from daq_config_server.testing._utils import make_test_response
+from daq_config_server.app._config import WhitelistConfig
+from daq_config_server.app._whitelist import (
+    init_whitelist,
+)
 from tests.constants import TEST_WHITELIST_RESPONSE
 
-WHITELIST_PATH = Path(__file__).resolve().parents[2] / "whitelist.yaml"
+DEFAULT_WHITELIST = (
+    Path(__file__).resolve().parents[2] / "helm/daq-config-server/whitelist.yaml"
+)
+
+
+@pytest.fixture(scope="session")
+def tmp_whitelist(tmp_path_factory: TempPathFactory) -> Path:
+    tmp_whitelist = tmp_path_factory.mktemp("yaml") / "test_whitelist.yaml"
+    with tmp_whitelist.open("w") as whitelist_stream:
+        whitelist_stream.write(TEST_WHITELIST_RESPONSE)
+    return tmp_whitelist
 
 
 @pytest.fixture(autouse=True)
-def test_friendly_whitelist(request: FixtureRequest):
-    # Don't launch threads unless we really need to since it slows down testing
-
-    with patch("daq_config_server.app._whitelist.requests.get") as mock_request:
-        if "test_whitelist.py" in str(request.path):
-            with open(WHITELIST_PATH) as f:
-                whitelist_contents = f.read()
-            mock_request.return_value = make_test_response(content=whitelist_contents)
-        else:
-            mock_request.return_value = make_test_response(
-                content=TEST_WHITELIST_RESPONSE
-            )
-
-        if request.node.get_closest_marker("use_threading"):  # type: ignore
-            with patch(
-                "daq_config_server.app._whitelist.WHITELIST_REFRESH_RATE_S", new=0
-            ):
-                yield
-                get_whitelist().stop()
-        else:
-            with (
-                patch("daq_config_server.app._whitelist.Thread"),
-                patch("daq_config_server.app._whitelist.WhitelistFetcher.stop"),
-            ):
-                yield
-
-    get_whitelist.cache_clear()
+def patch_whitelist_fetch(tmp_whitelist: Path, request: FixtureRequest):
+    test_module_path = request.path
+    if "test_whitelist.py" not in str(test_module_path):
+        with (
+            patch("daq_config_server.app._whitelist.Thread"),
+            patch("daq_config_server.app._whitelist.FilesystemWhitelist.stop"),
+        ):
+            init_whitelist(WhitelistConfig(config_file=str(tmp_whitelist)))
+            yield
+    else:
+        yield

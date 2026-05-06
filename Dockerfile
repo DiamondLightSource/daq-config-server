@@ -61,4 +61,7 @@ COPY --from=build /python /python
 COPY --from=build /app/.venv /app/.venv
 ENV PATH=/app/.venv/bin:$PATH
 
+# Copy the default configuration files
+COPY helm/daq-config-server/whitelist.yaml /etc/config/whitelist.yaml
+
 ENTRYPOINT ["daq-config-server"]

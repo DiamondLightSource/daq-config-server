@@ -1,26 +1,28 @@
 import atexit
 import logging
 import time
-from functools import cache
 from pathlib import Path
 from threading import Event, Thread
 
-import requests
 import yaml
+
+from daq_config_server.app._config import WhitelistConfig
 
 LOGGER = logging.getLogger(__name__)
 
 
 WHITELIST_REFRESH_RATE_S = 300
-WHITELIST_URL = "https://raw.githubusercontent.com/DiamondLightSource/daq-config-server/refs/heads/main/whitelist.yaml"
+
+_whitelist: "FilesystemWhitelist"
 
 
-class WhitelistFetcher:
-    """Read the whitelist from the main branch of this repo from github, and check for
+class FilesystemWhitelist:
+    """Read the whitelist from a configuration file, and check for
     updates every 5 minutes. This lets the deployed server see updates to the whitelist
     without requiring a new release or a restart"""
 
-    def __init__(self):
+    def __init__(self, path: Path):
+        self._path = path
         self._initial_load()
         self._stop = Event()
         self.update_in_background_thread = Thread(
@@ -28,17 +30,24 @@ class WhitelistFetcher:
         )
         self.update_in_background_thread.start()
 
+    def _fetch(self) -> str:
+        """Read the whitelist from a configuration file.
+        Returns:
+            str: The whitelist YAML
+        """
+        with self._path.open() as f:
+            return f.read()
+
     def _fetch_and_update(self):
-        response = requests.get(WHITELIST_URL)
-        response.raise_for_status()
-        data = yaml.safe_load(response.text)
+        text = self._fetch()
+        data = yaml.safe_load(text)
         self.whitelist_files = {Path(p) for p in data.get("whitelist_files")}
         self.whitelist_dirs = {Path(p) for p in data.get("whitelist_dirs")}
 
     def _initial_load(self):
         try:
             self._fetch_and_update()
-            LOGGER.info("Successfully read whitelist from GitHub.")
+            LOGGER.info("Successfully read whitelist.")
         except Exception as e:
             LOGGER.error(f"Initial whitelist load failed: {e}")
             raise RuntimeError("Failed to load whitelist during initialization.") from e
@@ -57,11 +66,14 @@ class WhitelistFetcher:
         self.update_in_background_thread.join(timeout=1)
 
 
-@cache
-def get_whitelist() -> WhitelistFetcher:
-    fetcher = WhitelistFetcher()
-    atexit.register(fetcher.stop)
-    return fetcher
+def get_whitelist() -> FilesystemWhitelist:
+    return _whitelist
+
+
+def init_whitelist(config: WhitelistConfig) -> None:
+    global _whitelist
+    _whitelist = FilesystemWhitelist(Path(config.config_file))
+    atexit.register(_whitelist.stop)
 
 
 def path_is_whitelisted(file_path: Path) -> bool:
