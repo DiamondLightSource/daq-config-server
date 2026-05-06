@@ -17,10 +17,32 @@ config_client.get_file_contents(FILE_PATH,reset_cached_result=True)
 ```
 By default, this will return the file's raw string output - which includes things like linebreaks. It is up to you to format this output - using `splitlines()` will get you a list where each item is a line in the file. `get_file_contents` has a `desired_return_type` parameter where you can instead ask for a `dict`, `bytes` or a one of the `pydantic models` defined in the server. The server will try and do the conversion, and respond with an HTTP error if the requested file is incompatible with that type, or a pydantic validation error if the data cannot be converted to the pydantic model provided. Custom [file converters](#file-converters) can be used to specify how a file should be converted to a dict or pydantic model.
 
+# Converter map configuration
+
+Converters can be used to turn a file into a standard format server-side, reducing the complexity of reading config files client-side. Converters can convert config files to a `dict` or pydantic model, and the same pydantic model can be reconstructed client-side by the `get_file_contents` method. 
+
+The converter map configuration file can be changed by specifying in the AppConfig.yaml:
+
+```yaml
+converter_map:
+  config_file: /path/to/my/converter_map.yaml
+```
+
+The converter_map.yaml configuration file consists of a sequence of alternating `path`, `converter` key-value pairs:
+
+```yaml
+- path: "/dls_sw/i23/software/aithre/aithre_display.configuration"
+  converter: DisplayConfig
+- path: "/dls_sw/i03/software/gda_versions/var/display.configuration"
+  converter: DisplayConfig
+```
+
+The list of valid converter names can be found in `CONVERTER_FUNCS` in [_file_converter_map.py](https://github.com/DiamondLightSource/daq-config-server/blob/main/src/daq_config_server/app/_file_converter_map.py)
+
 (file-converters)=
 # File converters
 
-Converters can be used to turn a file into a standard format server-side, reducing the complexity of reading config files client-side. Converters can convert config files to a `dict` or pydantic model, and the same pydantic model can be reconstructed client-side by the `get_file_contents` method. Available converters and models exist [here](https://github.com/DiamondLightSource/daq-config-server/blob/main/src/daq_config_server/models/), divided into modules based on the type of config they convert - see if there's a suitable converter you can use before adding your own. [This dictionary](https://github.com/DiamondLightSource/daq-config-server/blob/main/src/daq_config_server/models/converters/_file_converter_map.py) maps files to converters. Add the path of your config file and a suitable converter to this dictionary and it will automatically be used by the config server when a request for that file is made. Models should be added to this [`__init__.py`](https://github.com/DiamondLightSource/daq-config-server/blob/main/src/daq_config_server/models/__init__.py) so that they can be imported with `from daq_config_server.models import MyModel`.
+Available converters and models exist [here](https://github.com/DiamondLightSource/daq-config-server/blob/main/src/daq_config_server/models/), divided into modules based on the type of config they convert - see if there's a suitable converter you can use before adding your own. Add your converter function to the `CONVERTER_FUNCS` dictionary and it will be available for use in the `converter_map.yaml` configuration file. Models should be added to this [`__init__.py`](https://github.com/DiamondLightSource/daq-config-server/blob/main/src/daq_config_server/models/__init__.py) so that they can be imported with `from daq_config_server.models import MyModel`.
 
 A request for `str` or `bytes` will fetch the raw file with no conversion.
 

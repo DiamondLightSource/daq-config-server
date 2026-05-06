@@ -11,7 +11,7 @@ from starlette import status
 
 from daq_config_server.models.base_model import ConfigModel
 
-from ._file_converter_map import FILE_TO_CONVERTER_MAP
+from ._file_converter_map import get_converter
 from ._whitelist import path_is_whitelisted
 
 
@@ -21,7 +21,7 @@ class ConverterParseError(Exception): ...
 def get_converted_file_contents(file_path: Path) -> dict[str, Any]:
     with file_path.open("r", encoding="utf-8") as f:
         raw_contents = f.read()
-    if converter := FILE_TO_CONVERTER_MAP.get(str(file_path)):
+    if converter := get_converter(file_path):
         try:
             contents = converter(raw_contents)
             if isinstance(contents, ConfigModel):

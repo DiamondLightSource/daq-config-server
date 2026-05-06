@@ -8,6 +8,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import Response
 
 from ._config import load_config
+from ._file_converter_map import init_converter_map
 from ._log import set_up_logging
 from ._routes import router
 from ._whitelist import get_whitelist, init_whitelist
@@ -29,6 +30,7 @@ async def log_request_details(
 async def lifespan(_: FastAPI):
     config = load_config()
     init_whitelist(config.whitelist)
+    init_converter_map(config.converter_map)
     yield
     get_whitelist().stop()
 

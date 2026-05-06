@@ -3,5 +3,17 @@ kind: ConfigMap
 metadata:
   name: {{ include "daq-config-server.fullname" . }}-config
 data:
+  converter_map.yaml: |-
+    {{- if .Values.converterMap}}
+      {{- toYaml .Values.converterMap | nindent 4 }}
+    {{- else }}
+      {{- .Files.Get "converter_map.yaml" | nindent 4 }}
+    {{- end }}
+  whitelist.yaml: |-
+    {{- if .Values.whitelist}}
+      {{- toYaml .Values.whitelist | nindent 4 }}
+    {{- else }}
+      {{- .Files.Get "whitelist.yaml" | nindent 4 }}
+    {{- end }}
   config.yaml: |-
     {{- toYaml .Values.config | nindent 4 }}

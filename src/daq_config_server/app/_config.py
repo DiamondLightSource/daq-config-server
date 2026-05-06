@@ -6,6 +6,7 @@ from pydantic import BaseModel
 from daq_config_server.app._log import LoggingConfig
 
 CONFIG_PATH = "/etc/config/config.yaml"
+DEFAULT_CONVERTER_MAP_PATH = "/etc/config/converter_map.yaml"
 DEFAULT_WHITELIST_PATH = "/etc/config/whitelist.yaml"
 
 
@@ -17,10 +18,15 @@ class WhitelistConfig(BaseModel):
     config_file: str = DEFAULT_WHITELIST_PATH
 
 
+class ConverterConfig(BaseModel):
+    config_file: str = DEFAULT_CONVERTER_MAP_PATH
+
+
 class AppConfig(BaseModel):
     logging: LoggingConfig = LoggingConfig()
     uvicorn: UvicornConfig = UvicornConfig()
     whitelist: WhitelistConfig = WhitelistConfig()
+    converter_map: ConverterConfig = ConverterConfig()
 
 
 def load_config() -> AppConfig:

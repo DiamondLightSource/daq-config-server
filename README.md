@@ -31,7 +31,7 @@ The output will come out as a raw string - you should format it as required in y
 
 To run unit tests, type `tox -e unit_tests` from within the dev container
 
-There is a convenient script in `./deployment/build_and_push.sh` which can be used to easily build and run the container locally for testing, and optionally push the container to ghcr. In general we should rely on the CI to be pushing new containers - it should only be done manually for urgent debugging.
+There is a convenient script in `./deployment/build_and_push.sh` which can be used to easily build and run the container locally for testing, and optionally push the container to a repository. In general we should rely on the CI to be pushing new containers - however it is sometimes useful to push a development image to a private repo for development or debugging.
 
 To run local system tests, start a local container by running `./deployment/build_and_push.sh -r -b`. Then, in the dev container, forward port 8555. There are instructions on port forwarding within vscode [here](https://code.visualstudio.com/docs/debugtest/port-forwarding). Next, in a terminal in the devcontainer, run `tox -e system_tests_local` from the `daq-config-server` directory.
 

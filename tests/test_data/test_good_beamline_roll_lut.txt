@@ -1,0 +1,6 @@
+#Bragg angle against roll( absolute number)
+#reloadLookupTables()
+# last update 2024/06/20 NP
+Units Deg mrad
+26.4095 2.6154
+6.3075  2.6154

@@ -12,6 +12,8 @@ if [ ! -f .gitignore ]; then
     exit 1
 fi
 
+# BASE_REPO_ADDR="gcr.io/diamond-privreg/daq-config-server/"
+
 cp .gitignore .dockerignore
 for option in "$@"; do
     case $option in
@@ -23,7 +25,9 @@ for option in "$@"; do
         -p|--push)
             PUSH=1
             shift
-            echo "Push the container to GCR."
+            BASE_REPO_ADDR=$1
+            shift
+            echo "Push the container to $BASE_REPO_ADDR"
             ;;
         -r|--run)
             shift
@@ -41,8 +45,8 @@ for option in "$@"; do
             echo "gcr.io/diamond-privreg/daq-config-server/<container-name>."
             echo " "
             echo "  -t, --tag <tag>       Specify the tag for the container. Default is 'dev'."
-            echo "  -p, --push            Push the container to GCR. Requires a GitHub token, followed by"
-            echo "                        podman login ghcr.io --username <your gh login> --password-stdin"
+            echo "  -p, --push <repo>     Push the container to the specified repo. Requires a GitHub or gitlab token,"
+            echo "                        followed by e.g. podman login ghcr.io --username <your gh login> --password-stdin"
             echo "  -r, --run             Run the container after building it."
             echo "  -b, --rebuild         Rebuild the container even if it already exists."
             echo "  -h, --help, --info    Show this help message."    
@@ -60,13 +64,10 @@ done
 
 # set container and tag names:
 BASE_CONTAINER_NAME="daq-config-server"
-BASE_REPO_ADDR="gcr.io/diamond-privreg/daq-config-server/"
-
 
 MAIN_CONTAINER_NAME="${BASE_CONTAINER_NAME}"
 
-
-MAIN_CONTAINER_TAG="${BASE_REPO_ADDR}${MAIN_CONTAINER_NAME}:${TAG}"
+QUALIFIED_IMAGE_TAG="${BASE_REPO_ADDR}${MAIN_CONTAINER_NAME}:${TAG}"
 
 if [ -z "$(podman images -q $MAIN_CONTAINER_NAME:$TAG 2> /dev/null)" ] || [ $REBUILD_CONTAINER -gt 0 ]; then
     echo " "
@@ -82,8 +83,10 @@ else
 fi
 rm .dockerignore
 if [ $PUSH -gt 0 ]; then
-    podman tag $MAIN_CONTAINER_NAME $MAIN_CONTAINER_TAG
-    podman push $MAIN_CONTAINER_TAG $BASE_REPO_ADDR:$MAIN_CONTAINER_TAG
+    echo "podman tag $MAIN_CONTAINER_NAME $QUALIFIED_IMAGE_TAG"
+    podman tag $MAIN_CONTAINER_NAME $QUALIFIED_IMAGE_TAG
+    echo "podman push $QUALIFIED_IMAGE_TAG $BASE_REPO_ADDR:$QUALIFIED_IMAGE_TAG"
+    podman push $QUALIFIED_IMAGE_TAG docker://$QUALIFIED_IMAGE_TAG
 fi
 if [ $RUN_CONTAINER -gt 0 ]; then
     echo "Running container ${MAIN_CONTAINER_NAME}:${TAG}..."
