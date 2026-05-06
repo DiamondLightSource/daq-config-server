@@ -24,9 +24,20 @@ Converters can be used to turn a file into a standard format server-side, reduci
 
 A request for `str` or `bytes` will fetch the raw file with no conversion.
 
-# Adding files to the whitelist
+# Whitelisting files
 
-For [security reasons](../explanations/whitelist_info.md), only files existing on the [whitelist](https://github.com/DiamondLightSource/daq-config-server/blob/main/whitelist.yaml) can be read. Please make a PR to add a file to the whitelist. If unsure, please ask in the #daq-config-server slack channel or create a GitHub issue. To make the config-server as quick to use as possible, the server will check any requests against the `whitelist.yaml` file on **the main branch of the repository**, rather than the whitelist in the latest release. The server will check for updates every 5 minutes.
+For [security reasons](../explanations/whitelist_info.md), only files existing on the [whitelist](https://github.com/DiamondLightSource/daq-config-server/blob/main/whitelist.yaml) can be read. Older versions of the daq-config-server periodically polled the main branch of this repository to fetch updates to their whitelist. However, file-based configuration is now preferred and this shared whitelist is now deprecated. Beamlines using such older releases of the config server should when they next upgrade their daq-config-server to a newer release add their beamline-specific whitelist configuration to their beamline configmap and submit a PR to this project to remove their entries from the legacy whitelist after deploying their updated server.
+
+Similarly, beamlines that decide to migrate from the shared config server to a beamline-specific deployment should also inform the daq-config-server maintainers and submit a PR to remove their whitelist entries from the site-wide configuration. 
+
+# File-based whitelist
+
+The whitelist is configured using a yaml file, by default the location is ``/etc/config/whitelist.yaml``. The location of the whitelist is configurable in the AppConfig YAML, for example:
+
+```yaml
+whitelist:
+  config_file: "/path/to/my/whitelist.yaml"
+```
 
 # Reading sensitive information
 

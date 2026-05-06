@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Guide to using the config-server &#8212; daq-config-server 1.3.2.dev3+gd57b5dca0 documentation</title>
+    <title>Guide to using the config-server &#8212; daq-config-server 1.3.2.dev4+g5bd32e05d documentation</title>
   
   
   
@@ -41,7 +41,7 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../_static/documentation_options.js?v=5362448d"></script>
+    <script src="../_static/documentation_options.js?v=7ec6b0c4"></script>
     <script src="../_static/doctools.js?v=9bcbadda"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -401,6 +401,7 @@
 
 
 
+
 <li class="toctree-l1"><a class="reference internal" href="contribute.html">Contribute to the project</a></li>
 <li class="toctree-l1"><a class="reference internal" href="release-and-deploy.html">Deploying to production</a></li>
 
@@ -485,9 +486,18 @@
 <p>Converters can be used to turn a file into a standard format server-side, reducing the complexity of reading config files client-side. Converters can convert config files to a <code class="docutils literal notranslate"><span class="pre">dict</span></code> or pydantic model, and the same pydantic model can be reconstructed client-side by the <code class="docutils literal notranslate"><span class="pre">get_file_contents</span></code> method. Available converters and models exist <a class="reference external" href="https://github.com/DiamondLightSource/daq-config-server/blob/main/src/daq_config_server/models/">here</a>, divided into modules based on the type of config they convert - see if there’s a suitable converter you can use before adding your own. <a class="reference external" href="https://github.com/DiamondLightSource/daq-config-server/blob/main/src/daq_config_server/models/converters/_file_converter_map.py">This dictionary</a> maps files to converters. Add the path of your config file and a suitable converter to this dictionary and it will automatically be used by the config server when a request for that file is made. Models should be added to this <a class="reference external" href="https://github.com/DiamondLightSource/daq-config-server/blob/main/src/daq_config_server/models/__init__.py"><code class="docutils literal notranslate"><span class="pre">__init__.py</span></code></a> so that they can be imported with <code class="docutils literal notranslate"><span class="pre">from</span> <span class="pre">daq_config_server.models</span> <span class="pre">import</span> <span class="pre">MyModel</span></code>.</p>
 <p>A request for <code class="docutils literal notranslate"><span class="pre">str</span></code> or <code class="docutils literal notranslate"><span class="pre">bytes</span></code> will fetch the raw file with no conversion.</p>
 </section>
-<section id="adding-files-to-the-whitelist">
-<h1>Adding files to the whitelist<a class="headerlink" href="#adding-files-to-the-whitelist" title="Link to this heading">#</a></h1>
-<p>For <a class="reference internal" href="../explanations/whitelist_info.html"><span class="std std-doc">security reasons</span></a>, only files existing on the <a class="reference external" href="https://github.com/DiamondLightSource/daq-config-server/blob/main/whitelist.yaml">whitelist</a> can be read. Please make a PR to add a file to the whitelist. If unsure, please ask in the #daq-config-server slack channel or create a GitHub issue. To make the config-server as quick to use as possible, the server will check any requests against the <code class="docutils literal notranslate"><span class="pre">whitelist.yaml</span></code> file on <strong>the main branch of the repository</strong>, rather than the whitelist in the latest release. The server will check for updates every 5 minutes.</p>
+<section id="whitelisting-files">
+<h1>Whitelisting files<a class="headerlink" href="#whitelisting-files" title="Link to this heading">#</a></h1>
+<p>For <a class="reference internal" href="../explanations/whitelist_info.html"><span class="std std-doc">security reasons</span></a>, only files existing on the <a class="reference external" href="https://github.com/DiamondLightSource/daq-config-server/blob/main/whitelist.yaml">whitelist</a> can be read. Older versions of the daq-config-server periodically polled the main branch of this repository to fetch updates to their whitelist. However, file-based configuration is now preferred and this shared whitelist is now deprecated. Beamlines using such older releases of the config server should when they next upgrade their daq-config-server to a newer release add their beamline-specific whitelist configuration to their beamline configmap and submit a PR to this project to remove their entries from the legacy whitelist after deploying their updated server.</p>
+<p>Similarly, beamlines that decide to migrate from the shared config server to a beamline-specific deployment should also inform the daq-config-server maintainers and submit a PR to remove their whitelist entries from the site-wide configuration.</p>
+</section>
+<section id="file-based-whitelist">
+<h1>File-based whitelist<a class="headerlink" href="#file-based-whitelist" title="Link to this heading">#</a></h1>
+<p>The whitelist is configured using a yaml file, by default the location is <code class="docutils literal notranslate"><span class="pre">/etc/config/whitelist.yaml</span></code>. The location of the whitelist is configurable in the AppConfig YAML, for example:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">whitelist</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">config_file</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;/path/to/my/whitelist.yaml&quot;</span>
+</pre></div>
+</div>
 </section>
 <section id="reading-sensitive-information">
 <h1>Reading sensitive information<a class="headerlink" href="#reading-sensitive-information" title="Link to this heading">#</a></h1>
@@ -543,7 +553,8 @@
     <ul class="visible nav section-nav flex-column">
 <li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#">Guide to using the config-server</a></li>
 <li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#file-converters">File converters</a></li>
-<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#adding-files-to-the-whitelist">Adding files to the whitelist</a></li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#whitelisting-files">Whitelisting files</a></li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#file-based-whitelist">File-based whitelist</a></li>
 <li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#reading-sensitive-information">Reading sensitive information</a></li>
 </ul>
 

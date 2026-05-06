@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Whitelist Security &#8212; daq-config-server 1.3.2.dev3+gd57b5dca0 documentation</title>
+    <title>Whitelist Security &#8212; daq-config-server 1.3.2.dev4+g5bd32e05d documentation</title>
   
   
   
@@ -41,7 +41,7 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../_static/documentation_options.js?v=5362448d"></script>
+    <script src="../_static/documentation_options.js?v=7ec6b0c4"></script>
     <script src="../_static/doctools.js?v=9bcbadda"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -465,7 +465,7 @@
                   
   <section id="whitelist-security">
 <h1>Whitelist Security<a class="headerlink" href="#whitelist-security" title="Link to this heading">#</a></h1>
-<p>The centrally-hosted config server is running with the same permissions as the <code class="docutils literal notranslate"><span class="pre">dls-dasc</span></code> group. Since this service currently doesn’t have authentication and has <code class="docutils literal notranslate"><span class="pre">/dls_sw</span></code> mounted, we have introduced a whitelist to ensure that nothing sensitve gets read. Most importantly, <strong>nothing confidential should be added to the whitelist</strong>. This includes any experimental data and files containing credentials.</p>
+<p>The centrally-hosted config server is running with the same permissions as the <code class="docutils literal notranslate"><span class="pre">dls-dasc</span></code> group. Since this service currently doesn’t have authentication and has <code class="docutils literal notranslate"><span class="pre">/dls_sw</span></code> mounted, we have introduced whitelists to ensure that nothing sensitive gets read. Most importantly, <strong>nothing confidential should be added to the whitelist</strong>. This includes any experimental data and files containing credentials.</p>
 <p>This service was designed primarily to read beamline configuration files, like lookup tables and key-value variables. However, as long the file is safe for <strong>anyone</strong> to read, it can be safely added to the whitelist.</p>
 <p>See the <a class="reference internal" href="../how-to/config-server-guide.html"><span class="std std-doc">general guide</span></a> if you need to read sensitive information in your Bluesky plans.</p>
 </section>
