@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>DAQ Config Server &#8212; daq-config-server 1.3.2.dev4+g5bd32e05d documentation</title>
+    <title>DAQ Config Server &#8212; daq-config-server 1.3.2.dev5+g05e387020 documentation</title>
   
   
   
@@ -41,7 +41,7 @@
   <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="_static/documentation_options.js?v=7ec6b0c4"></script>
+    <script src="_static/documentation_options.js?v=01be828e"></script>
     <script src="_static/doctools.js?v=9bcbadda"></script>
     <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/clipboard.min.js?v=a7894cd8"></script>
@@ -456,7 +456,7 @@
 <section id="testing">
 <h2>Testing<a class="headerlink" href="#testing" title="Link to this heading">#</a></h2>
 <p>To run unit tests, type <code class="docutils literal notranslate"><span class="pre">tox</span> <span class="pre">-e</span> <span class="pre">unit_tests</span></code> from within the dev container</p>
-<p>There is a convenient script in <code class="docutils literal notranslate"><span class="pre">./deployment/build_and_push.sh</span></code> which can be used to easily build and run the container locally for testing, and optionally push the container to ghcr. In general we should rely on the CI to be pushing new containers - it should only be done manually for urgent debugging.</p>
+<p>There is a convenient script in <code class="docutils literal notranslate"><span class="pre">./deployment/build_and_push.sh</span></code> which can be used to easily build and run the container locally for testing, and optionally push the container to a repository. In general we should rely on the CI to be pushing new containers - however it is sometimes useful to push a development image to a private repo for development or debugging.</p>
 <p>To run local system tests, start a local container by running <code class="docutils literal notranslate"><span class="pre">./deployment/build_and_push.sh</span> <span class="pre">-r</span> <span class="pre">-b</span></code>. Then, in the dev container, forward port 8555. There are instructions on port forwarding within vscode <a class="reference external" href="https://code.visualstudio.com/docs/debugtest/port-forwarding">here</a>. Next, in a terminal in the devcontainer, run <code class="docutils literal notranslate"><span class="pre">tox</span> <span class="pre">-e</span> <span class="pre">system_tests_local</span></code> from the <code class="docutils literal notranslate"><span class="pre">daq-config-server</span></code> directory.</p>
 <p>To run a test deployment on argus, log in to argus in your namespace and run:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>helm<span class="w"> </span>install<span class="w"> </span>daq-config<span class="w"> </span>./helmchart/<span class="w"> </span>--values<span class="w"> </span>dev-values.yaml
@@ -505,6 +505,7 @@ top bar.</p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="how-to.html">How-to Guides</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="how-to/config-server-guide.html">Guide to using the config-server</a></li>
+<li class="toctree-l2"><a class="reference internal" href="how-to/config-server-guide.html#converter-map-configuration">Converter map configuration</a></li>
 <li class="toctree-l2"><a class="reference internal" href="how-to/config-server-guide.html#file-converters">File converters</a></li>
 <li class="toctree-l2"><a class="reference internal" href="how-to/config-server-guide.html#whitelisting-files">Whitelisting files</a></li>
 <li class="toctree-l2"><a class="reference internal" href="how-to/config-server-guide.html#file-based-whitelist">File-based whitelist</a></li>

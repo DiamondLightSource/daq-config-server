@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Guide to using the config-server &#8212; daq-config-server 1.3.2.dev4+g5bd32e05d documentation</title>
+    <title>Guide to using the config-server &#8212; daq-config-server 1.3.2.dev5+g05e387020 documentation</title>
   
   
   
@@ -41,7 +41,7 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../_static/documentation_options.js?v=7ec6b0c4"></script>
+    <script src="../_static/documentation_options.js?v=01be828e"></script>
     <script src="../_static/doctools.js?v=9bcbadda"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -402,6 +402,7 @@
 
 
 
+
 <li class="toctree-l1"><a class="reference internal" href="contribute.html">Contribute to the project</a></li>
 <li class="toctree-l1"><a class="reference internal" href="release-and-deploy.html">Deploying to production</a></li>
 
@@ -481,9 +482,26 @@
 </div>
 <p>By default, this will return the file’s raw string output - which includes things like linebreaks. It is up to you to format this output - using <code class="docutils literal notranslate"><span class="pre">splitlines()</span></code> will get you a list where each item is a line in the file. <code class="docutils literal notranslate"><span class="pre">get_file_contents</span></code> has a <code class="docutils literal notranslate"><span class="pre">desired_return_type</span></code> parameter where you can instead ask for a <code class="docutils literal notranslate"><span class="pre">dict</span></code>, <code class="docutils literal notranslate"><span class="pre">bytes</span></code> or a one of the <code class="docutils literal notranslate"><span class="pre">pydantic</span> <span class="pre">models</span></code> defined in the server. The server will try and do the conversion, and respond with an HTTP error if the requested file is incompatible with that type, or a pydantic validation error if the data cannot be converted to the pydantic model provided. Custom <a class="reference internal" href="#file-converters">file converters</a> can be used to specify how a file should be converted to a dict or pydantic model.</p>
 </section>
+<section id="converter-map-configuration">
+<h1>Converter map configuration<a class="headerlink" href="#converter-map-configuration" title="Link to this heading">#</a></h1>
+<p>Converters can be used to turn a file into a standard format server-side, reducing the complexity of reading config files client-side. Converters can convert config files to a <code class="docutils literal notranslate"><span class="pre">dict</span></code> or pydantic model, and the same pydantic model can be reconstructed client-side by the <code class="docutils literal notranslate"><span class="pre">get_file_contents</span></code> method.</p>
+<p>The converter map configuration file can be changed by specifying in the AppConfig.yaml:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">converter_map</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">config_file</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/path/to/my/converter_map.yaml</span>
+</pre></div>
+</div>
+<p>The converter_map.yaml configuration file consists of a sequence of alternating <code class="docutils literal notranslate"><span class="pre">path</span></code>, <code class="docutils literal notranslate"><span class="pre">converter</span></code> key-value pairs:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">path</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;/dls_sw/i23/software/aithre/aithre_display.configuration&quot;</span>
+<span class="w">  </span><span class="nt">converter</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">DisplayConfig</span>
+<span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">path</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;/dls_sw/i03/software/gda_versions/var/display.configuration&quot;</span>
+<span class="w">  </span><span class="nt">converter</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">DisplayConfig</span>
+</pre></div>
+</div>
+<p>The list of valid converter names can be found in <code class="docutils literal notranslate"><span class="pre">CONVERTER_FUNCS</span></code> in <a class="reference external" href="https://github.com/DiamondLightSource/daq-config-server/blob/main/src/daq_config_server/app/_file_converter_map.py">_file_converter_map.py</a></p>
+</section>
 <section id="file-converters">
 <span id="id1"></span><h1>File converters<a class="headerlink" href="#file-converters" title="Link to this heading">#</a></h1>
-<p>Converters can be used to turn a file into a standard format server-side, reducing the complexity of reading config files client-side. Converters can convert config files to a <code class="docutils literal notranslate"><span class="pre">dict</span></code> or pydantic model, and the same pydantic model can be reconstructed client-side by the <code class="docutils literal notranslate"><span class="pre">get_file_contents</span></code> method. Available converters and models exist <a class="reference external" href="https://github.com/DiamondLightSource/daq-config-server/blob/main/src/daq_config_server/models/">here</a>, divided into modules based on the type of config they convert - see if there’s a suitable converter you can use before adding your own. <a class="reference external" href="https://github.com/DiamondLightSource/daq-config-server/blob/main/src/daq_config_server/models/converters/_file_converter_map.py">This dictionary</a> maps files to converters. Add the path of your config file and a suitable converter to this dictionary and it will automatically be used by the config server when a request for that file is made. Models should be added to this <a class="reference external" href="https://github.com/DiamondLightSource/daq-config-server/blob/main/src/daq_config_server/models/__init__.py"><code class="docutils literal notranslate"><span class="pre">__init__.py</span></code></a> so that they can be imported with <code class="docutils literal notranslate"><span class="pre">from</span> <span class="pre">daq_config_server.models</span> <span class="pre">import</span> <span class="pre">MyModel</span></code>.</p>
+<p>Available converters and models exist <a class="reference external" href="https://github.com/DiamondLightSource/daq-config-server/blob/main/src/daq_config_server/models/">here</a>, divided into modules based on the type of config they convert - see if there’s a suitable converter you can use before adding your own. Add your converter function to the <code class="docutils literal notranslate"><span class="pre">CONVERTER_FUNCS</span></code> dictionary and it will be available for use in the <code class="docutils literal notranslate"><span class="pre">converter_map.yaml</span></code> configuration file. Models should be added to this <a class="reference external" href="https://github.com/DiamondLightSource/daq-config-server/blob/main/src/daq_config_server/models/__init__.py"><code class="docutils literal notranslate"><span class="pre">__init__.py</span></code></a> so that they can be imported with <code class="docutils literal notranslate"><span class="pre">from</span> <span class="pre">daq_config_server.models</span> <span class="pre">import</span> <span class="pre">MyModel</span></code>.</p>
 <p>A request for <code class="docutils literal notranslate"><span class="pre">str</span></code> or <code class="docutils literal notranslate"><span class="pre">bytes</span></code> will fetch the raw file with no conversion.</p>
 </section>
 <section id="whitelisting-files">
@@ -552,6 +570,7 @@
   <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="visible nav section-nav flex-column">
 <li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#">Guide to using the config-server</a></li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#converter-map-configuration">Converter map configuration</a></li>
 <li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#file-converters">File converters</a></li>
 <li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#whitelisting-files">Whitelisting files</a></li>
 <li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#file-based-whitelist">File-based whitelist</a></li>
