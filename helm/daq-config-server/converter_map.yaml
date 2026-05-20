@@ -10,6 +10,8 @@
   converter: DisplayConfig
 - path: "/dls_sw/i19-1/software/daq_configuration/domain/display.configuration"
   converter: DisplayConfig
+- path: "/dls_sw/i23/software/daq_configuration/domain/display.configuration"
+  converter: DisplayConfig
 - path: "/dls_sw/i24/software/gda_versions/var/display.configuration"
   converter: DisplayConfig
 - path: "/dls_sw/i03/software/gda/configurations/i03-config/xml/jCameraManZoomLevels.xml"
@@ -52,5 +54,3 @@
   converter: HyperionFeatureSettings
 - path: "/dls_sw/i15-1/software/gda_var/xpdfLocalParameters.xml"
   converter: TemperatureControllersConfig
-- path: "/dls_sw/i23/software/aithre/aithre_oav.xml"
-  converter: Xml
