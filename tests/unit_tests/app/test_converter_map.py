@@ -44,7 +44,10 @@ def converter_map_from_config():
         ["tests/test_data/test_xml.xml", dict],
         ["tests/test_data/test_i04_domain.properties", I04FeatureSettings],
         ["tests/test_data/test_hyperion_domain.properties", HyperionFeatureSettings],
-        ["tests/test_data/test_xpdfLocalParameters.xml", TemperatureControllersConfig],
+        [
+            "tests/test_data/i15-1/test_xpdfLocalParameters.xml",
+            TemperatureControllersConfig,
+        ],
         ["tests/test_data/test_good_detector_xy_lut.txt", DetectorXYLookupTable],
         ["tests/test_data/test_good_beamline_pitch_lut.txt", BeamlinePitchLookupTable],
         ["tests/test_data/test_good_beamline_roll_lut.txt", BeamlineRollLookupTable],

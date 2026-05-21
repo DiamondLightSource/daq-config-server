@@ -50,7 +50,10 @@ class TestDataPaths:
         "test_i04_domain.properties"
     )
     TEST_I15_1_XPDF_LOCAL_PARAMETERS = TEST_DATA_DIR_PATH.joinpath(
-        "test_xpdfLocalParameters.xml"
+        "i15-1/test_xpdfLocalParameters.xml"
+    )
+    TEST_I15_1_XPDF_CRYSTAL_LUT = TEST_DATA_DIR_PATH.joinpath(
+        "i15-1/test_i15-1_xpdf_crystal_lut.txt"
     )
 
 

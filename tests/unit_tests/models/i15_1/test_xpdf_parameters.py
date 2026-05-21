@@ -97,7 +97,6 @@ def test_robot_load_devices_config_model():
     with open(TestDataPaths.TEST_I15_1_XPDF_LOCAL_PARAMETERS) as f:
         contents = f.read()
     result = TemperatureControllersConfig.from_xpdf_parameters(contents)
-    print(result)
     assert result == TemperatureControllersConfig(
         cobra=TemperatureControllerParams(
             beam_position=461.5,
