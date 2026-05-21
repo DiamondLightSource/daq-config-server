@@ -54,3 +54,5 @@
   converter: TemperatureControllersConfig
 - path: "/dls_sw/i23/software/aithre/aithre_oav.xml"
   converter: Xml
+- path: "/dls_sw/i15-1/software/daq_configuration/xpdf_crystal_lut.txt"
+  converter: XpdfCrystalLookupTable
