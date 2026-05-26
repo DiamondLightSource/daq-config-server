@@ -7,6 +7,10 @@ XPDF_CRYSTAL_COLUMN_NAMES = Literal["y_mm", "energy_keV"]
 
 
 class XpdfCrystalLookupTable(LookupTableBase[XPDF_CRYSTAL_COLUMN_NAMES]):
+    # Unlike most other config in the config server, this is never read by GDA.
+    # For this reason it's a good candidate for storing in a database such as
+    # redis, instead of on the file system.
+    # See https://github.com/DiamondLightSource/daq-config-server/issues/184
     def get_column_names(self) -> list[XPDF_CRYSTAL_COLUMN_NAMES]:
         return list(get_args(XPDF_CRYSTAL_COLUMN_NAMES))
 
