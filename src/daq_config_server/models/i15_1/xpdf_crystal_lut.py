@@ -15,5 +15,5 @@ class XpdfCrystalLookupTable(LookupTableBase[XPDF_CRYSTAL_COLUMN_NAMES]):
         rows = parse_lut_rows(contents, [float, float])
         return cls(rows=rows)
 
-    def get_energy(self, y: float):
+    def get_energy(self, y: float) -> float:
         return self.get_value("y_mm", y, "energy_keV", value_must_exist=False)
