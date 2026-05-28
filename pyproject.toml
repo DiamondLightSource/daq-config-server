@@ -51,6 +51,11 @@ dev = [
     "types-mock",
 ]
 
+[tool.uv]
+constraint-dependencies = [
+    "starlette>=1.1.0"
+]
+
 [project.scripts]
 daq-config-server = "daq_config_server.__main__:main"
 
