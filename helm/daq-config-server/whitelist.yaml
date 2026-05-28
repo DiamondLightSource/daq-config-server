@@ -22,6 +22,7 @@ whitelist_dirs:
 - /dls_sw/i02-1/software/daq_configuration/
 - /dls_sw/i19-1/software/daq_configuration/
 - /dls_sw/i19-2/software/daq_configuration/
+- /dls_sw/i19-1/software/i19-acquisition/i19-shared
 - /dls_sw/i23/software/daq_configuration/
 - /dls_sw/i24/software/daq_configuration/
 - /dls_sw/i04-1/software/daq_configuration/
