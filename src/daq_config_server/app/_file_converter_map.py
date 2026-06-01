@@ -13,6 +13,7 @@ from daq_config_server.models.feature_settings.hyperion_feature_settings import 
 from daq_config_server.models.feature_settings.i04_feature_settings import (
     I04FeatureSettings,
 )
+from daq_config_server.models.i15_1.xpdf_crystal_lut import XpdfCrystalLookupTable
 from daq_config_server.models.i15_1.xpdf_parameters import TemperatureControllersConfig
 from daq_config_server.models.lookup_tables import (
     BeamlinePitchLookupTable,
@@ -58,6 +59,7 @@ CONVERTER_FUNCS: dict[str, Converter] = {
     "I04FeatureSettings": I04FeatureSettings.from_domain_properties,
     "HyperionFeatureSettings": HyperionFeatureSettings.from_domain_properties,
     "TemperatureControllersConfig": TemperatureControllersConfig.from_xpdf_parameters,
+    "XpdfCrystalLookupTable": XpdfCrystalLookupTable.from_contents,
 }
 
 

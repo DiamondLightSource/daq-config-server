@@ -10,7 +10,7 @@
   converter: I04FeatureSettings
 - path: "tests/test_data/test_hyperion_domain.properties"
   converter: HyperionFeatureSettings
-- path: "tests/test_data/test_xpdfLocalParameters.xml"
+- path: "tests/test_data/i15-1/test_xpdfLocalParameters.xml"
   converter: TemperatureControllersConfig
 - path: "tests/test_data/test_good_detector_xy_lut.txt"
   converter: DetectorXYLookupTable

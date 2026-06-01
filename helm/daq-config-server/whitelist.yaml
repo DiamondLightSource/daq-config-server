@@ -32,3 +32,4 @@ whitelist_dirs:
 - /dls_sw/i07/software/gda/config/lookupTables/
 - /dls_sw/i07/software/gda/workspace_git/gda-diamond.git/configurations/i07-config/lookupTables/
 - /dls_sw/i16/var/
+- /dls_sw/i15-1/software/daq_configuration/

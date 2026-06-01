@@ -54,3 +54,5 @@
   converter: HyperionFeatureSettings
 - path: "/dls_sw/i15-1/software/gda_var/xpdfLocalParameters.xml"
   converter: TemperatureControllersConfig
+- path: "/dls_sw/i15-1/software/daq_configuration/xpdf_crystal_lut.txt"
+  converter: XpdfCrystalLookupTable
