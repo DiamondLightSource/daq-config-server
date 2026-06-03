@@ -29,7 +29,7 @@ The output will come out as a raw string - you should format it as required in y
 
 ## Testing
 
-To run unit tests, type `tox -e unit_tests` from within the dev container
+To run unit tests, type `tox -e tests` from within the dev container
 
 There is a convenient script in `./deployment/build_and_push.sh` which can be used to easily build and run the container locally for testing, and optionally push the container to a repository. In general we should rely on the CI to be pushing new containers - however it is sometimes useful to push a development image to a private repo for development or debugging.
 
