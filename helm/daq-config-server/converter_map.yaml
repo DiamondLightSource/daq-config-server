@@ -20,6 +20,8 @@
   converter: Xml
 - path: "/dls_sw/i19-1/software/gda_versions/gda/config/xml/jCameraManZoomLevels.xml"
   converter: Xml
+- path: "/dls_sw/i23/software/gda_versions/gda/config/xml/jCameraManZoomLevels.xml"
+  converter: Xml
 - path: "/dls_sw/i24/software/gda_versions/gda/config/xml/jCameraManZoomLevels.xml"
   converter: Xml
 - path: "/dls_sw/i03/software/daq_configuration/domain/beamlineParameters"
