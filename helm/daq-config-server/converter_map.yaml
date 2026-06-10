@@ -40,6 +40,8 @@
   converter: DetectorXYLookupTable
 - path: "/dls_sw/i24/software/daq_configuration/lookup/DetDistToBeamXYConverter.txt"
   converter: DetectorXYLookupTable
+- path: "/dls_sw/i24/software/daq_configuration/lookup/DetDistToBeamXYConverterE9M.txt"
+  converter: DetectorXYLookupTable
 - path: "/dls_sw/i03/software/daq_configuration/lookup/BeamLineEnergy_DCM_Pitch_converter.txt"
   converter: BeamlinePitchLookupTable
 - path: "/dls_sw/i03/software/daq_configuration/lookup/BeamLineEnergy_DCM_Roll_converter.txt"
