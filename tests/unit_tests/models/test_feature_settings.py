@@ -25,6 +25,7 @@ def test_hyperion_feature_flags():
         DETECTOR_DISTANCE_LIMIT_MAX_MM=800.0,
         DETECTOR_DISTANCE_LIMIT_MIN_MM=150.0,
         BEAMSTOP_DIODE_CHECK=False,
+        XRC_USE_ROI_MODE=True,
     )
     config = HyperionFeatureSettings.from_domain_properties(contents)
     assert config == expected

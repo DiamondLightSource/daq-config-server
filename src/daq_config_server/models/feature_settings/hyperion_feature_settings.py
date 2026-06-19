@@ -12,6 +12,7 @@ class HyperionFeatureSettingsSources(FeatureSettingSources):
     DETECTOR_DISTANCE_LIMIT_MAX_MM = "gda.detector.distance.limit.max"
     DETECTOR_DISTANCE_LIMIT_MIN_MM = "gda.detector.distance.limit.min"
     BEAMSTOP_DIODE_CHECK = "gda.mx.hyperion.enable_beamstop_diode_check"
+    XRC_USE_ROI_MODE = "gda.mx.hyperion.xrc.use_roi_mode"
 
 
 class HyperionFeatureSettings(BaseFeatureSettings):
@@ -23,6 +24,7 @@ class HyperionFeatureSettings(BaseFeatureSettings):
     DETECTOR_DISTANCE_LIMIT_MAX_MM: float = 700
     DETECTOR_DISTANCE_LIMIT_MIN_MM: float = 250
     BEAMSTOP_DIODE_CHECK: bool = False
+    XRC_USE_ROI_MODE: bool = True
 
     @staticmethod
     def feature_settings_sources() -> type[HyperionFeatureSettingsSources]:
