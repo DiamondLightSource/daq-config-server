@@ -8,7 +8,7 @@ import requests
 from requests import Response as RealResponse
 from requests.exceptions import HTTPError
 
-from daq_config_server.models.base_model import ConfigModel
+from daq_config_server.models import ConfigModel
 
 from ._routes import ValidAcceptHeaders
 
