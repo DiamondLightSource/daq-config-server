@@ -27,6 +27,8 @@ from daq_config_server.models.lookup_tables.insertion_device import (
 )
 from daq_config_server.testing import make_test_response
 
+REQUEST_PATCH = "daq_config_server.app._server_response.requests.get"
+
 test_path = Path("test")
 
 
@@ -35,7 +37,7 @@ def client() -> ConfigClient:
     return ConfigClient("url")
 
 
-@patch("daq_config_server.app.client.requests.get")
+@patch(REQUEST_PATCH)
 def test_config_client_get_file_contents_default_header(
     mock_request: MagicMock, client: ConfigClient
 ):
@@ -51,7 +53,7 @@ def test_config_client_get_file_contents_default_header(
     )
 
 
-@patch("daq_config_server.app.client.requests.get")
+@patch(REQUEST_PATCH)
 def test_config_client_get_file_contents_with_bytes(
     mock_request: MagicMock, client: ConfigClient
 ):
@@ -65,7 +67,7 @@ def test_config_client_get_file_contents_with_bytes(
     )
 
 
-@patch("daq_config_server.app.client.requests.get")
+@patch(REQUEST_PATCH)
 def test_config_client_get_file_contents_gives_exception_on_invalid_json(
     mock_request: MagicMock,
     client: ConfigClient,
@@ -79,7 +81,7 @@ def test_config_client_get_file_contents_gives_exception_on_invalid_json(
         client.get_file_contents(test_path, desired_return_type=dict[Any, Any])
 
 
-@patch("daq_config_server.app.client.requests.get")
+@patch(REQUEST_PATCH)
 def test_config_client_get_file_contents_caching(
     mock_request: MagicMock,
     client: ConfigClient,
@@ -95,7 +97,7 @@ def test_config_client_get_file_contents_caching(
     assert client.get_file_contents(test_path, reset_cached_result=False) == "2nd_read"
 
 
-@patch("daq_config_server.app.client.requests.get")
+@patch(REQUEST_PATCH)
 def test_config_client_bad_responses_no_details_raises_error(
     mock_request: MagicMock, client: ConfigClient
 ):
@@ -111,7 +113,7 @@ def test_config_client_bad_responses_no_details_raises_error(
     )
 
 
-@patch("daq_config_server.app.client.requests.get")
+@patch(REQUEST_PATCH)
 def test_config_client_bad_responses_with_details_raises_error(
     mock_request: MagicMock, client: ConfigClient
 ):
@@ -131,7 +133,7 @@ def test_config_client_bad_responses_with_details_raises_error(
     client._log.error.assert_called_once_with(detail)
 
 
-@patch("daq_config_server.app.client.requests.get")
+@patch(REQUEST_PATCH)
 def test_config_client_get_file_contents_with_untyped_dict(
     mock_request: MagicMock, client: ConfigClient
 ):
@@ -161,7 +163,7 @@ def test_get_mime_type(input: type[TModel | TNonModel], expected: ValidAcceptHea
     assert _get_mime_type(input) == expected
 
 
-@patch("daq_config_server.app.client.requests.get")
+@patch(REQUEST_PATCH)
 def test_config_client_get_file_contents_with_force_parser_requests_str_from_server_and_converts(  # noqa: E501
     mock_request: MagicMock,
     client: ConfigClient,
@@ -190,7 +192,7 @@ def test_config_client_get_file_contents_with_force_parser_requests_str_from_ser
         (BeamlinePitchLookupTable, pydantic.ValidationError),
     ],
 )
-@patch("daq_config_server.app.client.requests.get")
+@patch(REQUEST_PATCH)
 def test_config_client_get_file_contents_with_force_parser_still_validates_desired_return_type(  # noqa: E501
     mock_request: MagicMock,
     client: ConfigClient,
@@ -217,7 +219,7 @@ def test_config_client_get_file_contents_with_force_parser_still_validates_desir
         assert result == expected_result
 
 
-@patch("daq_config_server.app.client.requests.get")
+@patch(REQUEST_PATCH)
 def test_config_client_get_file_contents_with_bad_force_parser_errors(
     mock_request: MagicMock, client: ConfigClient
 ):
@@ -232,7 +234,7 @@ def test_config_client_get_file_contents_with_bad_force_parser_errors(
         )
 
 
-@patch("daq_config_server.app.client.requests.get")
+@patch(REQUEST_PATCH)
 def test_reset_cache(
     mock_request: MagicMock,
 ):
