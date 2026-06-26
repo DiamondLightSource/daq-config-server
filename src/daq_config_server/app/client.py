@@ -80,10 +80,7 @@ class ConfigClient:
         cache=operator.attrgetter("_cache"), lock=operator.attrgetter("_lock")
     )
     def _cached_get(
-        self,
-        endpoint: str,
-        accept_header: ValidAcceptHeaders,
-        file_path: Path,
+        self, endpoint: str, accept_header: ValidAcceptHeaders, file_path: Path
     ) -> ResponseType:
         """
         Get data from the config server and cache it.

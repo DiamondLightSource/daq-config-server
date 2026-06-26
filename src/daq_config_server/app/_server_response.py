@@ -22,12 +22,12 @@ class MockResponse:
         content_type: ValidAcceptHeaders,
         status_code: int = 200,
     ):
-        self._body = body
         self.headers = {"content-type": content_type}
-        self.status_code = status_code
+        self._body = body
+        self._status_code = status_code
 
     def raise_for_status(self):
-        if self.status_code >= 400:
+        if self._status_code >= 400:
             raise requests.exceptions.HTTPError()
 
     def json(self) -> Any:
@@ -54,10 +54,7 @@ ResponseType = RealResponse | MockResponse
 
 class ServerResponse(Protocol):
     def get_response(
-        self,
-        endpoint: str,
-        accept_header: ValidAcceptHeaders,
-        file_path: Path,
+        self, endpoint: str, accept_header: ValidAcceptHeaders, file_path: Path
     ) -> ResponseType: ...
 
 
@@ -66,10 +63,7 @@ class MockServerResponse(ServerResponse):
         self._mock_data_converters = mock_data_converters or {}
 
     def get_response(
-        self,
-        endpoint: str,
-        accept_header: ValidAcceptHeaders,
-        file_path: Path,
+        self, endpoint: str, accept_header: ValidAcceptHeaders, file_path: Path
     ) -> MockResponse:
         raw = file_path.read_text()
         # Apply optional converter hook
@@ -93,10 +87,7 @@ class RealServerResponse(ServerResponse):
         self._log = log
 
     def get_response(
-        self,
-        endpoint: str,
-        accept_header: ValidAcceptHeaders,
-        file_path: Path,
+        self, endpoint: str, accept_header: ValidAcceptHeaders, file_path: Path
     ) -> ResponseType:
         """
         Get data from the config server and cache it.
