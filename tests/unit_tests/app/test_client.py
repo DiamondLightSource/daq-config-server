@@ -1,3 +1,4 @@
+import json
 from pathlib import Path
 from typing import Any
 from unittest.mock import MagicMock, patch
@@ -252,3 +253,53 @@ def test_reset_cache(
         str,
     )
     assert result != new_result
+
+
+def test_mock_config_client_get_file_contents_as_dict_gives_expected_result(
+    tmp_path: Path,
+):
+    file = tmp_path / "beamline.json"
+
+    expected_data = {"x": 1, "y": "test"}
+    file.write_text(json.dumps(expected_data))
+
+    client = ConfigClient()
+    client.setup_mock()
+
+    result = client.get_file_contents(file, desired_return_type=dict)
+    assert result == expected_data
+
+
+def test_mock_config_client_get_file_contents_as_str_gives_expected_result(
+    tmp_path: Path,
+):
+    file = tmp_path / "beamline.json"
+
+    expected_data = '{"x": 1, "y": "test"}'
+    file.write_text(expected_data)
+
+    client = ConfigClient()
+    client.setup_mock()
+
+    result = client.get_file_contents(file)
+    assert result == expected_data
+
+
+class MyModel(ConfigModel):
+    x: float = 1.5
+    y: str = "test"
+    z: list[int] = [1, 4, 5]
+
+
+def test_mock_config_client_get_file_contents_as_config_model_gives_expected_result(
+    tmp_path: Path,
+):
+    file = tmp_path / "beamline.json"
+    expected_data = MyModel().model_dump_json()
+    file.write_text(expected_data)
+
+    client = ConfigClient()
+    client.setup_mock()
+
+    result = client.get_file_contents(file)
+    assert result == expected_data

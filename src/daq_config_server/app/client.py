@@ -119,7 +119,6 @@ class ConfigClient:
                     del self._cache[cache_key]
 
         r = self._cached_get(*cache_key)
-
         content_type = r.headers["content-type"].split(";")[0].strip()
 
         if content_type != accept_header:
@@ -127,7 +126,6 @@ class ConfigClient:
                 f"Server failed to parse the file as requested. Requested "
                 f"{accept_header} but response came as content-type {content_type}"
             )
-
         try:
             match content_type:
                 case ValidAcceptHeaders.JSON:
