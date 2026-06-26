@@ -24,7 +24,7 @@ TNonModel = TypeVar("TNonModel", str, bytes, dict[str, Any])
 
 T = TypeVar("T", str, dict[str, Any], ConfigModel)
 
-ConverterDict = dict[str, Callable[[str], ConfigModel]]
+ConverterDict = dict[Path | str, Callable[[str], Any]]
 
 
 class TypeConversionError(Exception): ...
@@ -33,11 +33,11 @@ class TypeConversionError(Exception): ...
 class MockResponse:
     def __init__(
         self,
-        data: Any,
+        body: str | bytes,
         content_type: ValidAcceptHeaders,
         status_code: int = 200,
     ):
-        self._data = data
+        self._body = body
         self.headers = {"content-type": content_type}
         self.status_code = status_code
 
@@ -46,21 +46,22 @@ class MockResponse:
             raise requests.exceptions.HTTPError()
 
     def json(self) -> Any:
-        return self._data
+        """Match requests.Response: JSON is parsed from text/bytes."""
+        if isinstance(self._body, bytes):
+            return json.loads(self._body.decode())
+        return json.loads(self._body)
 
     @property
     def text(self) -> str:
-        if isinstance(self._data, str):
-            return self._data
-        return json.dumps(self._data)
+        if isinstance(self._body, bytes):
+            return self._body.decode()
+        return self._body
 
     @property
     def content(self) -> bytes:
-        if isinstance(self._data, bytes):
-            return self._data
-        if isinstance(self._data, str):
-            return self._data.encode()
-        return json.dumps(self._data).encode()
+        if isinstance(self._body, bytes):
+            return self._body
+        return self._body.encode()
 
 
 ResponseType = Response | MockResponse
@@ -75,9 +76,12 @@ class ServerResponse(Protocol):
     ) -> ResponseType: ...
 
 
-class MockServerResponse(ServerResponse):
+class MockServerResponse:
     def __init__(self, mock_data_converters: ConverterDict | None = None):
-        self.mock_data_converters = mock_data_converters or {}
+        self._mock_data_converters = mock_data_converters or {}
+
+    def _load_file(self, file_path: Path) -> str:
+        return file_path.read_text()
 
     def get_response(
         self,
@@ -85,15 +89,20 @@ class MockServerResponse(ServerResponse):
         accept_header: ValidAcceptHeaders,
         file_path: Path,
     ) -> MockResponse:
-        raw = file_path.read_text()
+        raw = self._load_file(file_path)
+        # Apply optional converter hook
+        if file_path in self._mock_data_converters:
+            converted = self._mock_data_converters[file_path](raw)
+            # If it's a Pydantic model, serialize properly
+            if isinstance(converted, ConfigModel):
+                raw = converted.model_dump_json()
 
-        if accept_header == ValidAcceptHeaders.JSON:
-            return MockResponse(json.loads(raw), accept_header)
-
-        if accept_header == ValidAcceptHeaders.PLAIN_TEXT:
-            return MockResponse(raw, accept_header)
-
-        return MockResponse(raw.encode(), accept_header)
+            elif isinstance(converted, dict):
+                raw = json.dumps(converted)
+            # otherwise assume already string-like
+            else:
+                raw = str(converted)
+        return MockResponse(raw, accept_header)
 
 
 class RealServerResponse(ServerResponse):
@@ -179,7 +188,7 @@ class ConfigClient:
         self._lock = RLock()
         self._server: ServerResponse = RealServerResponse(url, self._log)
 
-    def setup_mock(self, converters: ConverterDict) -> None:
+    def setup_mock(self, converters: ConverterDict | None = None) -> None:
         self._server = MockServerResponse(converters)
 
     @cachedmethod(

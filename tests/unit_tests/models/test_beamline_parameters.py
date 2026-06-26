@@ -3,6 +3,7 @@ from typing import Any
 
 import pytest
 
+from daq_config_server import ConfigClient
 from daq_config_server.models.beamline_parameters import (
     _parse_value,
     beamline_parameters_to_dict,
@@ -10,12 +11,21 @@ from daq_config_server.models.beamline_parameters import (
 from tests.constants import TestDataPaths
 
 
-def test_beamline_parameters_to_dict_gives_expected_result():
-    with open(TestDataPaths.TEST_BEAMLINE_PARAMETERS_PATH) as f:
-        contents = f.read()
+@pytest.fixture
+def config_client() -> ConfigClient:
+    client = ConfigClient()
+    client.setup_mock(
+        {TestDataPaths.TEST_BEAMLINE_PARAMETERS_PATH: beamline_parameters_to_dict}
+    )
+    return client
+
+
+def test_beamline_parameters_to_dict_gives_expected_result(config_client: ConfigClient):
     with open(TestDataPaths.EXPECTED_BEAMLINE_PARAMETERS_JSON_PATH) as f:
         expected = json.load(f)
-    result = beamline_parameters_to_dict(contents)
+    result = config_client.get_file_contents(
+        TestDataPaths.TEST_BEAMLINE_PARAMETERS_PATH, desired_return_type=dict
+    )
     assert result == expected
 
 
