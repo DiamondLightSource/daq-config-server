@@ -17,6 +17,16 @@ MockPathToConverterDict = dict[Path, Callable[[str], ConfigModel | NonModel]]
 
 
 class MockResponse:
+    """Lightweight stand-in for requests.Response used in unit tests.
+
+    This class emulates the minimal interface of a real HTTP response
+    required by ConfigClient, without performing any network operations.
+
+    This allows tests to simulate server responses at different encoding
+    layers (JSON, plain text, or raw bytes) while keeping behaviour
+    consistent with real requests.Response objects.
+    """
+
     def __init__(
         self,
         body: str | bytes,
@@ -54,12 +64,23 @@ ResponseType = RealResponse | MockResponse
 
 
 class ServerResponse(Protocol):
+    """Interface for retrieving configuration data from either a real server or a local
+    mock implementation.
+    """
+
     def get_response(
         self, endpoint: str, accept_header: ValidAcceptHeaders, file_path: Path
     ) -> ResponseType: ...
 
 
 class MockServerResponse(ServerResponse):
+    """Mock implementation of ServerResponse used for unit testing.
+
+    This class simulates a config server by reading local files instead of
+    performing HTTP requests. It supports optional per-file converter functions
+    that can transform raw file contents before they are returned.
+    """
+
     def __init__(self, mock_data_converters: MockPathToConverterDict | None = None):
         self._mock_data_converters = mock_data_converters or {}
 
@@ -83,6 +104,12 @@ class MockServerResponse(ServerResponse):
 
 
 class RealServerResponse(ServerResponse):
+    """Real HTTP implementation of ServerResponse used in production.
+
+    This class communicates with a remote configuration server via HTTP
+    requests and retrieves file contents from a deployed service.
+    """
+
     def __init__(self, url: str, log: Logger):
         self._url = url
         self._log = log

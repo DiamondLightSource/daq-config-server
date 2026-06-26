@@ -48,8 +48,13 @@ def _get_mime_type(
 
 
 class ConfigClient:
-    """Client to communicate with a deployed config service with a configurable cache
-    and logger"""
+    """Client for retrieving configuration data from a config service with
+    support for caching, flexible return types, and pluggable backends.
+
+    This client abstracts access to configuration files stored either on:
+    - a remote configuration server (production mode), or
+    - a local mock filesystem (test mode)
+    """
 
     def __init__(
         self,
@@ -58,12 +63,19 @@ class ConfigClient:
         cache_size: int = 10,
         cache_lifetime_s: int = 3600,
     ) -> None:
-        """
+        """Switch the client into mock mode using a local filesystem backend.
+
+        This replaces the real HTTP server implementation with a mock
+        server that reads configuration data directly from local files.
+
+        Optional converters can be provided to simulate server-side parsing
+        or transformation logic on a per-file basis.
+
         Args:
-            url: Base URL of the config server. Defaults to central service.
-            log: Optional logger instance.
-            cache_size: Size of the cache (maximum number of items can be stored).
-            cache_lifetime_s: Lifetime of the cache (in seconds).
+            converters:
+                Optional mapping of file paths to converter functions.
+                Each function receives raw file contents as a string and
+                returns a transformed object (e.g. dict, ConfigModel, etc.).
         """
         self._url = url.rstrip("/")
         self._log = log if log else getLogger("daq_config_server.client")
