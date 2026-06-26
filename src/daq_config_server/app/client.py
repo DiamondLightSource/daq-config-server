@@ -1,4 +1,3 @@
-import logging
 import operator
 from collections.abc import Callable
 from logging import Logger, getLogger
@@ -21,12 +20,8 @@ from ._server_response import (
     ServerResponse,
 )
 
-LOGGER = logging.getLogger(__name__)
-
 TModel = TypeVar("TModel", bound=ConfigModel)
 TNonModel = TypeVar("TNonModel", str, bytes, dict[str, Any])
-
-T = TypeVar("T", str, dict[str, Any], ConfigModel)
 
 
 class TypeConversionError(Exception): ...
@@ -78,7 +73,7 @@ class ConfigClient:
                 returns a transformed object (e.g. dict, ConfigModel, etc.).
         """
         self._url = url.rstrip("/")
-        self._log = log if log else getLogger("daq_config_server.client")
+        self._log = log or getLogger("daq_config_server.client")
         self._cache: TTLCache[tuple[str, str, Path], Response] = TTLCache(
             maxsize=cache_size, ttl=cache_lifetime_s
         )
