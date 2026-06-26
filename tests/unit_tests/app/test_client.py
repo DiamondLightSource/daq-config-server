@@ -69,8 +69,7 @@ def test_config_client_get_file_contents_with_bytes(
 
 @patch(REQUEST_PATCH)
 def test_config_client_get_file_contents_gives_exception_on_invalid_json(
-    mock_request: MagicMock,
-    client: ConfigClient,
+    mock_request: MagicMock, client: ConfigClient
 ):
     content_type = ValidAcceptHeaders.JSON
     bad_json = "bad_dict}"
@@ -83,8 +82,7 @@ def test_config_client_get_file_contents_gives_exception_on_invalid_json(
 
 @patch(REQUEST_PATCH)
 def test_config_client_get_file_contents_caching(
-    mock_request: MagicMock,
-    client: ConfigClient,
+    mock_request: MagicMock, client: ConfigClient
 ):
     """Test reset_cached_result=False and reset_cached_result=True."""
     mock_request.side_effect = [
@@ -165,8 +163,7 @@ def test_get_mime_type(input: type[TModel | TNonModel], expected: ValidAcceptHea
 
 @patch(REQUEST_PATCH)
 def test_config_client_get_file_contents_with_force_parser_requests_str_from_server_and_converts(  # noqa: E501
-    mock_request: MagicMock,
-    client: ConfigClient,
+    mock_request: MagicMock, client: ConfigClient
 ):
     mock_config = "mock_config"
     mock_request.return_value = make_test_response(mock_config)
@@ -235,19 +232,16 @@ def test_config_client_get_file_contents_with_bad_force_parser_errors(
 
 
 @patch(REQUEST_PATCH)
-def test_reset_cache(
-    mock_request: MagicMock,
-):
+def test_reset_cache(mock_request: MagicMock):
     mock_config = "Units eV mm\n5700		5.4606\n#24500		7.2\n"
     mock_request.return_value = make_test_response(mock_config)
     server = ConfigClient("url")
-    result = server.get_file_contents(
-        test_path,
-        str,
-    )
+    result = server.get_file_contents(test_path, str)
+
     assert server._cache.currsize == 1
     server.reset_cache()
     assert server._cache.currsize == 0
+
     new_mock_config = "Units eV mm\n6800		5.4606\n#24500		7.2\n"
     mock_request.return_value = make_test_response(new_mock_config)
     new_result = server.get_file_contents(
@@ -266,7 +260,7 @@ def test_mock_config_client_get_file_contents_as_dict_gives_expected_result(
     file.write_text(json.dumps(expected_data))
 
     client = ConfigClient()
-    client.setup_mock()
+    client.configure_mock()
 
     result = client.get_file_contents(file, desired_return_type=dict)
     assert result == expected_data
@@ -281,7 +275,7 @@ def test_mock_config_client_get_file_contents_as_str_gives_expected_result(
     file.write_text(expected_data)
 
     client = ConfigClient()
-    client.setup_mock()
+    client.configure_mock()
 
     result = client.get_file_contents(file)
     assert result == expected_data
@@ -301,7 +295,26 @@ def test_mock_config_client_get_file_contents_as_config_model_gives_expected_res
     file.write_text(expected_data)
 
     client = ConfigClient()
-    client.setup_mock()
+    client.configure_mock()
 
     result = client.get_file_contents(file)
     assert result == expected_data
+
+
+def test_mock_config_client_converter_table_to_json(tmp_path: Path):
+    file = tmp_path / "beamline.txt"
+
+    # "table" format (header + row)
+    file.write_text("x|y\n1|test")
+
+    def table_to_dict(contents: str) -> dict[str, Any]:
+        lines = contents.strip().splitlines()
+        headers = lines[0].split("|")
+        values = lines[1].split("|")
+        return dict(zip(headers, values, strict=True))
+
+    client = ConfigClient()
+    client.configure_mock({file: table_to_dict})
+
+    result = client.get_file_contents(file, desired_return_type=dict)
+    assert result == {"x": "1", "y": "test"}

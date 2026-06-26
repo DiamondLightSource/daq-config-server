@@ -14,7 +14,7 @@ from daq_config_server.models.base_model import ConfigModel
 
 from ._routes import ENDPOINTS, ValidAcceptHeaders
 from ._server_response import (
-    ConverterDict,
+    MockPathToConverterDict,
     MockServerResponse,
     RealServerResponse,
     ResponseType,
@@ -73,7 +73,7 @@ class ConfigClient:
         self._lock = RLock()
         self._server: ServerResponse = RealServerResponse(url, self._log)
 
-    def setup_mock(self, converters: ConverterDict | None = None) -> None:
+    def configure_mock(self, converters: MockPathToConverterDict | None = None) -> None:
         self._server = MockServerResponse(converters)
 
     @cachedmethod(
@@ -186,9 +186,7 @@ class ConfigClient:
             force_parser: Optionally provide a function to convert the contents of a
                 config file to the desired return type. This overides whatever converter
                 is specified for that file in the FILE_TO_CONVERTER_MAP, and can be used
-                if the config file isn't in the FILE_TO_CONVERTER_MAP at all. This
-                should only be used for testing or when waiting on a release that will
-                add the file to the FILE_TO_CONVERTER_MAP.
+                if the config file isn't in the FILE_TO_CONVERTER_MAP at all.
         Returns:
             The file contents, in the format specified.
         """

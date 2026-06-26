@@ -14,7 +14,7 @@ from tests.constants import TestDataPaths
 @pytest.fixture
 def config_client() -> ConfigClient:
     client = ConfigClient()
-    client.setup_mock(
+    client.configure_mock(
         {TestDataPaths.TEST_BEAMLINE_PARAMETERS_PATH: beamline_parameters_to_dict}
     )
     return client

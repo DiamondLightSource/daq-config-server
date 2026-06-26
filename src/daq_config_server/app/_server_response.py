@@ -12,7 +12,8 @@ from daq_config_server.models.base_model import ConfigModel
 
 from ._routes import ValidAcceptHeaders
 
-ConverterDict = dict[Path, Callable[[str], Any]]
+NonModel = str | bytes | dict[str, Any]
+MockPathToConverterDict = dict[Path, Callable[[str], ConfigModel | NonModel]]
 
 
 class MockResponse:
@@ -59,7 +60,7 @@ class ServerResponse(Protocol):
 
 
 class MockServerResponse(ServerResponse):
-    def __init__(self, mock_data_converters: ConverterDict | None = None):
+    def __init__(self, mock_data_converters: MockPathToConverterDict | None = None):
         self._mock_data_converters = mock_data_converters or {}
 
     def get_response(
