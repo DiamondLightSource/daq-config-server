@@ -58,6 +58,23 @@ class ConfigClient:
         cache_size: int = 10,
         cache_lifetime_s: int = 3600,
     ) -> None:
+        """
+        Args:
+            url: Base URL of the config server. Defaults to central service.
+            log: Optional logger instance.
+            cache_size: Size of the cache (maximum number of items can be stored).
+            cache_lifetime_s: Lifetime of the cache (in seconds).
+        """
+
+        self._url = url.rstrip("/")
+        self._log = log or getLogger("daq_config_server.client")
+        self._cache: TTLCache[tuple[str, str, Path], Response] = TTLCache(
+            maxsize=cache_size, ttl=cache_lifetime_s
+        )
+        self._lock = RLock()
+        self._server: ServerResponse = RealServerResponse(self._url, self._log)
+
+    def configure_mock(self, converters: MockPathToConverterDict | None = None) -> None:
         """Switch the client into mock mode using a local filesystem backend.
 
         This replaces the real HTTP server implementation with a mock
@@ -72,15 +89,6 @@ class ConfigClient:
                 Each function receives raw file contents as a string and
                 returns a transformed object (e.g. dict, ConfigModel, etc.).
         """
-        self._url = url.rstrip("/")
-        self._log = log or getLogger("daq_config_server.client")
-        self._cache: TTLCache[tuple[str, str, Path], Response] = TTLCache(
-            maxsize=cache_size, ttl=cache_lifetime_s
-        )
-        self._lock = RLock()
-        self._server: ServerResponse = RealServerResponse(self._url, self._log)
-
-    def configure_mock(self, converters: MockPathToConverterDict | None = None) -> None:
         self._server = MockServerResponse(converters)
 
     @cachedmethod(
