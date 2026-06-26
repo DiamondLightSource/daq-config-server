@@ -124,6 +124,4 @@ class RealServerResponse(ServerResponse):
             except ValueError:
                 self._log.error("Response raised HTTP error but no details provided")
                 raise HTTPError from err
-
-        self._log.debug(f"Cache set for {request_url}.")
         return r
