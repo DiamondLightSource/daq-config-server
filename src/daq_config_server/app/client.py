@@ -1,10 +1,11 @@
+import json
 import logging
 import operator
 from collections.abc import Callable
 from logging import Logger, getLogger
 from pathlib import Path
 from threading import RLock
-from typing import Any, TypeVar, get_origin, overload
+from typing import Any, Protocol, TypeVar, get_origin, overload
 
 import requests
 from cachetools import TTLCache, cachedmethod
@@ -21,8 +22,120 @@ LOGGER = logging.getLogger(__name__)
 TModel = TypeVar("TModel", bound=ConfigModel)
 TNonModel = TypeVar("TNonModel", str, bytes, dict[str, Any])
 
+T = TypeVar("T", str, dict[str, Any], ConfigModel)
+
+ConverterDict = dict[str, Callable[[str], ConfigModel]]
+
 
 class TypeConversionError(Exception): ...
+
+
+class MockResponse:
+    def __init__(
+        self,
+        data: Any,
+        content_type: ValidAcceptHeaders,
+        status_code: int = 200,
+    ):
+        self._data = data
+        self.headers = {"content-type": content_type}
+        self.status_code = status_code
+
+    def raise_for_status(self):
+        if self.status_code >= 400:
+            raise requests.exceptions.HTTPError()
+
+    def json(self) -> Any:
+        return self._data
+
+    @property
+    def text(self) -> str:
+        if isinstance(self._data, str):
+            return self._data
+        return json.dumps(self._data)
+
+    @property
+    def content(self) -> bytes:
+        if isinstance(self._data, bytes):
+            return self._data
+        if isinstance(self._data, str):
+            return self._data.encode()
+        return json.dumps(self._data).encode()
+
+
+ResponseType = Response | MockResponse
+
+
+class ServerResponse(Protocol):
+    def get_response(
+        self,
+        endpoint: str,
+        accept_header: ValidAcceptHeaders,
+        file_path: Path,
+    ) -> ResponseType: ...
+
+
+class MockServerResponse(ServerResponse):
+    def __init__(self, mock_data_converters: ConverterDict | None = None):
+        self.mock_data_converters = mock_data_converters or {}
+
+    def get_response(
+        self,
+        endpoint: str,
+        accept_header: ValidAcceptHeaders,
+        file_path: Path,
+    ) -> MockResponse:
+        raw = file_path.read_text()
+
+        if accept_header == ValidAcceptHeaders.JSON:
+            return MockResponse(json.loads(raw), accept_header)
+
+        if accept_header == ValidAcceptHeaders.PLAIN_TEXT:
+            return MockResponse(raw, accept_header)
+
+        return MockResponse(raw.encode(), accept_header)
+
+
+class RealServerResponse(ServerResponse):
+    def __init__(self, url: str, log: Logger):
+        self._url = url
+        self._log = log
+
+    def get_response(
+        self,
+        endpoint: str,
+        accept_header: ValidAcceptHeaders,
+        file_path: Path,
+    ) -> ResponseType:
+        """
+        Get data from the config server and cache it.
+
+        Args:
+            endpoint: API endpoint.
+            accept_header: Accept header MIME type
+            file_path: absolute path to the file which will be read
+
+        Returns:
+            The response data.
+        """
+
+        request_url = self._url + endpoint + (f"/{file_path}")
+        r = requests.get(request_url, headers={"Accept": accept_header})
+        # Intercept http exceptions from server so that the client
+        # can include the response `detail` sent by the server
+        try:
+            r.raise_for_status()
+        except requests.exceptions.HTTPError as err:
+            try:
+                error_detail = r.json().get("detail")
+                self._log.error(error_detail)
+                raise HTTPError(error_detail) from err
+            except ValueError:
+                self._log.error("Response raised HTTP error but no details provided")
+                raise HTTPError from err
+
+        self._log.debug(f"Cache set for {request_url}.")
+        return r
 
 
 def _get_mime_type(
@@ -64,6 +177,10 @@ class ConfigClient:
             maxsize=cache_size, ttl=cache_lifetime_s
         )
         self._lock = RLock()
+        self._server: ServerResponse = RealServerResponse(url, self._log)
+
+    def setup_mock(self, converters: ConverterDict) -> None:
+        self._server = MockServerResponse(converters)
 
     @cachedmethod(
         cache=operator.attrgetter("_cache"), lock=operator.attrgetter("_lock")
@@ -73,7 +190,7 @@ class ConfigClient:
         endpoint: str,
         accept_header: ValidAcceptHeaders,
         file_path: Path,
-    ) -> Response:
+    ) -> ResponseType:
         """
         Get data from the config server and cache it.
 
@@ -87,28 +204,15 @@ class ConfigClient:
         """
 
         request_url = self._url + endpoint + (f"/{file_path}")
-        r = requests.get(request_url, headers={"Accept": accept_header})
-        # Intercept http exceptions from server so that the client
-        # can include the response `detail` sent by the server
-        try:
-            r.raise_for_status()
-        except requests.exceptions.HTTPError as err:
-            try:
-                error_detail = r.json().get("detail")
-                self._log.error(error_detail)
-                raise HTTPError(error_detail) from err
-            except ValueError:
-                self._log.error("Response raised HTTP error but no details provided")
-                raise HTTPError from err
-
+        r = self._server.get_response(endpoint, accept_header, file_path)
         self._log.debug(f"Cache set for {request_url}.")
         return r
 
     def _get(
         self,
         endpoint: str,
-        accept_header: ValidAcceptHeaders,
         file_path: Path,
+        accept_header: ValidAcceptHeaders,
         reset_cached_result: bool = False,
     ):
         """
@@ -116,6 +220,7 @@ class ConfigClient:
         the content-type response header to format the return value.
         If data parsing fails, return the response contents in bytes
         """
+
         cache_key = (endpoint, accept_header, file_path)
         if reset_cached_result:
             with self._lock:
@@ -201,12 +306,6 @@ class ConfigClient:
         file_path = Path(file_path)
 
         if force_parser:
-            LOGGER.warning(
-                "The force_parser argument should only be used for testing or "
-                "as a temporary measure. Add your file and parser to the "
-                "FILE_TO_CONVERTER_MAP. See "
-                "https://github.com/DiamondLightSource/daq-config-server/blob/main/docs/how-to/config-server-guide.md#file-converters"
-            )
             # force accept header to string so conversion is done client side
             accept_header = _get_mime_type(str)
         else:
@@ -214,8 +313,8 @@ class ConfigClient:
 
         result = self._get(
             ENDPOINTS.CONFIG,
-            accept_header,
-            file_path,
+            accept_header=accept_header,
+            file_path=file_path,
             reset_cached_result=reset_cached_result,
         )
         if force_parser:
