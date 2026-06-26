@@ -64,3 +64,71 @@ whitelist:
 # Reading sensitive information
 
 If you need to read a file which contains sensitive information, or `dls-dasc` doesn't have the permissions to read your file, you should encrypt this file as a [sealed secret](https://github.com/bitnami-labs/sealed-secrets) on your beamline cluster, and mount this in your BlueAPI service.
+
+# Mocking the Config Client (for tests and offline development)
+
+The ConfigClient can be configured to run in a fully offline mode for unit tests and local development. In this mode, no HTTP requests are made. Instead, file reads are intercepted and optionally transformed using mock converters.
+
+This allows you to simulate server-side conversion behaviour (e.g. JSON → dict, table → JSON, or custom Pydantic models) without requiring a running config service.
+
+## Enabling mock mode
+```python
+config_client = ConfigClient()
+config_client.configure_mock()
+```
+Once enabled, all file access goes through the mock layer instead of the real server.
+
+### Mock converters
+
+Mock converters allow you to simulate the server-side converter_map behaviour locally.
+
+A converter is a function with the signature:
+
+```python
+Callable[[str], ConfigModel | str | bytes | dict[str, Any]]
+```
+
+You register converters keyed by Path:
+
+```python
+from pathlib import Path
+
+config_client.setup_mock(
+    {
+        Path("/tmp/my_file.txt"): my_converter_function
+    }
+)
+```
+Example: converting a table to JSON
+
+You can simulate a file containing a table-like format (e.g. whitespace-separated columns) and convert it into JSON.
+
+### Example file content
+```
+key value
+x   1
+y   test
+```
+### Converter function
+```python
+import json
+
+def table_to_json(contents: str) -> str:
+    lines = contents.strip().splitlines()
+    headers = lines[0].split()
+
+    result = {}
+    for line in lines[1:]:
+        key, value = line.split()
+        # attempt numeric conversion
+        if value.isdigit():
+            value = int(value)
+        result[key] = value
+
+    return json.dumps(result)
+```
+### Test setup
+```python
+file_path = Path("/path/to/data.txt")
+client.setup_mock({file_path: table_to_json})
+```
