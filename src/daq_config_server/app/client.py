@@ -83,7 +83,7 @@ class ConfigClient:
             maxsize=cache_size, ttl=cache_lifetime_s
         )
         self._lock = RLock()
-        self._server: ServerResponse = RealServerResponse(url, self._log)
+        self._server: ServerResponse = RealServerResponse(self._url, self._log)
 
     def configure_mock(self, converters: MockPathToConverterDict | None = None) -> None:
         self._server = MockServerResponse(converters)
