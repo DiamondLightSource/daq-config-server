@@ -31,15 +31,9 @@ class MockResponse:
         self,
         body: str | bytes,
         content_type: ValidAcceptHeaders,
-        status_code: int = 200,
     ):
         self.headers = {"content-type": content_type}
         self._body = body
-        self._status_code = status_code
-
-    def raise_for_status(self):
-        if self._status_code >= 400:
-            raise requests.exceptions.HTTPError()
 
     def json(self) -> Any:
         """Match requests.Response: JSON is parsed from text/bytes."""
