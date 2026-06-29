@@ -10,7 +10,7 @@ from fastapi import status
 from httpx import Response
 
 from daq_config_server.app._routes import ENDPOINTS, ValidAcceptHeaders
-from daq_config_server.app.client import (
+from daq_config_server.client._client import (
     ConfigClient,
     TModel,
     TNonModel,
@@ -27,7 +27,7 @@ from daq_config_server.models.lookup_tables.insertion_device import (
 )
 from daq_config_server.testing import make_test_response
 
-REQUEST_PATCH = "daq_config_server.app._server_response.requests.get"
+REQUEST_PATCH = "daq_config_server.client._server_response.requests.get"
 
 test_path = Path("test")
 

@@ -3,7 +3,7 @@ from typing import Any
 
 import pytest
 
-from daq_config_server import ConfigClient
+from daq_config_server.client import ConfigClient
 from daq_config_server.models.beamline_parameters import (
     _parse_value,
     beamline_parameters_to_dict,

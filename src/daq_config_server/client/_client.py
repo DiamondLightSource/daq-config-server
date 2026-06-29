@@ -9,9 +9,9 @@ from cachetools import TTLCache, cachedmethod
 from pydantic import TypeAdapter
 from requests import Response
 
-from daq_config_server.models import ConfigModel
+from daq_config_server.app.endpoints import ENDPOINTS, ValidAcceptHeaders
+from daq_config_server.models.base_model import ConfigModel
 
-from ._routes import ENDPOINTS, ValidAcceptHeaders
 from ._server_response import (
     MockPathToConverterDict,
     MockServerResponse,
