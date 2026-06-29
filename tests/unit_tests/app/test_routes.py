@@ -12,11 +12,11 @@ from fastapi.testclient import TestClient
 
 from daq_config_server.app._routes import (
     ConverterParseError,
-    EndPoints,
     ValidAcceptHeaders,
     get_converted_file_contents,
 )
 from daq_config_server.app.api import app
+from daq_config_server.app.constants import EndPoints
 from daq_config_server.models.beamline_parameters import beamline_parameters_to_dict
 from daq_config_server.models.lookup_tables import GenericLookupTable
 from tests.constants import TestDataPaths

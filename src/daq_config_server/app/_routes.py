@@ -7,7 +7,7 @@ from fastapi import APIRouter, HTTPException, Request
 from fastapi.responses import JSONResponse, Response
 from starlette import status
 
-from daq_config_server.app.endpoints import EndPoints, ValidAcceptHeaders
+from daq_config_server.app.constants import EndPoints, ValidAcceptHeaders
 from daq_config_server.models.base_model import ConfigModel
 
 from ._file_converter_map import get_converter

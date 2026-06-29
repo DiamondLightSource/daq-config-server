@@ -9,7 +9,7 @@ from cachetools import TTLCache, cachedmethod
 from pydantic import TypeAdapter
 from requests import Response
 
-from daq_config_server.app.endpoints import EndPoints, ValidAcceptHeaders
+from daq_config_server.app.constants import EndPoints, ValidAcceptHeaders
 from daq_config_server.models.base_model import ConfigModel
 
 from ._server_response import (

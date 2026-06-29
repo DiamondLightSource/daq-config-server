@@ -8,7 +8,7 @@ import requests
 from requests import Response as RealResponse
 from requests.exceptions import HTTPError
 
-from daq_config_server.app.endpoints import ValidAcceptHeaders
+from daq_config_server.app.constants import ValidAcceptHeaders
 from daq_config_server.models.base_model import ConfigModel
 
 NonModel = str | bytes | dict[str, Any]
