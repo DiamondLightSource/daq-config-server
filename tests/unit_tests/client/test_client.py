@@ -9,7 +9,7 @@ import requests
 from fastapi import status
 from httpx import Response
 
-from daq_config_server.app._routes import ENDPOINTS, ValidAcceptHeaders
+from daq_config_server.app._routes import EndPoints, ValidAcceptHeaders
 from daq_config_server.client._client import (
     ConfigClient,
     TModel,
@@ -48,7 +48,7 @@ def test_config_client_get_file_contents_default_header(
     mock_request.return_value = make_test_response("test")
     assert client.get_file_contents(test_path) == "test"
     mock_request.assert_called_once_with(
-        client._url + ENDPOINTS.CONFIG + "/" + str(test_path),
+        client._url + EndPoints.CONFIG + "/" + str(test_path),
         headers={"Accept": ValidAcceptHeaders.PLAIN_TEXT},
     )
 
