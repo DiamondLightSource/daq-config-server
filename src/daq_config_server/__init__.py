@@ -8,9 +8,4 @@
 
 from ._version import __version__
 
-# from .client._client import ConfigClient
-
-__all__ = [
-    "__version__",
-    # "ConfigClient"
-]
+__all__ = ["__version__"]
