@@ -11,8 +11,8 @@ from fastapi.responses import JSONResponse, Response
 from fastapi.testclient import TestClient
 
 from daq_config_server.app._routes import (
-    ENDPOINTS,
     ConverterParseError,
+    EndPoints,
     ValidAcceptHeaders,
     get_converted_file_contents,
 )
@@ -124,7 +124,7 @@ async def test_get_configuration_on_plain_text_file(mock_app: TestClient):
     )
 
     await _assert_get_and_response(
-        mock_app, f"{ENDPOINTS.CONFIG}/{file_path}", expected_response
+        mock_app, f"{EndPoints.CONFIG}/{file_path}", expected_response
     )
 
 
@@ -141,7 +141,7 @@ async def test_get_configuration_raw_bytes(mock_app: TestClient):
 
     await _assert_get_and_response(
         mock_app,
-        f"{ENDPOINTS.CONFIG}/{file_path}",
+        f"{EndPoints.CONFIG}/{file_path}",
         expected_response,
         accept_header={"Accept": expected_type},
     )
@@ -150,7 +150,7 @@ async def test_get_configuration_raw_bytes(mock_app: TestClient):
 def test_get_configuration_exception_on_invalid_file(mock_app: TestClient):
     file_path = TestDataPaths.TEST_INVALID_FILE_PATH
     response = mock_app.get(
-        f"{ENDPOINTS.CONFIG}/{file_path}", headers=ACCEPT_HEADER_DEFAULT
+        f"{EndPoints.CONFIG}/{file_path}", headers=ACCEPT_HEADER_DEFAULT
     )
     assert response.status_code == status.HTTP_404_NOT_FOUND
 
@@ -167,7 +167,7 @@ async def test_get_configuration_on_json_file(mock_app: TestClient):
     )
     await _assert_get_and_response(
         mock_app,
-        f"{ENDPOINTS.CONFIG}/{file_path}",
+        f"{EndPoints.CONFIG}/{file_path}",
         expected_response,
         accept_header={"Accept": expected_type},
     )
@@ -181,42 +181,42 @@ async def test_get_configuration_gives_http_422_on_failed_conversion(
     with open(file_path, "wb") as f:
         f.write(b"\x80\x81\xfe\xff")
     response = mock_app.get(
-        f"{ENDPOINTS.CONFIG}/{file_path}", headers=ACCEPT_HEADER_DEFAULT
+        f"{EndPoints.CONFIG}/{file_path}", headers=ACCEPT_HEADER_DEFAULT
     )
     assert response.status_code == status.HTTP_422_UNPROCESSABLE_CONTENT
 
 
 def test_get_configuration_on_non_absolute_filepath(mock_app: TestClient):
     file_path = "relative_path"
-    response = mock_app.get(f"{ENDPOINTS.CONFIG}/{file_path}")
+    response = mock_app.get(f"{EndPoints.CONFIG}/{file_path}")
     assert response.status_code == status.HTTP_422_UNPROCESSABLE_CONTENT
 
 
 async def test_health_check_returns_code_200(
     mock_app: TestClient,
 ):
-    assert mock_app.get(ENDPOINTS.HEALTH).status_code == status.HTTP_200_OK
+    assert mock_app.get(EndPoints.HEALTH).status_code == status.HTTP_200_OK
 
 
 def test_validate_path_against_whitelist_on_valid_file(mock_app: TestClient):
     file_path = TestDataPaths.TEST_BEAMLINE_PARAMETERS_PATH
-    response = mock_app.get(f"{ENDPOINTS.CONFIG}/{file_path}")
+    response = mock_app.get(f"{EndPoints.CONFIG}/{file_path}")
     assert response.status_code == status.HTTP_200_OK
 
 
 def test_validate_path_against_whitelist_on_invalid_file(mock_app: TestClient):
     file_path = TestDataPaths.TEST_FILE_NOT_ON_WHITELIST_PATH
-    response = mock_app.get(f"{ENDPOINTS.CONFIG}/{file_path}")
+    response = mock_app.get(f"{EndPoints.CONFIG}/{file_path}")
     assert response.status_code == status.HTTP_403_FORBIDDEN
 
 
 def test_validate_path_against_whitelist_on_file_in_invalid_dir(mock_app: TestClient):
     file_path = TestDataPaths.TEST_FILE_IN_BAD_DIR
-    response = mock_app.get(f"{ENDPOINTS.CONFIG}/{file_path}")
+    response = mock_app.get(f"{EndPoints.CONFIG}/{file_path}")
     assert response.status_code == status.HTTP_403_FORBIDDEN
 
 
 def test_validate_path_against_whitelist_on_file_in_valid_dir(mock_app: TestClient):
     file_path = TestDataPaths.TEST_FILE_IN_GOOD_DIR
-    response = mock_app.get(f"{ENDPOINTS.CONFIG}/{file_path}")
+    response = mock_app.get(f"{EndPoints.CONFIG}/{file_path}")
     assert response.status_code == status.HTTP_200_OK

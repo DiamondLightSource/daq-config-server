@@ -1,4 +1,3 @@
-from dataclasses import dataclass
 from enum import StrEnum
 
 
@@ -8,7 +7,6 @@ class ValidAcceptHeaders(StrEnum):
     RAW_BYTES = "application/octet-stream"
 
 
-@dataclass(frozen=True)
-class ENDPOINTS:
+class EndPoints(StrEnum):
     CONFIG = "/config"
     HEALTH = "/healthz"

@@ -9,7 +9,7 @@ from cachetools import TTLCache, cachedmethod
 from pydantic import TypeAdapter
 from requests import Response
 
-from daq_config_server.app.endpoints import ENDPOINTS, ValidAcceptHeaders
+from daq_config_server.app.endpoints import EndPoints, ValidAcceptHeaders
 from daq_config_server.models.base_model import ConfigModel
 
 from ._server_response import (
@@ -214,7 +214,7 @@ class ConfigClient:
             accept_header = _get_mime_type(desired_return_type)
 
         result = self._get(
-            ENDPOINTS.CONFIG,
+            EndPoints.CONFIG,
             accept_header=accept_header,
             file_path=file_path,
             reset_cached_result=reset_cached_result,
