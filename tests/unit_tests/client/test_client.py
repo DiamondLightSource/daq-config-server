@@ -308,6 +308,7 @@ def test_mock_config_client_get_file_contents_as_config_model_gives_expected_res
         (MyModel(), MyModel),
         ({"data1": 5, "data2": "value"}, dict),
         ("My string data", str),
+        (b"My string data", bytes),
     ),
 )
 def test_mock_config_client_with_path_to_data_override(
