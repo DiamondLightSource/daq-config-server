@@ -301,8 +301,8 @@ def test_mock_config_client_get_file_contents_as_config_model_gives_expected_res
     assert result == expected_data
 
 
-def test_mock_config_client_converter_table_to_json(tmp_path: Path):
-    file = Path("/path/to/data.txt")
+def test_mock_config_client_converter_table_to_json():
+    file = "/path/to/data.txt"
 
     client = ConfigClient()
     expected_data = MyModel()

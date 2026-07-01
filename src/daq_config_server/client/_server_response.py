@@ -79,7 +79,7 @@ class MockServerResponse(ServerResponse):
     def get_response(
         self, endpoint: str, accept_header: ValidAcceptHeaders, file_path: Path
     ) -> MockResponse:
-        if file_path in self.path_to_mock_data:
+        if str(file_path) in self.path_to_mock_data:
             mock_data = self.path_to_mock_data[str(file_path)]
             if isinstance(mock_data, ConfigModel):
                 mock_response = mock_data.model_dump_json()
