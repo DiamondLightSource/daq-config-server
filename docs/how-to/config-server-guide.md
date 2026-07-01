@@ -67,16 +67,32 @@ If you need to read a file which contains sensitive information, or `dls-dasc` d
 
 # Mocking the Config Client (for tests and offline development)
 
-The ConfigClient can be configured to run in a fully offline mode for unit tests and local development. In this mode, no HTTP requests are made. Instead, file reads are intercepted and optionally transformed using mock converters.
+The `ConfigClient` can be configured to run in a fully offline mode for unit tests and local development. In this mode, no HTTP requests are made. Instead, responses for specific file paths can be overridden with mock data.
 
-This allows you to simulate server-side conversion behaviour (e.g. JSON → dict, table → JSON, or custom Pydantic models) without requiring a running config service.
+Mock data can be provided as a `ConfigModel`, `dict`, `str`, or `bytes`, allowing tests to simulate the responses that would normally be returned by the config server without requiring a running service or real configuration files.
 
 ## Enabling mock mode
+
 ```python
 config_client = ConfigClient()
 config_client.configure_mock()
 ```
-Once enabled, all file access goes through the mock layer instead of the real server.
+
+With no mock data configured, the client reads directly from the local filesystem instead of contacting the config server.
+
+To override the response for specific files, pass a mapping from `Path` to the desired response:
+
+```python
+from pathlib import Path
+
+config_client.configure_mock(
+    {
+        Path("/path/to/config"): {"enabled": True},
+    }
+)
+```
+
+When a mocked path is requested, the configured value is returned. For all other paths, the client reads the file contents from the local filesystem.
 
 ### Mock data
 
