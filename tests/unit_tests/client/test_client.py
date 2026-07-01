@@ -17,6 +17,7 @@ from daq_config_server.client._client import (
     TypeConversionError,
     _get_mime_type,
 )
+from daq_config_server.client._server_response import NonModel
 from daq_config_server.models import ConfigModel, DisplayConfig
 from daq_config_server.models.lookup_tables import (
     BeamlinePitchLookupTable,
@@ -301,12 +302,26 @@ def test_mock_config_client_get_file_contents_as_config_model_gives_expected_res
     assert result == expected_data
 
 
-def test_mock_config_client_converter_table_to_json():
+@pytest.mark.parametrize(
+    "expected_data, return_type",
+    (
+        (MyModel(), MyModel),
+        ({"data1": 5, "data2": "value"}, dict),
+        ("My string data", str),
+    ),
+)
+def test_mock_config_client_with_path_to_data_override(
+    expected_data: ConfigModel | NonModel, return_type: type[ConfigModel | NonModel]
+):
     file = "/path/to/data.txt"
 
     client = ConfigClient()
-    expected_data = MyModel()
     client.configure_mock({file: expected_data})
 
-    result = client.get_file_contents(file, desired_return_type=MyModel)
+    result = client.get_file_contents(file, desired_return_type=return_type)
     assert result == expected_data
+
+    with pytest.raises(FileNotFoundError):
+        client.get_file_contents(
+            "/file/not/configured/with/mock/data", desired_return_type=return_type
+        )
