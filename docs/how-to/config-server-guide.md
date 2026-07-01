@@ -80,27 +80,13 @@ config_client.configure_mock()
 
 With no mock data configured, the client reads directly from the local filesystem instead of contacting the config server.
 
-To override the response for specific files, pass a mapping from `Path` to the desired response:
+### Mock data
 
-```python
-from pathlib import Path
-
-config_client.configure_mock(
-    {
-        Path("/path/to/config"): {"enabled": True},
-    }
-)
-```
+Mock mode allows you to override the contents returned for specific files without running a real config server.
 
 When a mocked path is requested, the configured value is returned. For all other paths, the client reads the file contents from the local filesystem.
 
-### Mock data
-
-Mock mode allows you to override the contents returned for specific files without
-running a real config server.
-
-Mock data is registered as a mapping from `str` file path to the value that should be
-returned. Supported values are:
+Mock data is registered as a mapping from `str` file path to the value that should be returned. Supported values are:
 
 ```python
 ConfigModel | str | bytes | dict[str, Any]
