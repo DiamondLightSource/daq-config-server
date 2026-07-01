@@ -13,8 +13,8 @@ from daq_config_server.app.constants import EndPoints, ValidAcceptHeaders
 from daq_config_server.models.base_model import ConfigModel
 
 from ._server_response import (
-    MockPathToConverterDict,
     MockServerResponse,
+    PathToMockDataDict,
     RealServerResponse,
     ResponseType,
     ServerResponse,
@@ -74,7 +74,9 @@ class ConfigClient:
         self._lock = RLock()
         self._server: ServerResponse = RealServerResponse(self._url, self._log)
 
-    def configure_mock(self, converters: MockPathToConverterDict | None = None) -> None:
+    def configure_mock(
+        self, path_to_mock_data: PathToMockDataDict | None = None
+    ) -> None:
         """Switch the client into mock mode using a local filesystem backend.
 
         This replaces the real HTTP server implementation with a mock
@@ -84,12 +86,10 @@ class ConfigClient:
         or transformation logic on a per-file basis.
 
         Args:
-            converters:
-                Optional mapping of file paths to converter functions.
-                Each function receives raw file contents as a string and
-                returns a transformed object (e.g. dict, ConfigModel, etc.).
+            path_to_mock_data:
+                Optional mapping of file paths to mock data to return from the server.
         """
-        self._server = MockServerResponse(converters)
+        self._server = MockServerResponse(path_to_mock_data)
 
     @cachedmethod(
         cache=operator.attrgetter("_cache"), lock=operator.attrgetter("_lock")

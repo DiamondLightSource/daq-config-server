@@ -1,5 +1,4 @@
 import json
-from collections.abc import Callable
 from logging import Logger
 from pathlib import Path
 from typing import Any, Protocol
@@ -12,7 +11,7 @@ from daq_config_server.app.constants import ValidAcceptHeaders
 from daq_config_server.models.base_model import ConfigModel
 
 NonModel = str | bytes | dict[str, Any]
-MockPathToConverterDict = dict[Path, Callable[[str], ConfigModel | NonModel]]
+PathToMockDataDict = dict[str, ConfigModel | NonModel]
 
 
 class MockResponse:
@@ -69,31 +68,30 @@ class ServerResponse(Protocol):
 class MockServerResponse(ServerResponse):
     """Mock implementation of ServerResponse used for unit testing.
 
-    This class simulates a config server by reading local files instead of
-    performing HTTP requests. It supports optional per-file converter functions
-    that can transform raw file contents before they are returned.
+    This class simulates a config server by reading local files instead of performing
+    HTTP requests. Supports optional overrides for a specified path to the data you
+    want to return instead.
     """
 
-    def __init__(self, mock_data_converters: MockPathToConverterDict | None = None):
-        self._mock_data_converters = mock_data_converters or {}
+    def __init__(self, path_to_mock_data: PathToMockDataDict | None = None):
+        self.path_to_mock_data = path_to_mock_data or {}
 
     def get_response(
         self, endpoint: str, accept_header: ValidAcceptHeaders, file_path: Path
     ) -> MockResponse:
-        raw = file_path.read_text()
-        # Apply optional converter hook
-        if file_path in self._mock_data_converters:
-            converted = self._mock_data_converters[file_path](raw)
-            # If it's a Pydantic model, serialize properly
-            if isinstance(converted, ConfigModel):
-                raw = converted.model_dump_json()
-
-            elif isinstance(converted, dict):
-                raw = json.dumps(converted)
-            # otherwise assume already string-like
+        if file_path in self.path_to_mock_data:
+            mock_data = self.path_to_mock_data[str(file_path)]
+            if isinstance(mock_data, ConfigModel):
+                mock_response = mock_data.model_dump_json()
+            elif isinstance(mock_data, dict):
+                mock_response = json.dumps(mock_data)
+            elif isinstance(mock_data, bytes):
+                mock_response = mock_data.decode()
             else:
-                raw = str(converted)
-        return MockResponse(raw, accept_header)
+                mock_response = mock_data
+        else:
+            mock_response = file_path.read_text()
+        return MockResponse(mock_response, accept_header)
 
 
 class RealServerResponse(ServerResponse):

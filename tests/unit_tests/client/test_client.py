@@ -302,19 +302,11 @@ def test_mock_config_client_get_file_contents_as_config_model_gives_expected_res
 
 
 def test_mock_config_client_converter_table_to_json(tmp_path: Path):
-    file = tmp_path / "beamline.txt"
-
-    # "table" format (header + row)
-    file.write_text("x|y\n1|test")
-
-    def table_to_dict(contents: str) -> dict[str, Any]:
-        lines = contents.strip().splitlines()
-        headers = lines[0].split("|")
-        values = lines[1].split("|")
-        return dict(zip(headers, values, strict=True))
+    file = Path("/path/to/data.txt")
 
     client = ConfigClient()
-    client.configure_mock({file: table_to_dict})
+    expected_data = MyModel()
+    client.configure_mock({file: expected_data})
 
-    result = client.get_file_contents(file, desired_return_type=dict)
-    assert result == {"x": "1", "y": "test"}
+    result = client.get_file_contents(file, desired_return_type=MyModel)
+    assert result == expected_data
