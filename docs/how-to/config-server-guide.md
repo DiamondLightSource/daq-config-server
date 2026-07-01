@@ -78,57 +78,59 @@ config_client.configure_mock()
 ```
 Once enabled, all file access goes through the mock layer instead of the real server.
 
-### Mock converters
+### Mock data
 
-Mock converters allow you to simulate the server-side converter_map behaviour locally.
+Mock mode allows you to override the contents returned for specific files without
+running a real config server.
 
-A converter is a function with the signature:
+Mock data is registered as a mapping from `str` file path to the value that should be
+returned. Supported values are:
 
 ```python
-Callable[[str], ConfigModel | str | bytes | dict[str, Any]]
+ConfigModel | str | bytes | dict[str, Any]
 ```
 
-You register converters keyed by Path:
-
 ```python
-from pathlib import Path
 
-config_client.setup_mock(
+config_client.configure_mock(
     {
-        Path("/tmp/my_file.txt"): my_converter_function
+        "/path/to/data.txt": {"key": "value"}
     }
 )
 ```
-Example: converting a table to JSON
 
-You can simulate a file containing a table-like format (e.g. whitespace-separated columns) and convert it into JSON.
+### Example: returning a model
 
-### Example file content
-```
-key value
-x   1
-y   test
-```
-### Converter function
+You can configure the mock to return a `ConfigModel` instance directly.
+
 ```python
-import json
 
-def table_to_json(contents: str) -> str:
-    lines = contents.strip().splitlines()
-    headers = lines[0].split()
+expected = MyModel(field="value")
 
-    result = {}
-    for line in lines[1:]:
-        key, value = line.split()
-        # attempt numeric conversion
-        if value.isdigit():
-            value = int(value)
-        result[key] = value
+client.configure_mock({"/path/to/data.txt": expected})
 
-    return json.dumps(result)
+result = client.get_file_contents(
+    "/path/to/data.txt",
+    desired_return_type=MyModel,
+)
+
+assert result == expected
 ```
-### Test setup
+
+### Example: returning a dictionary
+
+If the caller requests a dictionary, provide a dictionary as the mock data.
+
 ```python
-file_path = Path("/path/to/data.txt")
-client.setup_mock({file_path: table_to_json})
+
+expected = {
+    "x": 1,
+    "y": "test",
+}
+
+client.configure_mock({"/path/to/data.txt": expected})
+
+result = client.get_file_contents("/path/to/data.txt", desired_return_type=dict)
+
+assert result == expected
 ```
