@@ -291,14 +291,14 @@ class MyModel(ConfigModel):
 def test_mock_config_client_get_file_contents_as_config_model_gives_expected_result(
     tmp_path: Path,
 ):
-    file = tmp_path / "beamline.json"
+    real_file = tmp_path / "beamline.json"
     expected_data = MyModel().model_dump_json()
-    file.write_text(expected_data)
+    real_file.write_text(expected_data)
 
     client = ConfigClient()
     client.configure_mock()
 
-    result = client.get_file_contents(file)
+    result = client.get_file_contents(real_file)
     assert result == expected_data
 
 
@@ -312,14 +312,15 @@ def test_mock_config_client_get_file_contents_as_config_model_gives_expected_res
     ),
 )
 def test_mock_config_client_with_path_to_data_override(
-    expected_data: ConfigModel | NonModel, return_type: type[ConfigModel | NonModel]
+    expected_data: ConfigModel | NonModel,
+    return_type: type[ConfigModel | NonModel],
 ):
-    file = "/path/to/data.txt"
+    mock_file = "/path/to/data.txt"
 
     client = ConfigClient()
-    client.configure_mock({file: expected_data})
+    client.configure_mock({mock_file: expected_data})
 
-    result = client.get_file_contents(file, desired_return_type=return_type)
+    result = client.get_file_contents(mock_file, desired_return_type=return_type)
     assert result == expected_data
 
     with pytest.raises(FileNotFoundError):
