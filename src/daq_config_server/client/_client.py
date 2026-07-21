@@ -6,15 +6,20 @@ from pathlib import Path
 from threading import RLock
 from typing import Any, TypeVar, get_origin, overload
 
-import requests
 from cachetools import TTLCache, cachedmethod
 from pydantic import TypeAdapter
 from requests import Response
-from requests.exceptions import HTTPError
 
+from daq_config_server.app.constants import EndPoints, ValidAcceptHeaders
 from daq_config_server.models.base_model import ConfigModel
 
-from ._routes import ENDPOINTS, ValidAcceptHeaders
+from ._server_response import (
+    MockServerResponse,
+    PathToMockDataDict,
+    RealServerResponse,
+    ResponseType,
+    ServerResponse,
+)
 
 LOGGER = logging.getLogger(__name__)
 
@@ -41,8 +46,13 @@ def _get_mime_type(
 
 
 class ConfigClient:
-    """Client to communicate with a deployed config service with a configurable cache
-    and logger"""
+    """Client for retrieving configuration data from a config service with
+    support for caching, flexible return types, and pluggable backends.
+
+    This client abstracts access to configuration files stored either on:
+    - a remote configuration server (production mode), or
+    - a local mock filesystem (test mode)
+    """
 
     def __init__(
         self,
@@ -58,22 +68,38 @@ class ConfigClient:
             cache_size: Size of the cache (maximum number of items can be stored).
             cache_lifetime_s: Lifetime of the cache (in seconds).
         """
+
         self._url = url.rstrip("/")
-        self._log = log if log else getLogger("daq_config_server.client")
+        self._log = log or getLogger("daq_config_server.client")
         self._cache: TTLCache[tuple[str, str, Path], Response] = TTLCache(
             maxsize=cache_size, ttl=cache_lifetime_s
         )
         self._lock = RLock()
+        self._server: ServerResponse = RealServerResponse(self._url, self._log)
+
+    def configure_mock(
+        self, path_to_mock_data: PathToMockDataDict | None = None
+    ) -> None:
+        """Switch the client into mock mode using a local filesystem backend.
+
+        This replaces the real HTTP server implementation with a mock
+        server that reads configuration data directly from local files.
+
+        Optional converters can be provided to simulate server-side parsing
+        or transformation logic on a per-file basis.
+
+        Args:
+            path_to_mock_data:
+                Optional mapping of file paths to mock data to return from the server.
+        """
+        self._server = MockServerResponse(path_to_mock_data)
 
     @cachedmethod(
         cache=operator.attrgetter("_cache"), lock=operator.attrgetter("_lock")
     )
     def _cached_get(
-        self,
-        endpoint: str,
-        accept_header: ValidAcceptHeaders,
-        file_path: Path,
-    ) -> Response:
+        self, endpoint: str, accept_header: ValidAcceptHeaders, file_path: Path
+    ) -> ResponseType:
         """
         Get data from the config server and cache it.
 
@@ -87,28 +113,15 @@ class ConfigClient:
         """
 
         request_url = self._url + endpoint + (f"/{file_path}")
-        r = requests.get(request_url, headers={"Accept": accept_header})
-        # Intercept http exceptions from server so that the client
-        # can include the response `detail` sent by the server
-        try:
-            r.raise_for_status()
-        except requests.exceptions.HTTPError as err:
-            try:
-                error_detail = r.json().get("detail")
-                self._log.error(error_detail)
-                raise HTTPError(error_detail) from err
-            except ValueError:
-                self._log.error("Response raised HTTP error but no details provided")
-                raise HTTPError from err
-
+        r = self._server.get_response(endpoint, accept_header, file_path)
         self._log.debug(f"Cache set for {request_url}.")
         return r
 
     def _get(
         self,
         endpoint: str,
-        accept_header: ValidAcceptHeaders,
         file_path: Path,
+        accept_header: ValidAcceptHeaders,
         reset_cached_result: bool = False,
     ):
         """
@@ -116,6 +129,7 @@ class ConfigClient:
         the content-type response header to format the return value.
         If data parsing fails, return the response contents in bytes
         """
+
         cache_key = (endpoint, accept_header, file_path)
         if reset_cached_result:
             with self._lock:
@@ -123,7 +137,6 @@ class ConfigClient:
                     del self._cache[cache_key]
 
         r = self._cached_get(*cache_key)
-
         content_type = r.headers["content-type"].split(";")[0].strip()
 
         if content_type != accept_header:
@@ -131,7 +144,6 @@ class ConfigClient:
                 f"Server failed to parse the file as requested. Requested "
                 f"{accept_header} but response came as content-type {content_type}"
             )
-
         try:
             match content_type:
                 case ValidAcceptHeaders.JSON:
@@ -213,9 +225,9 @@ class ConfigClient:
             accept_header = _get_mime_type(desired_return_type)
 
         result = self._get(
-            ENDPOINTS.CONFIG,
-            accept_header,
-            file_path,
+            EndPoints.CONFIG,
+            accept_header=accept_header,
+            file_path=file_path,
             reset_cached_result=reset_cached_result,
         )
         if force_parser:

@@ -6,7 +6,7 @@ The server is centrally hosted on argus and is accessible anywhere within the Di
 This library provides a python client to easily make requests from Bluesky code. The client can use caching to prevent needlessly making time-consuming requests on data which won't have changed. You can choose the maximum number of items it can hold as well as the lifetime of an item upon instantiation.
 
 ```python
-from daq_config_server import ConfigClient
+from daq_config_server.client import ConfigClient
 
 config_client = ConfigClient("https://daq-config.diamond.ac.uk", cache_size = 10, cache_lifetime_s = 3600)
 ```
@@ -64,3 +64,75 @@ whitelist:
 # Reading sensitive information
 
 If you need to read a file which contains sensitive information, or `dls-dasc` doesn't have the permissions to read your file, you should encrypt this file as a [sealed secret](https://github.com/bitnami-labs/sealed-secrets) on your beamline cluster, and mount this in your BlueAPI service.
+
+# Mocking the Config Client (for tests and offline development)
+
+The `ConfigClient` can be configured to run in a fully offline mode for unit tests and local development. In this mode, no HTTP requests are made. Instead, responses for specific file paths can be overridden with mock data.
+
+Mock data can be provided as a `ConfigModel`, `dict`, `str`, or `bytes`, allowing tests to simulate the responses that would normally be returned by the config server without requiring a running service or real configuration files.
+
+## Enabling mock mode
+
+```python
+config_client = ConfigClient()
+config_client.configure_mock()
+```
+
+With no mock data configured, the client reads directly from the local filesystem instead of contacting the config server.
+
+### Mock data
+
+Mock mode allows you to override the contents returned for specific files without running a real config server.
+
+When a mocked path is requested, the configured value is returned. For all other paths, the client reads the file contents from the local filesystem.
+
+Mock data is registered as a mapping from `str` file path to the value that should be returned. Supported values are:
+
+```python
+ConfigModel | str | bytes | dict[str, Any]
+```
+
+```python
+
+config_client.configure_mock(
+    {
+        "/path/to/data.txt": {"key": "value"}
+    }
+)
+```
+
+### Example: returning a model
+
+You can configure the mock to return a `ConfigModel` instance directly.
+
+```python
+
+expected = MyModel(field="value")
+
+client.configure_mock({"/path/to/data.txt": expected})
+
+result = client.get_file_contents(
+    "/path/to/data.txt",
+    desired_return_type=MyModel,
+)
+
+assert result == expected
+```
+
+### Example: returning a dictionary
+
+If the caller requests a dictionary, provide a dictionary as the mock data.
+
+```python
+
+expected = {
+    "x": 1,
+    "y": "test",
+}
+
+client.configure_mock({"/path/to/data.txt": expected})
+
+result = client.get_file_contents("/path/to/data.txt", desired_return_type=dict)
+
+assert result == expected
+```

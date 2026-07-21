@@ -1,7 +1,5 @@
 import json
 import os
-from dataclasses import dataclass
-from enum import StrEnum
 from pathlib import Path
 from typing import Any
 
@@ -9,6 +7,7 @@ from fastapi import APIRouter, HTTPException, Request
 from fastapi.responses import JSONResponse, Response
 from starlette import status
 
+from daq_config_server.app.constants import EndPoints, ValidAcceptHeaders
 from daq_config_server.models.base_model import ConfigModel
 
 from ._file_converter_map import get_converter
@@ -38,20 +37,8 @@ def get_converted_file_contents(file_path: Path) -> dict[str, Any]:
 router = APIRouter()
 
 
-class ValidAcceptHeaders(StrEnum):
-    JSON = "application/json"
-    PLAIN_TEXT = "text/plain"
-    RAW_BYTES = "application/octet-stream"
-
-
-@dataclass(frozen=True)
-class ENDPOINTS:
-    CONFIG = "/config"
-    HEALTH = "/healthz"
-
-
 @router.get(
-    ENDPOINTS.CONFIG + "/{file_path:path}",
+    EndPoints.CONFIG + "/{file_path:path}",
     responses={
         200: {
             "description": "Returns JSON, plain text, or binary file.",

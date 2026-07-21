@@ -7,6 +7,5 @@
 """
 
 from ._version import __version__
-from .app.client import ConfigClient
 
-__all__ = ["__version__", "ConfigClient"]
+__all__ = ["__version__"]

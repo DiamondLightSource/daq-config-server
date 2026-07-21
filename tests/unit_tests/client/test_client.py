@@ -1,3 +1,4 @@
+import json
 from pathlib import Path
 from typing import Any
 from unittest.mock import MagicMock, patch
@@ -8,14 +9,15 @@ import requests
 from fastapi import status
 from httpx import Response
 
-from daq_config_server.app._routes import ENDPOINTS, ValidAcceptHeaders
-from daq_config_server.app.client import (
+from daq_config_server.app._routes import EndPoints, ValidAcceptHeaders
+from daq_config_server.client._client import (
     ConfigClient,
     TModel,
     TNonModel,
     TypeConversionError,
     _get_mime_type,
 )
+from daq_config_server.client._server_response import NonModel
 from daq_config_server.models import ConfigModel, DisplayConfig
 from daq_config_server.models.lookup_tables import (
     BeamlinePitchLookupTable,
@@ -26,6 +28,8 @@ from daq_config_server.models.lookup_tables.insertion_device import (
 )
 from daq_config_server.testing import make_test_response
 
+REQUEST_PATCH = "daq_config_server.client._server_response.requests.get"
+
 test_path = Path("test")
 
 
@@ -34,7 +38,7 @@ def client() -> ConfigClient:
     return ConfigClient("url")
 
 
-@patch("daq_config_server.app.client.requests.get")
+@patch(REQUEST_PATCH)
 def test_config_client_get_file_contents_default_header(
     mock_request: MagicMock, client: ConfigClient
 ):
@@ -45,12 +49,12 @@ def test_config_client_get_file_contents_default_header(
     mock_request.return_value = make_test_response("test")
     assert client.get_file_contents(test_path) == "test"
     mock_request.assert_called_once_with(
-        client._url + ENDPOINTS.CONFIG + "/" + str(test_path),
+        client._url + EndPoints.CONFIG + "/" + str(test_path),
         headers={"Accept": ValidAcceptHeaders.PLAIN_TEXT},
     )
 
 
-@patch("daq_config_server.app.client.requests.get")
+@patch(REQUEST_PATCH)
 def test_config_client_get_file_contents_with_bytes(
     mock_request: MagicMock, client: ConfigClient
 ):
@@ -64,10 +68,9 @@ def test_config_client_get_file_contents_with_bytes(
     )
 
 
-@patch("daq_config_server.app.client.requests.get")
+@patch(REQUEST_PATCH)
 def test_config_client_get_file_contents_gives_exception_on_invalid_json(
-    mock_request: MagicMock,
-    client: ConfigClient,
+    mock_request: MagicMock, client: ConfigClient
 ):
     content_type = ValidAcceptHeaders.JSON
     bad_json = "bad_dict}"
@@ -78,10 +81,9 @@ def test_config_client_get_file_contents_gives_exception_on_invalid_json(
         client.get_file_contents(test_path, desired_return_type=dict[Any, Any])
 
 
-@patch("daq_config_server.app.client.requests.get")
+@patch(REQUEST_PATCH)
 def test_config_client_get_file_contents_caching(
-    mock_request: MagicMock,
-    client: ConfigClient,
+    mock_request: MagicMock, client: ConfigClient
 ):
     """Test reset_cached_result=False and reset_cached_result=True."""
     mock_request.side_effect = [
@@ -94,7 +96,7 @@ def test_config_client_get_file_contents_caching(
     assert client.get_file_contents(test_path, reset_cached_result=False) == "2nd_read"
 
 
-@patch("daq_config_server.app.client.requests.get")
+@patch(REQUEST_PATCH)
 def test_config_client_bad_responses_no_details_raises_error(
     mock_request: MagicMock, client: ConfigClient
 ):
@@ -110,7 +112,7 @@ def test_config_client_bad_responses_no_details_raises_error(
     )
 
 
-@patch("daq_config_server.app.client.requests.get")
+@patch(REQUEST_PATCH)
 def test_config_client_bad_responses_with_details_raises_error(
     mock_request: MagicMock, client: ConfigClient
 ):
@@ -130,7 +132,7 @@ def test_config_client_bad_responses_with_details_raises_error(
     client._log.error.assert_called_once_with(detail)
 
 
-@patch("daq_config_server.app.client.requests.get")
+@patch(REQUEST_PATCH)
 def test_config_client_get_file_contents_with_untyped_dict(
     mock_request: MagicMock, client: ConfigClient
 ):
@@ -160,10 +162,9 @@ def test_get_mime_type(input: type[TModel | TNonModel], expected: ValidAcceptHea
     assert _get_mime_type(input) == expected
 
 
-@patch("daq_config_server.app.client.requests.get")
+@patch(REQUEST_PATCH)
 def test_config_client_get_file_contents_with_force_parser_requests_str_from_server_and_converts(  # noqa: E501
-    mock_request: MagicMock,
-    client: ConfigClient,
+    mock_request: MagicMock, client: ConfigClient
 ):
     mock_config = "mock_config"
     mock_request.return_value = make_test_response(mock_config)
@@ -189,7 +190,7 @@ def test_config_client_get_file_contents_with_force_parser_requests_str_from_ser
         (BeamlinePitchLookupTable, pydantic.ValidationError),
     ],
 )
-@patch("daq_config_server.app.client.requests.get")
+@patch(REQUEST_PATCH)
 def test_config_client_get_file_contents_with_force_parser_still_validates_desired_return_type(  # noqa: E501
     mock_request: MagicMock,
     client: ConfigClient,
@@ -216,7 +217,7 @@ def test_config_client_get_file_contents_with_force_parser_still_validates_desir
         assert result == expected_result
 
 
-@patch("daq_config_server.app.client.requests.get")
+@patch(REQUEST_PATCH)
 def test_config_client_get_file_contents_with_bad_force_parser_errors(
     mock_request: MagicMock, client: ConfigClient
 ):
@@ -231,20 +232,17 @@ def test_config_client_get_file_contents_with_bad_force_parser_errors(
         )
 
 
-@patch("daq_config_server.app.client.requests.get")
-def test_reset_cache(
-    mock_request: MagicMock,
-):
+@patch(REQUEST_PATCH)
+def test_reset_cache(mock_request: MagicMock):
     mock_config = "Units eV mm\n5700		5.4606\n#24500		7.2\n"
     mock_request.return_value = make_test_response(mock_config)
     server = ConfigClient("url")
-    result = server.get_file_contents(
-        test_path,
-        str,
-    )
+    result = server.get_file_contents(test_path, str)
+
     assert server._cache.currsize == 1
     server.reset_cache()
     assert server._cache.currsize == 0
+
     new_mock_config = "Units eV mm\n6800		5.4606\n#24500		7.2\n"
     mock_request.return_value = make_test_response(new_mock_config)
     new_result = server.get_file_contents(
@@ -252,3 +250,80 @@ def test_reset_cache(
         str,
     )
     assert result != new_result
+
+
+def test_mock_config_client_get_file_contents_as_dict_gives_expected_result(
+    tmp_path: Path,
+):
+    file = tmp_path / "beamline.json"
+
+    expected_data = {"x": 1, "y": "test"}
+    file.write_text(json.dumps(expected_data))
+
+    client = ConfigClient()
+    client.configure_mock()
+
+    result = client.get_file_contents(file, desired_return_type=dict)
+    assert result == expected_data
+
+
+def test_mock_config_client_get_file_contents_as_str_gives_expected_result(
+    tmp_path: Path,
+):
+    file = tmp_path / "beamline.json"
+
+    expected_data = '{"x": 1, "y": "test"}'
+    file.write_text(expected_data)
+
+    client = ConfigClient()
+    client.configure_mock()
+
+    result = client.get_file_contents(file)
+    assert result == expected_data
+
+
+class MyModel(ConfigModel):
+    x: float = 1.5
+    y: str = "test"
+    z: list[int] = [1, 4, 5]
+
+
+def test_mock_config_client_get_file_contents_as_config_model_gives_expected_result(
+    tmp_path: Path,
+):
+    real_file = tmp_path / "beamline.json"
+    expected_data = MyModel().model_dump_json()
+    real_file.write_text(expected_data)
+
+    client = ConfigClient()
+    client.configure_mock()
+
+    result = client.get_file_contents(real_file)
+    assert result == expected_data
+
+
+@pytest.mark.parametrize(
+    "expected_data, return_type",
+    (
+        (MyModel(), MyModel),
+        ({"data1": 5, "data2": "value"}, dict),
+        ("My string data", str),
+        (b"My string data", bytes),
+    ),
+)
+def test_mock_config_client_with_path_to_data_override(
+    expected_data: ConfigModel | NonModel,
+    return_type: type[ConfigModel | NonModel],
+):
+    mock_file = "/path/to/data.txt"
+
+    client = ConfigClient()
+    client.configure_mock({mock_file: expected_data})
+
+    result = client.get_file_contents(mock_file, desired_return_type=return_type)
+    assert result == expected_data
+
+    with pytest.raises(FileNotFoundError):
+        client.get_file_contents(
+            "/file/not/configured/with/mock/data", desired_return_type=return_type
+        )

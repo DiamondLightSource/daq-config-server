@@ -7,6 +7,7 @@
 - Provide a client module for users to easily communicate with the server, with caching.
 - Have this service hosted on diamond's central argus cluster - with url `https://daq-config-server.diamond.ac.uk`
 - Provide server-side json and pydantic model formatting for commonly used configuration files - eg `beamline_parameters.txt` should be returned as a dictionary or pydantic model.
+- Supports mock behaviour so in test environments that rely on ConfigClient as a dependency can still use a local file system for tests.
 
 
 ## Future features

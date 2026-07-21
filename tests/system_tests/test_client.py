@@ -11,7 +11,7 @@ import yaml
 from pydantic import ValidationError
 
 from daq_config_server.app._file_converter_map import CONVERTER_FUNCS
-from daq_config_server.app.client import ConfigClient
+from daq_config_server.client import ConfigClient
 from daq_config_server.models import ConfigModel, DisplayConfig
 from daq_config_server.models.lookup_tables import (
     BeamlinePitchLookupTable,
