@@ -1,3 +1,4 @@
+import logging
 import operator
 from collections.abc import Callable
 from logging import Logger, getLogger
@@ -19,6 +20,8 @@ from ._server_response import (
     ResponseType,
     ServerResponse,
 )
+
+LOGGER = logging.getLogger(__name__)
 
 TModel = TypeVar("TModel", bound=ConfigModel)
 TNonModel = TypeVar("TNonModel", str, bytes, dict[str, Any])
@@ -201,13 +204,21 @@ class ConfigClient:
             force_parser: Optionally provide a function to convert the contents of a
                 config file to the desired return type. This overides whatever converter
                 is specified for that file in the FILE_TO_CONVERTER_MAP, and can be used
-                if the config file isn't in the FILE_TO_CONVERTER_MAP at all.
+                if the config file isn't in the FILE_TO_CONVERTER_MAP at all. This
+                should only be used for testing or when waiting on a release that will
+                add the file to the FILE_TO_CONVERTER_MAP.
         Returns:
             The file contents, in the format specified.
         """
         file_path = Path(file_path)
 
         if force_parser:
+            LOGGER.warning(
+                "The force_parser argument should only be used for testing or "
+                "as a temporary measure. Add your file and parser to the "
+                "FILE_TO_CONVERTER_MAP. See "
+                "https://github.com/DiamondLightSource/daq-config-server/blob/main/docs/how-to/config-server-guide.md#file-converters"
+            )
             # force accept header to string so conversion is done client side
             accept_header = _get_mime_type(str)
         else:
