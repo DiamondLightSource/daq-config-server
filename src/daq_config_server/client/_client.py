@@ -4,7 +4,7 @@ from collections.abc import Callable
 from logging import Logger, getLogger
 from pathlib import Path
 from threading import RLock
-from typing import Any, TypeVar, get_origin, overload
+from typing import Any, Final, TypeVar, get_origin, overload
 
 from cachetools import TTLCache, cachedmethod
 from pydantic import TypeAdapter
@@ -78,7 +78,7 @@ class ConfigClient:
         self._log = log or getLogger("daq_config_server.client")
         self._cache = TTLCache(maxsize=cache_size, ttl=cache_lifetime_s)
         self._lock = RLock()
-        self._server: ServerResponse
+        self._server: Final[ServerResponse]
         if mock is False:
             self._server = RealServerResponse(self._url, self._log)
         else:
@@ -101,7 +101,6 @@ class ConfigClient:
         Returns:
             The response data.
         """
-
         request_url = self._url + endpoint + (f"/{file_path}")
         r = self._server.get_response(endpoint, accept_header, file_path)
         self._log.debug(f"Cache set for {request_url}.")
