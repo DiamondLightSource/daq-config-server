@@ -67,49 +67,54 @@ If you need to read a file which contains sensitive information, or `dls-dasc` d
 
 # Mocking the Config Client (for tests and offline development)
 
-The `ConfigClient` can be configured to run in a fully offline mode for unit tests and local development. In this mode, no HTTP requests are made. Instead, responses for specific file paths can be overridden with mock data.
+The `ConfigClient` can be configured to run in a fully offline mode for unit tests and local development. In this mode, no HTTP requests are made. Instead, responses are read from the local filesystem, with the option to override specific file paths with mock data.
 
-Mock data can be provided as a `ConfigModel`, `dict`, `str`, or `bytes`, allowing tests to simulate the responses that would normally be returned by the config server without requiring a running service or real configuration files.
+Mock data can be provided as a `ConfigModel`, `dict`, `str`, or `bytes`, allowing tests to simulate responses that would normally be returned by the config server without requiring a running service or real configuration files.
 
 ## Enabling mock mode
 
+Mock mode is configured when constructing the `ConfigClient` by passing `mock=True`:
+
 ```python
-config_client = ConfigClient()
-config_client.configure_mock()
+config_client = ConfigClient(mock=True)
 ```
 
-With no mock data configured, the client reads directly from the local filesystem instead of contacting the config server.
+With no mock data configured, the client reads requested files directly from the local filesystem instead of contacting the config server.
 
 ### Mock data
 
-Mock mode allows you to override the contents returned for specific files without running a real config server.
+You can override the contents returned for specific files by passing a mapping of file paths to mock data when constructing the client.
 
 When a mocked path is requested, the configured value is returned. For all other paths, the client reads the file contents from the local filesystem.
 
-Mock data is registered as a mapping from `str` file path to the value that should be returned. Supported values are:
+Mock data is provided as a mapping from `str` file path to the value that should be returned. Supported values are:
 
 ```python
 ConfigModel | str | bytes | dict[str, Any]
 ```
 
-```python
+For example:
 
-config_client.configure_mock(
-    {
-        "/path/to/data.txt": {"key": "value"}
+```python
+config_client = ConfigClient(
+    mock={
+        "/path/to/data.txt": {"key": "value"},
     }
 )
 ```
 
 ### Example: returning a model
 
-You can configure the mock to return a `ConfigModel` instance directly.
+You can configure the mock to return a `ConfigModel` instance directly:
 
 ```python
-
 expected = MyModel(field="value")
 
-client.configure_mock({"/path/to/data.txt": expected})
+client = ConfigClient(
+    mock={
+        "/path/to/data.txt": expected,
+    }
+)
 
 result = client.get_file_contents(
     "/path/to/data.txt",
@@ -121,18 +126,26 @@ assert result == expected
 
 ### Example: returning a dictionary
 
-If the caller requests a dictionary, provide a dictionary as the mock data.
+If the caller requests a dictionary, provide a dictionary as the mock data:
 
 ```python
-
 expected = {
     "x": 1,
     "y": "test",
 }
 
-client.configure_mock({"/path/to/data.txt": expected})
+client = ConfigClient(
+    mock={
+        "/path/to/data.txt": expected,
+    }
+)
 
-result = client.get_file_contents("/path/to/data.txt", desired_return_type=dict)
+result = client.get_file_contents(
+    "/path/to/data.txt",
+    desired_return_type=dict,
+)
 
 assert result == expected
 ```
+
+Mock mode is configured for the lifetime of the `ConfigClient` instance. It cannot be enabled or disabled after construction, preventing one test or plan from changing the behaviour of a shared client used by subsequent tests or plans.

@@ -8,7 +8,6 @@ from typing import Any, TypeVar, get_origin, overload
 
 from cachetools import TTLCache, cachedmethod
 from pydantic import TypeAdapter
-from requests import Response
 
 from daq_config_server.app.constants import EndPoints, ValidAcceptHeaders
 from daq_config_server.models.base_model import ConfigModel
@@ -60,6 +59,7 @@ class ConfigClient:
         log: Logger | None = None,
         cache_size: int = 10,
         cache_lifetime_s: int = 3600,
+        mock: bool | PathToMockDataDict = False,
     ) -> None:
         """
         Args:
@@ -67,32 +67,22 @@ class ConfigClient:
             log: Optional logger instance.
             cache_size: Size of the cache (maximum number of items can be stored).
             cache_lifetime_s: Lifetime of the cache (in seconds).
+            mock: Configure the client to use mock responses instead of the config
+                server. If True, requested configuration files are read from the
+                local filesystem. If a mapping is provided, files are read from
+                the local filesystem unless their path is present in the mapping,
+                in which case the provided configuration is returned instead.
         """
 
         self._url = url.rstrip("/")
         self._log = log or getLogger("daq_config_server.client")
-        self._cache: TTLCache[tuple[str, str, Path], Response] = TTLCache(
-            maxsize=cache_size, ttl=cache_lifetime_s
-        )
+        self._cache = TTLCache(maxsize=cache_size, ttl=cache_lifetime_s)
         self._lock = RLock()
-        self._server: ServerResponse = RealServerResponse(self._url, self._log)
-
-    def configure_mock(
-        self, path_to_mock_data: PathToMockDataDict | None = None
-    ) -> None:
-        """Switch the client into mock mode using a local filesystem backend.
-
-        This replaces the real HTTP server implementation with a mock
-        server that reads configuration data directly from local files.
-
-        Optional converters can be provided to simulate server-side parsing
-        or transformation logic on a per-file basis.
-
-        Args:
-            path_to_mock_data:
-                Optional mapping of file paths to mock data to return from the server.
-        """
-        self._server = MockServerResponse(path_to_mock_data)
+        self._server: ServerResponse
+        if mock is False:
+            self._server = RealServerResponse(self._url, self._log)
+        else:
+            self._server = MockServerResponse(mock if isinstance(mock, dict) else None)
 
     @cachedmethod(
         cache=operator.attrgetter("_cache"), lock=operator.attrgetter("_lock")

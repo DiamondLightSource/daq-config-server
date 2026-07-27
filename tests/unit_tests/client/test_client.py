@@ -260,8 +260,7 @@ def test_mock_config_client_get_file_contents_as_dict_gives_expected_result(
     expected_data = {"x": 1, "y": "test"}
     file.write_text(json.dumps(expected_data))
 
-    client = ConfigClient()
-    client.configure_mock()
+    client = ConfigClient(mock=True)
 
     result = client.get_file_contents(file, desired_return_type=dict)
     assert result == expected_data
@@ -275,8 +274,7 @@ def test_mock_config_client_get_file_contents_as_str_gives_expected_result(
     expected_data = '{"x": 1, "y": "test"}'
     file.write_text(expected_data)
 
-    client = ConfigClient()
-    client.configure_mock()
+    client = ConfigClient(mock=True)
 
     result = client.get_file_contents(file)
     assert result == expected_data
@@ -295,8 +293,7 @@ def test_mock_config_client_get_file_contents_as_config_model_gives_expected_res
     expected_data = MyModel().model_dump_json()
     real_file.write_text(expected_data)
 
-    client = ConfigClient()
-    client.configure_mock()
+    client = ConfigClient(mock=True)
 
     result = client.get_file_contents(real_file)
     assert result == expected_data
@@ -317,8 +314,7 @@ def test_mock_config_client_with_path_to_data_override(
 ):
     mock_file = "/path/to/data.txt"
 
-    client = ConfigClient()
-    client.configure_mock({mock_file: expected_data})
+    client = ConfigClient(mock={mock_file: expected_data})
 
     result = client.get_file_contents(mock_file, desired_return_type=return_type)
     assert result == expected_data
