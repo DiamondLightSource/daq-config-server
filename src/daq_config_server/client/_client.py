@@ -8,6 +8,7 @@ from typing import Any, Final, TypeVar, get_origin, overload
 
 from cachetools import TTLCache, cachedmethod
 from pydantic import TypeAdapter
+from requests import Response
 
 from daq_config_server.app.constants import EndPoints, ValidAcceptHeaders
 from daq_config_server.models.base_model import ConfigModel
@@ -76,7 +77,9 @@ class ConfigClient:
 
         self._url = url.rstrip("/")
         self._log = log or getLogger("daq_config_server.client")
-        self._cache = TTLCache(maxsize=cache_size, ttl=cache_lifetime_s)
+        self._cache = TTLCache[tuple[str, str, Path], Response](
+            maxsize=cache_size, ttl=cache_lifetime_s
+        )
         self._lock = RLock()
         self._server: Final[ServerResponse]
         if mock is False:
