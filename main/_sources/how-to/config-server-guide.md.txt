@@ -8,7 +8,7 @@ This library provides a python client to easily make requests from Bluesky code.
 ```python
 from daq_config_server.client import ConfigClient
 
-config_client = ConfigClient("https://daq-config.diamond.ac.uk", cache_size = 10, cache_lifetime_s = 3600)
+config_client = ConfigClient.from_url("https://daq-config.diamond.ac.uk", cache_size = 10, cache_lifetime_s = 3600)
 ```
 
 You can then make a request through this client through its `get_file_contents` function. If you are reading a file which may have changed since the client last read it, you should set the appropriate flag to reset the cache for that result - this forces a new request and stores that new result in the cache.
@@ -67,49 +67,61 @@ If you need to read a file which contains sensitive information, or `dls-dasc` d
 
 # Mocking the Config Client (for tests and offline development)
 
-The `ConfigClient` can be configured to run in a fully offline mode for unit tests and local development. In this mode, no HTTP requests are made. Instead, responses for specific file paths can be overridden with mock data.
+The `ConfigClient` supports offline testing and development by allowing the server response implementation to be provided when the client is constructed.
 
-Mock data can be provided as a `ConfigModel`, `dict`, `str`, or `bytes`, allowing tests to simulate the responses that would normally be returned by the config server without requiring a running service or real configuration files.
-
-## Enabling mock mode
+In normal use, create a client using `ConfigClient.from_url()`. This creates a client backed by a real configuration server:
 
 ```python
-config_client = ConfigClient()
-config_client.configure_mock()
+config_client = ConfigClient.from_url()
 ```
 
-With no mock data configured, the client reads directly from the local filesystem instead of contacting the config server.
+For tests and offline development, construct the client with a `MockServerResponse` instead. No HTTP requests are made; responses are read from the local filesystem, with the option to override specific file paths with mock data.
+
+## Mock server
+
+To use the mock server with local configuration files, create a `MockServerResponse` and pass it to the `ConfigClient`:
+
+```python
+from daq_config_server.client import ConfigClient
+from daq_config_server.testing import MockServerResponse
+
+config_client = ConfigClient(
+    server_response=MockServerResponse(),
+)
+```
+
+With no mock data configured, requested configuration files are read directly from the local filesystem.
 
 ### Mock data
 
-Mock mode allows you to override the contents returned for specific files without running a real config server.
+You can override the contents returned for specific files by passing a mapping of file paths to mock data to `MockServerResponse`.
 
 When a mocked path is requested, the configured value is returned. For all other paths, the client reads the file contents from the local filesystem.
 
-Mock data is registered as a mapping from `str` file path to the value that should be returned. Supported values are:
+Mock data is provided as a mapping from `str` file path to the value that should be returned. Supported values are:
 
 ```python
 ConfigModel | str | bytes | dict[str, Any]
 ```
 
-```python
+For example:
 
-config_client.configure_mock(
-    {
-        "/path/to/data.txt": {"key": "value"}
-    }
+```python
+config_client = ConfigClient(
+    server_response=MockServerResponse({"/path/to/data.txt": {"key": "value"}}),
 )
 ```
 
 ### Example: returning a model
 
-You can configure the mock to return a `ConfigModel` instance directly.
+You can configure the mock server to return a `ConfigModel` instance directly:
 
 ```python
-
 expected = MyModel(field="value")
 
-client.configure_mock({"/path/to/data.txt": expected})
+client = ConfigClient(
+    server_response=MockServerResponse({"/path/to/data.txt": expected}),
+)
 
 result = client.get_file_contents(
     "/path/to/data.txt",
@@ -121,18 +133,24 @@ assert result == expected
 
 ### Example: returning a dictionary
 
-If the caller requests a dictionary, provide a dictionary as the mock data.
+If the caller requests a dictionary, provide a dictionary as the mock data:
 
 ```python
-
 expected = {
     "x": 1,
     "y": "test",
 }
 
-client.configure_mock({"/path/to/data.txt": expected})
+client = ConfigClient(
+    server_response=MockServerResponse({"/path/to/data.txt": expected})
+)
 
-result = client.get_file_contents("/path/to/data.txt", desired_return_type=dict)
+result = client.get_file_contents(
+    "/path/to/data.txt",
+    desired_return_type=dict,
+)
 
 assert result == expected
 ```
+
+The server response implementation is selected when the `ConfigClient` is constructed and cannot be changed afterwards. This ensures that a test or plan cannot switch a shared client between real and mock behaviour at runtime.
