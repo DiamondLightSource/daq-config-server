@@ -70,5 +70,9 @@
   {
     "version": "v0.2.0",
     "url": "https://DiamondLightSource.github.io/daq-config-server/v0.2.0/"
+  },
+  {
+    "version": "1.5.0",
+    "url": "https://DiamondLightSource.github.io/daq-config-server/1.5.0/"
   }
 ]
