@@ -4,7 +4,7 @@ from collections.abc import Callable
 from logging import Logger, getLogger
 from pathlib import Path
 from threading import RLock
-from typing import Any, TypeVar, get_origin, overload
+from typing import Any, Final, Self, TypeVar, get_origin, overload
 
 from cachetools import TTLCache, cachedmethod
 from pydantic import TypeAdapter
@@ -14,10 +14,8 @@ from daq_config_server.app.constants import EndPoints, ValidAcceptHeaders
 from daq_config_server.models.base_model import ConfigModel
 
 from ._server_response import (
-    MockServerResponse,
-    PathToMockDataDict,
     RealServerResponse,
-    ResponseType,
+    ResponseProtocol,
     ServerResponse,
 )
 
@@ -56,50 +54,49 @@ class ConfigClient:
 
     def __init__(
         self,
-        url: str = "https://daq-config.diamond.ac.uk",
+        server_response: ServerResponse,
         log: Logger | None = None,
         cache_size: int = 10,
         cache_lifetime_s: int = 3600,
     ) -> None:
         """
         Args:
-            url: Base URL of the config server. Defaults to central service.
+            server_response: Backend used to retrieve configuration data from.
             log: Optional logger instance.
             cache_size: Size of the cache (maximum number of items can be stored).
             cache_lifetime_s: Lifetime of the cache (in seconds).
         """
-
-        self._url = url.rstrip("/")
         self._log = log or getLogger("daq_config_server.client")
-        self._cache: TTLCache[tuple[str, str, Path], Response] = TTLCache(
+        self._cache = TTLCache[tuple[str, str, Path], Response](
             maxsize=cache_size, ttl=cache_lifetime_s
         )
         self._lock = RLock()
-        self._server: ServerResponse = RealServerResponse(self._url, self._log)
+        self._server: Final[ServerResponse] = server_response
 
-    def configure_mock(
-        self, path_to_mock_data: PathToMockDataDict | None = None
-    ) -> None:
-        """Switch the client into mock mode using a local filesystem backend.
-
-        This replaces the real HTTP server implementation with a mock
-        server that reads configuration data directly from local files.
-
-        Optional converters can be provided to simulate server-side parsing
-        or transformation logic on a per-file basis.
-
-        Args:
-            path_to_mock_data:
-                Optional mapping of file paths to mock data to return from the server.
+    @classmethod
+    def from_url(
+        cls,
+        url: str = "https://daq-config.diamond.ac.uk",
+        log: Logger | None = None,
+        cache_size: int = 10,
+        cache_lifetime_s: int = 3600,
+    ) -> Self:
+        """Create a ConfigClient that retrieves data from the given URL.
+        Defaults to the central configuration service.
         """
-        self._server = MockServerResponse(path_to_mock_data)
+        return cls(
+            log=log,
+            cache_size=cache_size,
+            cache_lifetime_s=cache_lifetime_s,
+            server_response=RealServerResponse(url),
+        )
 
     @cachedmethod(
         cache=operator.attrgetter("_cache"), lock=operator.attrgetter("_lock")
     )
     def _cached_get(
         self, endpoint: str, accept_header: ValidAcceptHeaders, file_path: Path
-    ) -> ResponseType:
+    ) -> ResponseProtocol:
         """
         Get data from the config server and cache it.
 
@@ -111,11 +108,14 @@ class ConfigClient:
         Returns:
             The response data.
         """
-
-        request_url = self._url + endpoint + (f"/{file_path}")
-        r = self._server.get_response(endpoint, accept_header, file_path)
-        self._log.debug(f"Cache set for {request_url}.")
-        return r
+        request_url = self._server.url + endpoint + (f"/{file_path}")
+        try:
+            r = self._server.get_response(endpoint, accept_header, file_path)
+            self._log.debug(f"Cache set for {request_url}.")
+            return r
+        except Exception as e:
+            self._log.error(e)
+            raise e
 
     def _get(
         self,
