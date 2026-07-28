@@ -1,7 +1,7 @@
 import json
 
 from daq_config_server.app._routes import ValidAcceptHeaders
-from daq_config_server.client._server_response import MockResponse
+from daq_config_server.testing.mock_server_response import MockResponse
 
 
 def test_mock_response_using_bytes():

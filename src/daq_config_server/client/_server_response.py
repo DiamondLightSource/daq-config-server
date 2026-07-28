@@ -1,5 +1,4 @@
-import json
-from logging import Logger
+from collections.abc import Mapping
 from pathlib import Path
 from typing import Any, Protocol
 
@@ -8,51 +7,19 @@ from requests import Response as RealResponse
 from requests.exceptions import HTTPError
 
 from daq_config_server.app.constants import ValidAcceptHeaders
-from daq_config_server.models.base_model import ConfigModel
-
-NonModel = str | bytes | dict[str, Any]
-PathToMockDataDict = dict[str, ConfigModel | NonModel]
 
 
-class MockResponse:
-    """Lightweight stand-in for requests.Response used in unit tests.
-
-    This class emulates the minimal interface of a real HTTP response
-    required by ConfigClient, without performing any network operations.
-
-    This allows tests to simulate server responses at different encoding
-    layers (JSON, plain text, or raw bytes) while keeping behaviour
-    consistent with real requests.Response objects.
-    """
-
-    def __init__(
-        self,
-        body: str | bytes,
-        content_type: ValidAcceptHeaders,
-    ):
-        self.headers = {"content-type": content_type}
-        self._body = body
-
-    def json(self) -> Any:
-        """Match requests.Response: JSON is parsed from text/bytes."""
-        if isinstance(self._body, bytes):
-            return json.loads(self._body.decode())
-        return json.loads(self._body)
+class ResponseProtocol(Protocol):
+    def json(self) -> Any: ...
 
     @property
-    def text(self) -> str:
-        if isinstance(self._body, bytes):
-            return self._body.decode()
-        return self._body
+    def headers(self) -> Mapping[str, str]: ...
 
     @property
-    def content(self) -> bytes:
-        if isinstance(self._body, bytes):
-            return self._body
-        return self._body.encode()
+    def text(self) -> str: ...
 
-
-ResponseType = RealResponse | MockResponse
+    @property
+    def content(self) -> bytes: ...
 
 
 class ServerResponse(Protocol):
@@ -60,38 +27,11 @@ class ServerResponse(Protocol):
     mock implementation.
     """
 
-    def get_response(
-        self, endpoint: str, accept_header: ValidAcceptHeaders, file_path: Path
-    ) -> ResponseType: ...
-
-
-class MockServerResponse(ServerResponse):
-    """Mock implementation of ServerResponse used for unit testing.
-
-    This class simulates a config server by reading local files instead of performing
-    HTTP requests. Supports optional overrides for a specified path to the data you
-    want to return instead.
-    """
-
-    def __init__(self, path_to_mock_data: PathToMockDataDict | None = None):
-        self.path_to_mock_data = path_to_mock_data or {}
+    url: str
 
     def get_response(
         self, endpoint: str, accept_header: ValidAcceptHeaders, file_path: Path
-    ) -> MockResponse:
-        if str(file_path) in self.path_to_mock_data:
-            mock_data = self.path_to_mock_data[str(file_path)]
-            if isinstance(mock_data, ConfigModel):
-                mock_response = mock_data.model_dump_json()
-            elif isinstance(mock_data, dict):
-                mock_response = json.dumps(mock_data)
-            elif isinstance(mock_data, bytes):
-                mock_response = mock_data.decode()
-            else:
-                mock_response = mock_data
-        else:
-            mock_response = file_path.read_text()
-        return MockResponse(mock_response, accept_header)
+    ) -> ResponseProtocol: ...
 
 
 class RealServerResponse(ServerResponse):
@@ -101,13 +41,12 @@ class RealServerResponse(ServerResponse):
     requests and retrieves file contents from a deployed service.
     """
 
-    def __init__(self, url: str, log: Logger):
-        self._url = url
-        self._log = log
+    def __init__(self, url: str = "https://daq-config.diamond.ac.uk"):
+        self.url = url
 
     def get_response(
         self, endpoint: str, accept_header: ValidAcceptHeaders, file_path: Path
-    ) -> ResponseType:
+    ) -> RealResponse:
         """
         Get data from the config server and cache it.
 
@@ -120,7 +59,7 @@ class RealServerResponse(ServerResponse):
             The response data.
         """
 
-        request_url = self._url + endpoint + (f"/{file_path}")
+        request_url = self.url + endpoint + (f"/{file_path}")
         r = requests.get(request_url, headers={"Accept": accept_header})
         # Intercept http exceptions from server so that the client
         # can include the response `detail` sent by the server
@@ -129,9 +68,11 @@ class RealServerResponse(ServerResponse):
         except requests.exceptions.HTTPError as err:
             try:
                 error_detail = r.json().get("detail")
-                self._log.error(error_detail)
-                raise HTTPError(error_detail) from err
             except ValueError:
-                self._log.error("Response raised HTTP error but no details provided")
-                raise HTTPError from err
+                error_detail = None
+
+            if error_detail is None:
+                error_detail = "Response raised HTTP error but no details provided"
+            raise HTTPError(error_detail) from err
+
         return r

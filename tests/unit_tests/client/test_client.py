@@ -17,7 +17,6 @@ from daq_config_server.client._client import (
     TypeConversionError,
     _get_mime_type,
 )
-from daq_config_server.client._server_response import NonModel
 from daq_config_server.models import ConfigModel, DisplayConfig
 from daq_config_server.models.lookup_tables import (
     BeamlinePitchLookupTable,
@@ -26,7 +25,7 @@ from daq_config_server.models.lookup_tables import (
 from daq_config_server.models.lookup_tables.insertion_device import (
     UndulatorEnergyGapLookupTable,
 )
-from daq_config_server.testing import make_test_response
+from daq_config_server.testing import MockServerResponse, NonModel, make_test_response
 
 REQUEST_PATCH = "daq_config_server.client._server_response.requests.get"
 
@@ -35,7 +34,7 @@ test_path = Path("test")
 
 @pytest.fixture
 def client() -> ConfigClient:
-    return ConfigClient("url")
+    return ConfigClient.from_url("url")
 
 
 @patch(REQUEST_PATCH)
@@ -49,7 +48,7 @@ def test_config_client_get_file_contents_default_header(
     mock_request.return_value = make_test_response("test")
     assert client.get_file_contents(test_path) == "test"
     mock_request.assert_called_once_with(
-        client._url + EndPoints.CONFIG + "/" + str(test_path),
+        client._server.url + EndPoints.CONFIG + "/" + str(test_path),
         headers={"Accept": ValidAcceptHeaders.PLAIN_TEXT},
     )
 
@@ -107,9 +106,10 @@ def test_config_client_bad_responses_no_details_raises_error(
     client._log.error = MagicMock()
     with pytest.raises(requests.exceptions.HTTPError):
         client.get_file_contents(test_path)
-    client._log.error.assert_called_once_with(
-        "Response raised HTTP error but no details provided"
-    )
+
+    logged_error = client._log.error.call_args.args[0]
+    assert isinstance(logged_error, requests.exceptions.HTTPError)
+    assert str(logged_error) == "Response raised HTTP error but no details provided"
 
 
 @patch(REQUEST_PATCH)
@@ -117,7 +117,6 @@ def test_config_client_bad_responses_with_details_raises_error(
     mock_request: MagicMock, client: ConfigClient
 ):
     """Test that a non-200 response raises a RequestException."""
-
     detail = "test detail"
     mock_request.return_value = make_test_response(
         "1st_read",
@@ -127,9 +126,15 @@ def test_config_client_bad_responses_with_details_raises_error(
     )
     mock_request.return_value.json = MagicMock(return_value={"detail": detail})
     client._log.error = MagicMock()
+
     with pytest.raises(requests.exceptions.HTTPError):
         client.get_file_contents(test_path)
-    client._log.error.assert_called_once_with(detail)
+
+    client._log.error.assert_called_once()
+    logged_error = client._log.error.call_args.args[0]
+
+    assert isinstance(logged_error, requests.exceptions.HTTPError)
+    assert str(logged_error) == detail
 
 
 @patch(REQUEST_PATCH)
@@ -236,7 +241,7 @@ def test_config_client_get_file_contents_with_bad_force_parser_errors(
 def test_reset_cache(mock_request: MagicMock):
     mock_config = "Units eV mm\n5700		5.4606\n#24500		7.2\n"
     mock_request.return_value = make_test_response(mock_config)
-    server = ConfigClient("url")
+    server = ConfigClient.from_url("url")
     result = server.get_file_contents(test_path, str)
 
     assert server._cache.currsize == 1
@@ -252,7 +257,7 @@ def test_reset_cache(mock_request: MagicMock):
     assert result != new_result
 
 
-def test_mock_config_client_get_file_contents_as_dict_gives_expected_result(
+def test_config_client_with_mock_server_get_file_contents_as_dict_gives_expected_result(
     tmp_path: Path,
 ):
     file = tmp_path / "beamline.json"
@@ -260,13 +265,13 @@ def test_mock_config_client_get_file_contents_as_dict_gives_expected_result(
     expected_data = {"x": 1, "y": "test"}
     file.write_text(json.dumps(expected_data))
 
-    client = ConfigClient(mock=True)
+    client = ConfigClient(server_response=MockServerResponse())
 
     result = client.get_file_contents(file, desired_return_type=dict)
     assert result == expected_data
 
 
-def test_mock_config_client_get_file_contents_as_str_gives_expected_result(
+def test_config_client_with_mock_server_get_file_contents_as_str_gives_expected_result(
     tmp_path: Path,
 ):
     file = tmp_path / "beamline.json"
@@ -274,7 +279,7 @@ def test_mock_config_client_get_file_contents_as_str_gives_expected_result(
     expected_data = '{"x": 1, "y": "test"}'
     file.write_text(expected_data)
 
-    client = ConfigClient(mock=True)
+    client = ConfigClient(server_response=MockServerResponse())
 
     result = client.get_file_contents(file)
     assert result == expected_data
@@ -286,14 +291,14 @@ class MyModel(ConfigModel):
     z: list[int] = [1, 4, 5]
 
 
-def test_mock_config_client_get_file_contents_as_config_model_gives_expected_result(
+def test_config_client_with_mock_server_file_contents_gives_expected_result(
     tmp_path: Path,
 ):
     real_file = tmp_path / "beamline.json"
     expected_data = MyModel().model_dump_json()
     real_file.write_text(expected_data)
 
-    client = ConfigClient(mock=True)
+    client = ConfigClient(server_response=MockServerResponse())
 
     result = client.get_file_contents(real_file)
     assert result == expected_data
@@ -308,14 +313,15 @@ def test_mock_config_client_get_file_contents_as_config_model_gives_expected_res
         (b"My string data", bytes),
     ),
 )
-def test_mock_config_client_with_path_to_data_override(
+def test_config_client_with_mock_server_path_to_data_override(
     expected_data: ConfigModel | NonModel,
     return_type: type[ConfigModel | NonModel],
 ):
     mock_file = "/path/to/data.txt"
 
-    client = ConfigClient(mock={mock_file: expected_data})
-
+    client = ConfigClient(
+        server_response=MockServerResponse({mock_file: expected_data})
+    )
     result = client.get_file_contents(mock_file, desired_return_type=return_type)
     assert result == expected_data
 
