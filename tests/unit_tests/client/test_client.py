@@ -8,6 +8,7 @@ import pytest
 import requests
 from fastapi import status
 from httpx import Response
+from requests import RequestException
 
 from daq_config_server.app._routes import EndPoints, ValidAcceptHeaders
 from daq_config_server.client._client import (
@@ -25,11 +26,33 @@ from daq_config_server.models.lookup_tables import (
 from daq_config_server.models.lookup_tables.insertion_device import (
     UndulatorEnergyGapLookupTable,
 )
-from daq_config_server.testing import MockServerResponse, NonModel, make_test_response
+from daq_config_server.testing import MockServerResponse, NonModel
 
 REQUEST_PATCH = "daq_config_server.client._server_response.requests.get"
 
 test_path = Path("test")
+
+
+def make_test_response(
+    content: str,
+    status_code: int = 200,
+    raise_exc: type[RequestException] | None = None,
+    json_value: str | None = None,
+    content_type: ValidAcceptHeaders = ValidAcceptHeaders.PLAIN_TEXT,
+):
+    r = Response(
+        json=json_value,
+        status_code=status_code,
+        headers={"content-type": content_type},
+        content=content,
+    )
+    r.raise_for_status = MagicMock()
+
+    if raise_exc:
+        r.raise_for_status.side_effect = raise_exc
+    else:
+        r.raise_for_status.return_value = None
+    return r
 
 
 @pytest.fixture

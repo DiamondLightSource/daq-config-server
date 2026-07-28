@@ -1,4 +1,3 @@
-from ._utils import make_test_response
 from .mock_server_response import (
     MockResponse,
     MockServerResponse,
@@ -7,7 +6,6 @@ from .mock_server_response import (
 )
 
 __all__ = [
-    "make_test_response",
     "MockResponse",
     "MockServerResponse",
     "NonModel",
