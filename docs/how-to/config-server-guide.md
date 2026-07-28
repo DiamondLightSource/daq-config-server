@@ -83,7 +83,7 @@ To use the mock server with local configuration files, create a `MockServerRespo
 
 ```python
 from daq_config_server.client import ConfigClient
-from daq_config_server.testing.
+from daq_config_server.testing import MockServerResponse
 
 config_client = ConfigClient(
     server_response=MockServerResponse(),
