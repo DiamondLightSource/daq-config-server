@@ -108,11 +108,7 @@ For example:
 
 ```python
 config_client = ConfigClient(
-    server_response=MockServerResponse(
-        {
-            "/path/to/data.txt": {"key": "value"},
-        }
-    ),
+    server_response=MockServerResponse({"/path/to/data.txt": {"key": "value"}}),
 )
 ```
 
@@ -124,11 +120,7 @@ You can configure the mock server to return a `ConfigModel` instance directly:
 expected = MyModel(field="value")
 
 client = ConfigClient(
-    server_response=MockServerResponse(
-        {
-            "/path/to/data.txt": expected,
-        }
-    ),
+    server_response=MockServerResponse({"/path/to/data.txt": expected}),
 )
 
 result = client.get_file_contents(
@@ -150,11 +142,7 @@ expected = {
 }
 
 client = ConfigClient(
-    server_response=MockServerResponse(
-        {
-            "/path/to/data.txt": expected,
-        }
-    ),
+    server_response=MockServerResponse({"/path/to/data.txt": expected})
 )
 
 result = client.get_file_contents(
