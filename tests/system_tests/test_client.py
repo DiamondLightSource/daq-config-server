@@ -112,14 +112,16 @@ def test_bad_json_gives_http_error_with_details(client: ConfigClient):
         f"Failed to convert {file_name} to application/json. "
         "Try requesting this file as a different type."
     )
-
     client._log.error = MagicMock()
-    with pytest.raises(requests.exceptions.HTTPError):
+
+    with pytest.raises(requests.exceptions.HTTPError, match=expected_detail):
         client.get_file_contents(
             file_path,
             dict[Any, Any],
         )
-    client._log.error.assert_called_once_with(expected_detail)
+    logged_error = client._log.error.call_args.args[0]
+    assert isinstance(logged_error, requests.exceptions.HTTPError)
+    assert str(logged_error) == expected_detail
 
 
 @pytest.mark.requires_local_server
