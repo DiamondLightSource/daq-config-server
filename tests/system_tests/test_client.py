@@ -33,12 +33,12 @@ DEPLOYED_SERVER_ADDRESS = "https://daq-config.diamond.ac.uk"
 
 @pytest.fixture
 def client():
-    return ConfigClient(SERVER_ADDRESS)
+    return ConfigClient.from_url(SERVER_ADDRESS)
 
 
 @pytest.fixture
 def deployed_client():
-    return ConfigClient(DEPLOYED_SERVER_ADDRESS)
+    return ConfigClient.from_url(DEPLOYED_SERVER_ADDRESS)
 
 
 @pytest.fixture
