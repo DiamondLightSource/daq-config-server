@@ -13,6 +13,7 @@ from daq_config_server.models.feature_settings.hyperion_feature_settings import 
 from daq_config_server.models.feature_settings.i04_feature_settings import (
     I04FeatureSettings,
 )
+from daq_config_server.models.i15_1.positions_to_times import PositionsToTimes
 from daq_config_server.models.i15_1.xpdf_crystal_lut import XpdfCrystalLookupTable
 from daq_config_server.models.i15_1.xpdf_parameters import TemperatureControllersConfig
 from daq_config_server.models.lookup_tables import (
@@ -60,6 +61,7 @@ CONVERTER_FUNCS: dict[str, Converter] = {
     "HyperionFeatureSettings": HyperionFeatureSettings.from_domain_properties,
     "TemperatureControllersConfig": TemperatureControllersConfig.from_xpdf_parameters,
     "XpdfCrystalLookupTable": XpdfCrystalLookupTable.from_contents,
+    "PositionsToTimes": PositionsToTimes.model_validate,
 }
 
 
