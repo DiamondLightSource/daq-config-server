@@ -55,6 +55,9 @@ class TestDataPaths:
     TEST_I15_1_XPDF_CRYSTAL_LUT = TEST_DATA_DIR_PATH.joinpath(
         "i15-1/test_i15-1_xpdf_crystal_lut.txt"
     )
+    TEST_I15_1_POSITIONS_TIMES_LUT = TEST_DATA_DIR_PATH.joinpath(
+        "i15-1/test_positions_to_times.json"
+    )
 
 
 # These are the file locations accessible from the server running in a container
