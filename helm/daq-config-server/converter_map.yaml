@@ -60,5 +60,5 @@
   converter: TemperatureControllersConfig
 - path: "/dls_sw/i15-1/software/daq_configuration/xpdf_crystal_lut.txt"
   converter: XpdfCrystalLookupTable
-- path: "/dls_sw/i15-1/software/daq_configuration/positions_to_times.json"
-  converter: PositionsToTimes
+- path: "/dls_sw/i15-1/software/daq_configuration/tth_angle_to_collection_time.json"
+  converter: AnglesToTimes

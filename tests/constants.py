@@ -56,7 +56,7 @@ class TestDataPaths:
         "i15-1/test_i15-1_xpdf_crystal_lut.txt"
     )
     TEST_I15_1_POSITIONS_TIMES_LUT = TEST_DATA_DIR_PATH.joinpath(
-        "i15-1/test_positions_to_times.json"
+        "i15-1/test_tth_angle_to_collection_time.txt"
     )
 
 
