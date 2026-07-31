@@ -1,0 +1,21 @@
+# This file specifies which angles the tth will go do during a regular data collection.
+# It also specifies the proportion of the total collection time spent at each angle.
+# The time values can be in any arbitary units - their relative values are all that matter.
+# E.g, the following two tables are equivalent
+#
+# 90          1
+# 180         2
+# 270         3
+#
+#
+# 90          0.05
+# 180         0.01
+# 270         0.15
+
+# Angle (deg)     Time
+10                0.05
+20                0.05
+30                0.1
+40                0.2
+50                0.3
+60                0.3
