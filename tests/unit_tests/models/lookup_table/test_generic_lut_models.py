@@ -14,7 +14,7 @@ def generic_lookup_table():
     )
 
 
-def test_parse_lut_to_dict_gives_expected_result_and_can_be_jsonified():
+def test_parse_lut_gives_expected_result_and_can_be_jsonified():
     with open(TestDataPaths.TEST_GOOD_LUT_PATH) as f:
         contents = f.read()
     expected = GenericLookupTable(

@@ -66,3 +66,5 @@
   converter: DetectorXYLookupTable
 - path: "/dls_sw/i19-1/software/i19-acquisition/i19-shared/lookup/energy_to_id_gap_look_up_table.txt"
   converter: UndulatorEnergyGapLookupTable
+- path: "/dls_sw/i15-1/software/daq_configuration/tth_angle_to_collection_time.json"
+  converter: AnglesToTimes
