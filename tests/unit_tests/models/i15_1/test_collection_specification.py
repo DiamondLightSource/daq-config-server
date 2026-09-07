@@ -8,7 +8,7 @@ from daq_config_server.models.i15_1.collection_specification import (
 )
 
 
-def test_positions_to_times_parses_json_contents():
+def test_collection_spec_parses_json_contents():
     with open(TestDataPaths.TEST_I15_1_POSITIONS_TIMES_LUT) as f:
         contents = f.read()
 
@@ -23,7 +23,7 @@ def test_positions_to_times_parses_json_contents():
     }
 
 
-def test_positions_to_times_normalises_times():
+def test_collection_spec_normalises_times():
     result = CollectionSpecification.model_validate(
         {
             "tth_angle_to_specification": {
@@ -46,6 +46,6 @@ def test_positions_to_times_normalises_times():
 
 
 @pytest.mark.parametrize("transmission", [2, 0.02, 0.0001, 101])
-def test_positions_to_times_rejects_invalid_transmission(transmission: float):
+def test_collection_spec_rejects_invalid_transmission(transmission: float):
     with pytest.raises(ValidationError):
         SpecificationPerPosition(exposure_time=1, transmission=transmission)
