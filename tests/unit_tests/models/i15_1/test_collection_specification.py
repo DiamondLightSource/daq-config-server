@@ -41,7 +41,7 @@ def test_collection_spec_normalises_times():
         spec.exposure_time for spec in result.tth_angle_to_specification.values()
     ]
 
-    assert exposures == pytest.approx([0.05, 0.05, 0.1, 0.2, 0.3, 0.3])
+    assert exposures == pytest.approx([0.05, 0.05, 0.1, 0.2, 0.3, 0.3])  # pyright: ignore[reportUnknownMemberType]
     assert sum(exposures) == 1
 
 
