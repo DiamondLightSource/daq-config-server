@@ -43,9 +43,3 @@ def test_collection_spec_normalises_times():
 
     assert exposures == pytest.approx([0.05, 0.05, 0.1, 0.2, 0.3, 0.3])  # pyright: ignore[reportUnknownMemberType]
     assert sum(exposures) == 1
-
-
-@pytest.mark.parametrize("transmission", [2, 0.02, 0.0001, 101])
-def test_collection_spec_rejects_invalid_transmission(transmission: float):
-    with pytest.raises(ValidationError):
-        SpecificationPerPosition(exposure_time=1, transmission=transmission)

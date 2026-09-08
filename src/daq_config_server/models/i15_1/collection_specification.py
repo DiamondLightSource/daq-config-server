@@ -8,16 +8,6 @@ class SpecificationPerPosition(BaseModel):
     exposure_time: float
     transmission: float
 
-    @field_validator("transmission")
-    @classmethod
-    def _validate_transmission(cls, transmission: float) -> float:
-        allowed_transmissions = [100, 50, 10, 1, 0.1, 0.01, 0.001]
-        if transmission not in allowed_transmissions:
-            raise ValueError(
-                f"Transmission must be one of {sorted(allowed_transmissions)}"
-            )
-        return transmission
-
 
 class CollectionSpecification(ConfigModel):
     tth_angle_to_specification: dict[float, SpecificationPerPosition]
