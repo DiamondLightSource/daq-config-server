@@ -1,5 +1,4 @@
 import pytest
-from pydantic import ValidationError
 from tests.constants import TestDataPaths
 
 from daq_config_server.models.i15_1.collection_specification import (
