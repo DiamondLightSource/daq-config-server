@@ -15,7 +15,21 @@ def camel_to_snake_case(value: str) -> str:
     return re.sub(r"([a-z])([A-Z])", r"\1_\2", value).lower()
 
 
-DEFAULT_IGNORE_LINES_STARTING_WITH = ("Units", "ScannableUnits", "ScannableNames")
+DEFAULT_UNIT_LINES = ("Units", "ScannableUnits")
+DEFAULT_IGNORE_LINES_STARTING_WITH = DEFAULT_UNIT_LINES + ("ScannableNames",)
+
+
+def get_units_from_lut(
+    contents: str,
+    default_units: list[str],
+    units_lines: tuple[str, str] = DEFAULT_UNIT_LINES,
+) -> list[str]:
+    units = default_units
+    for line in contents.splitlines():
+        if line.startswith(units_lines):
+            units = line.split()[1:]
+            break
+    return units
 
 
 def parse_lut_rows(

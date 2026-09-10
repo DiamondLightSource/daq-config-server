@@ -1,3 +1,5 @@
+import pytest
+
 from daq_config_server.models.lookup_tables import GenericLookupTable
 from daq_config_server.models.lookup_tables.insertion_device import (
     UndulatorEnergyGapLookupTable,
@@ -51,3 +53,28 @@ def test_undulator_gap_lut_gives_expected_result():
     result = UndulatorEnergyGapLookupTable.from_contents(input)
     assert result == expected
     assert result.get_column_names() == ["energy_eV", "gap_mm"]
+
+
+def test_undulator_lut_converts_energy_when_in_kev():
+    input = (
+        "#######################\n"
+        "#                     #\n"
+        "# 5.5mm CPMU 20/11/22 #\n"
+        "#                     #\n"
+        "Units KeV mm\n"
+        "5.700		5.4606\n"
+        "5.760		5.5\n"
+        "6.000		5.681\n"
+        "6.500		6.045\n"
+    )
+    expected = UndulatorEnergyGapLookupTable(
+        rows=[[5700, 5.4606], [5760, 5.5], [6000, 5.681], [6500, 6.045]]
+    )
+    result = UndulatorEnergyGapLookupTable.from_contents(input)
+    assert result == expected
+
+
+def test_unulator_lut_raises_error_for_unexpected_units():
+    input = "#######################\nUnits J mm\n5700		5.4606\n5760		5.5\n"
+    with pytest.raises(ValueError):
+        UndulatorEnergyGapLookupTable.from_contents(input)
