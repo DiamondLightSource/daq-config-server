@@ -17,8 +17,13 @@ def _check_energy_units_and_convert_row(
 ) -> list[list[float]]:
     if units_from_table.lower() == default_energy_unit.lower():
         return rows
-    converted_rows = [[row[0] * 1000, row[1]] for row in rows]
-    return converted_rows
+    elif units_from_table.lower() == "kev":
+        return [[row[0] * 1000, row[1]] for row in rows]
+    else:
+        raise ValueError(
+            f"""No conversion implemented for units: {units_from_table}.
+            Energy in table should be in eV or KeV."""
+        )
 
 
 class UndulatorEnergyGapLookupTable(LookupTableBase[UNDULATOR_ENERGY_GAP_COLUMN_NAMES]):
