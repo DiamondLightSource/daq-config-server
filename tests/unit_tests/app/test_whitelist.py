@@ -48,7 +48,7 @@ def test_legacy_whitelist_contains_expected_data(inject_whitelist: None):
     }
     expected_dirs = {
         Path("/tests/test_data/"),
-        Path("/dls_sw/i03/software/daq_configuration/"),
+        Path("/dls_sw/i04/software/daq_configuration/"),
     }
     assert expected_files.issubset(whitelist.whitelist_files)
     assert expected_dirs.issubset(whitelist.whitelist_dirs)

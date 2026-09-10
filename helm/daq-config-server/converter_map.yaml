@@ -4,8 +4,6 @@
   converter: UndulatorEnergyGapLookupTable
 - path: "/dls_sw/i23/software/aithre/aithre_display.configuration"
   converter: DisplayConfig
-- path: "/dls_sw/i03/software/gda_versions/var/display.configuration"
-  converter: DisplayConfig
 - path: "/dls_sw/i04/software/bluesky/scratch/display.configuration"
   converter: DisplayConfig
 - path: "/dls_sw/i19-1/software/daq_configuration/domain/display.configuration"
@@ -14,8 +12,6 @@
   converter: DisplayConfig
 - path: "/dls_sw/i24/software/gda_versions/var/display.configuration"
   converter: DisplayConfig
-- path: "/dls_sw/i03/software/gda/configurations/i03-config/xml/jCameraManZoomLevels.xml"
-  converter: Xml
 - path: "/dls_sw/i04/software/bluesky/scratch/jCameraManZoomLevels.xml"
   converter: Xml
 - path: "/dls_sw/i19-1/software/gda_versions/gda/config/xml/jCameraManZoomLevels.xml"
@@ -24,12 +20,8 @@
   converter: Xml
 - path: "/dls_sw/i24/software/gda_versions/gda/config/xml/jCameraManZoomLevels.xml"
   converter: Xml
-- path: "/dls_sw/i03/software/daq_configuration/domain/beamlineParameters"
-  converter: BeamlineParameters
 - path: "/dls_sw/i04/software/daq_configuration/domain/beamlineParameters"
   converter: BeamlineParameters
-- path: "/dls_sw/i03/software/daq_configuration/lookup/DetDistToBeamXYConverter.txt"
-  converter: DetectorXYLookupTable
 - path: "/dls_sw/i04/software/daq_configuration/lookup/DetDistToBeamXYConverter.txt"
   converter: DetectorXYLookupTable
 - path: "/dls_sw/i04-1/software/daq_configuration/lookup/DetDistToBeamXYConverter.txt"
@@ -42,20 +34,12 @@
   converter: DetectorXYLookupTable
 - path: "/dls_sw/i24/software/daq_configuration/lookup/DetDistToBeamXYConverterE9M.txt"
   converter: DetectorXYLookupTable
-- path: "/dls_sw/i03/software/daq_configuration/lookup/BeamLineEnergy_DCM_Pitch_converter.txt"
-  converter: BeamlinePitchLookupTable
-- path: "/dls_sw/i03/software/daq_configuration/lookup/BeamLineEnergy_DCM_Roll_converter.txt"
-  converter: BeamlineRollLookupTable
-- path: "/dls_sw/i03/software/daq_configuration/lookup/BeamLine_Undulator_toGap.txt"
-  converter: UndulatorEnergyGapLookupTable
 - path: "/dls_sw/i04/software/daq_configuration/lookup/BeamLine_Undulator_toGap.txt"
   converter: UndulatorEnergyGapLookupTable
 - path: "/dls_sw/i09-1/software/gda/workspace_git/gda-diamond.git/configurations/i09-1-shared/lookupTables/IIDCalibrationTable.txt"
   converter: I09UndulatorHuEnergyGapLut
 - path: "/dls_sw/i04/software/daq_configuration/domain/domain.properties"
   converter: I04FeatureSettings
-- path: "/dls_sw/i03/software/daq_configuration/domain/domain.properties"
-  converter: HyperionFeatureSettings
 - path: "/dls_sw/i15-1/software/gda_var/xpdfLocalParameters.xml"
   converter: TemperatureControllersConfig
 - path: "/dls_sw/i15-1/software/daq_configuration/xpdf_crystal_lut.txt"
