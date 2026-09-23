@@ -1,6 +1,5 @@
 import re
 from collections.abc import Iterable
-from typing import Any
 
 
 def remove_comments(lines: Iterable[str]) -> list[str]:
@@ -34,12 +33,22 @@ def get_units_from_lut(
 
 def parse_lut_rows(
     contents: str,
-    types: list[type[int] | type[float]],
     ignore_lines_starting_with: tuple[str, ...] = DEFAULT_IGNORE_LINES_STARTING_WITH,
-) -> list[list[int | float]]:
-    rows: list[list[Any]] = []
+) -> list[list[str]]:
+    rows: list[list[str]] = []
     for line in remove_comments(contents.splitlines()):
         if line.startswith(ignore_lines_starting_with):
             continue
-        rows.append([types[i](value) for i, value in enumerate(line.split())])
+        rows.append(line.split())
     return rows
+
+
+def parse_and_cast_lut_rows(
+    contents: str,
+    types: list[type[int] | type[float]],
+    ignore_lines_starting_with: tuple[str, ...] = DEFAULT_IGNORE_LINES_STARTING_WITH,
+) -> list[list[int | float]]:
+    casted_rows: list[list[int | float]] = []
+    for line in parse_lut_rows(contents, ignore_lines_starting_with):
+        casted_rows.append([types[i](value) for i, value in enumerate(line)])
+    return casted_rows

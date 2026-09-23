@@ -4,7 +4,7 @@ from daq_config_server.models.lookup_tables.generic_lut_models import (
     GenericLookupTable,
     LookupTableBase,
 )
-from daq_config_server.models.utils import get_units_from_lut, parse_lut_rows
+from daq_config_server.models.utils import get_units_from_lut, parse_and_cast_lut_rows
 
 UNDULATOR_ENERGY_GAP_COLUMN_NAMES = Literal["energy_eV", "gap_mm"]
 EXPECTED_UNITS = ["eV", "mm"]
@@ -32,7 +32,7 @@ class UndulatorEnergyGapLookupTable(LookupTableBase[UNDULATOR_ENERGY_GAP_COLUMN_
 
     @classmethod
     def from_contents(cls, contents: str) -> Self:
-        rows = parse_lut_rows(contents, [float, float])
+        rows = parse_and_cast_lut_rows(contents, [float, float])
         rows = _check_energy_units_and_convert_row(
             rows, get_units_from_lut(contents, EXPECTED_UNITS)[0]
         )

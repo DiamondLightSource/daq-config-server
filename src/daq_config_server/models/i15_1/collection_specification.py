@@ -34,14 +34,15 @@ class CollectionSpecification(ConfigModel):
 
     @classmethod
     def from_lut(cls, contents: str):
-        rows = parse_lut_rows(contents, types=[float, float, float, str])
         return cls(
             tth_angle_to_specification={
-                row[0]: SpecificationPerPosition(
-                    exposure_time=row[1],
-                    slow_attenuator_transmission=row[2],
-                    fast_attenuator_position=row[3],
+                float(row[0]): SpecificationPerPosition.model_validate(
+                    {
+                        "exposure_time": row[1],
+                        "slow_attenuator_transmission": row[2],
+                        "fast_attenuator_position": row[3],
+                    }
                 )
-                for row in rows
+                for row in parse_lut_rows(contents)
             }
         )
