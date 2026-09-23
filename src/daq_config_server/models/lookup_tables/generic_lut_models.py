@@ -4,7 +4,7 @@ from typing import Generic, Self, TypeVar
 from pydantic import model_validator
 
 from daq_config_server.models.base_model import ConfigModel
-from daq_config_server.models.utils import parse_lut_rows
+from daq_config_server.models.utils import parse_and_cast_lut_rows
 
 ColumnNameT = TypeVar("ColumnNameT", bound=str)
 
@@ -105,5 +105,5 @@ class GenericLookupTable(LookupTableBase[str]):
         """
         column_names = [param[0] for param in params]
         types = [param[1] for param in params]
-        rows = parse_lut_rows(contents, types)
+        rows = parse_and_cast_lut_rows(contents, types)
         return cls(column_names=column_names, rows=rows)

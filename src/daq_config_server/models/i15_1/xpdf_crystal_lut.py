@@ -1,7 +1,7 @@
 from typing import Literal, Self, get_args
 
 from daq_config_server.models.lookup_tables.generic_lut_models import LookupTableBase
-from daq_config_server.models.utils import parse_lut_rows
+from daq_config_server.models.utils import parse_and_cast_lut_rows
 
 XPDF_CRYSTAL_COLUMN_NAMES = Literal["y_mm", "energy_keV"]
 
@@ -16,7 +16,7 @@ class XpdfCrystalLookupTable(LookupTableBase[XPDF_CRYSTAL_COLUMN_NAMES]):
 
     @classmethod
     def from_contents(cls, contents: str) -> Self:
-        rows = parse_lut_rows(contents, [float, float])
+        rows = parse_and_cast_lut_rows(contents, [float, float])
         return cls(rows=rows)
 
     def get_energy(self, y: float) -> float:
