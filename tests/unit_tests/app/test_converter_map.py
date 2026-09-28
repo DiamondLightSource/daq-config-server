@@ -45,7 +45,7 @@ def converter_map_from_config():
         ["tests/test_data/test_i04_domain.properties", I04FeatureSettings],
         ["tests/test_data/test_hyperion_domain.properties", HyperionFeatureSettings],
         [
-            "tests/test_data/i15-1/test_xpdfLocalParameters.xml",
+            "tests/test_data/i15_1/test_xpdfLocalParameters.xml",
             TemperatureControllersConfig,
         ],
         ["tests/test_data/test_good_detector_xy_lut.txt", DetectorXYLookupTable],

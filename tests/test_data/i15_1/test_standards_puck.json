@@ -1,0 +1,83 @@
+{
+    "pins": {
+        "1": {
+            "capillary": "metal",
+            "contents": null
+        },
+        "2": {
+            "capillary": "bs1.0",
+            "contents": "Silicon"
+        },
+        "3": {
+            "capillary": "fq1.0",
+            "contents": "Silicon"
+        },
+        "4": {
+            "capillary": "bs1.5",
+            "contents": "Silicon"
+        },
+        "5": null,
+        "6": {
+            "capillary": "bs2.0",
+            "contents": "Silicon"
+        },
+        "7": null,
+        "8": null,
+        "9": {
+            "capillary": "bs1.0",
+            "contents": "Si/Al2O3"
+        },
+        "10": {
+            "capillary": "fq1.0",
+            "contents": "Si/Al2O3"
+        },
+        "11": {
+            "capillary": "fq1.5",
+            "contents": "Si/Al2O3"
+        },
+        "12": {
+            "capillary": "fq2.0",
+            "contents": "Si/Al2O3"
+        },
+        "13": {
+            "capillary": "bs1.0",
+            "contents": "Pb"
+        },
+        "14": {
+            "capillary": "bs1.0",
+            "contents": "LaB6 660b"
+        },
+        "15": {
+            "capillary": "bs1.0",
+            "contents": null
+        },
+        "16": {
+            "capillary": "fq1.0",
+            "contents": null
+        },
+        "17": {
+            "capillary": "bs1.5",
+            "contents": null
+        },
+        "18": {
+            "capillary": "fq1.5",
+            "contents": null
+        },
+        "19": {
+            "capillary": "bs2.0",
+            "contents": null
+        },
+        "20": {
+            "capillary": "fq2.0",
+            "contents": null
+        },
+        "21": {
+            "capillary": "bs1.0",
+            "contents": "Ga/In"
+        },
+        "22": {
+            "capillary": "bs1.0",
+            "contents": "Tungsten/Boron mix"
+        }
+    }
+}
