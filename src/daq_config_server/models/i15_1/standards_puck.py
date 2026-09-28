@@ -18,8 +18,6 @@ ALLOWED_USER_CAPILLARIES = Literal[
 
 STANDARD_CAPILLARY = ALLOWED_USER_CAPILLARIES | Literal["metal"]
 
-# Should put this into the config server and create a config file for it.
-
 
 class StandardsPin(BaseModel):
     capillary: STANDARD_CAPILLARY
