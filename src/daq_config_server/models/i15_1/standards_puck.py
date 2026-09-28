@@ -2,7 +2,6 @@ from typing import Literal
 
 from pydantic import BaseModel, ConfigDict, field_validator
 
-STANDARDS_PUCK_PLACEMENT = 1
 STANDARD_SAMPLE = Literal[
     "Silicon", "Tungsten/Boron mix", "Si/Al2O3", "Pb", "LaB6 660b", "Ga/In"
 ]
