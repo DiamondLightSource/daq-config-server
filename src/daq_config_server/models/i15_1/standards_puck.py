@@ -1,6 +1,8 @@
 from typing import Literal
 
-from pydantic import BaseModel, ConfigDict, field_validator
+from pydantic import ConfigDict, field_validator
+
+from daq_config_server.models.base_model import ConfigModel
 
 STANDARD_SAMPLE = Literal[
     "Silicon", "Tungsten/Boron mix", "Si/Al2O3", "Pb", "LaB6 660b", "Ga/In"
@@ -18,12 +20,12 @@ ALLOWED_USER_CAPILLARIES = Literal[
 STANDARD_CAPILLARY = ALLOWED_USER_CAPILLARIES | Literal["metal"]
 
 
-class StandardsPin(BaseModel):
+class StandardsPin(ConfigModel):
     capillary: STANDARD_CAPILLARY
     contents: STANDARD_SAMPLE | None  # None for empty capillary
 
 
-class StandardsPuck(BaseModel):
+class StandardsPuck(ConfigModel):
     model_config = ConfigDict(validate_default=True)
 
     pins: dict[int, StandardsPin | None]
