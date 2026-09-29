@@ -1,4 +1,5 @@
 import json
+import logging
 import os
 from pathlib import Path
 from typing import Any
@@ -12,6 +13,8 @@ from daq_config_server.models.base_model import ConfigModel
 
 from ._file_converter_map import get_converter
 from ._whitelist import path_is_whitelisted
+
+LOGGER = logging.getLogger(__name__)
 
 
 class ConverterParseError(Exception): ...
@@ -108,6 +111,7 @@ def get_configuration(file_path: Path, request: Request):
                     )
 
     except Exception as e:
+        LOGGER.exception(e)
         raise HTTPException(
             status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
             detail=(
