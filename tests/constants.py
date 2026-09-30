@@ -49,15 +49,6 @@ class TestDataPaths:
     TEST_I04_DOMAIN_PROPERTIES = TEST_DATA_DIR_PATH.joinpath(
         "test_i04_domain.properties"
     )
-    TEST_I15_1_XPDF_LOCAL_PARAMETERS = TEST_DATA_DIR_PATH.joinpath(
-        "i15-1/test_xpdfLocalParameters.xml"
-    )
-    TEST_I15_1_XPDF_CRYSTAL_LUT = TEST_DATA_DIR_PATH.joinpath(
-        "i15-1/test_i15-1_xpdf_crystal_lut.txt"
-    )
-    TEST_I15_1_POSITIONS_TIMES_LUT = TEST_DATA_DIR_PATH.joinpath(
-        "i15-1/test_tth_angle_to_collection_time.txt"
-    )
 
 
 # These are the file locations accessible from the server running in a container

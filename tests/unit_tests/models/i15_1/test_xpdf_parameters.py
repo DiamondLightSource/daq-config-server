@@ -1,14 +1,15 @@
 import xmltodict
-from tests.constants import TestDataPaths
 
 from daq_config_server.models.i15_1.xpdf_parameters import (
     TemperatureControllerParams,
     TemperatureControllersConfig,
 )
 
+from .conftest import TestI151DataPaths
+
 
 def test_xml_can_be_read():
-    with open(TestDataPaths.TEST_I15_1_XPDF_LOCAL_PARAMETERS) as f:
+    with open(TestI151DataPaths.XPDF_LOCAL_PARAMETERS) as f:
         contents = f.read()
     result = xmltodict.parse(contents)
     expected = {
@@ -94,7 +95,7 @@ def test_xml_can_be_read():
 
 
 def test_robot_load_devices_config_model():
-    with open(TestDataPaths.TEST_I15_1_XPDF_LOCAL_PARAMETERS) as f:
+    with open(TestI151DataPaths.XPDF_LOCAL_PARAMETERS) as f:
         contents = f.read()
     result = TemperatureControllersConfig.from_xpdf_parameters(contents)
     assert result == TemperatureControllersConfig(

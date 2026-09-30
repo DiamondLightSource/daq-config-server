@@ -1,14 +1,15 @@
 import pytest
-from tests.constants import TestDataPaths
 
 from daq_config_server.models.i15_1.collection_specification import (
     CollectionSpecification,
     SpecificationPerPosition,
 )
 
+from .conftest import TestI151DataPaths
+
 
 def test_collection_spec_parses_lut_contents():
-    with open(TestDataPaths.TEST_I15_1_POSITIONS_TIMES_LUT) as f:
+    with open(TestI151DataPaths.POSITIONS_TIMES_LUT) as f:
         contents = f.read()
 
     result = CollectionSpecification.from_lut(contents)
