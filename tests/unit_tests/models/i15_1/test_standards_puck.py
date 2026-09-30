@@ -44,7 +44,7 @@ def test_standards_puck_json_is_read_correctly():
     [
         {},
         {1: None, 22: None},
-        {
+        {  # Check when more pins defined than expected
             1: None,
             2: None,
             3: None,
@@ -84,7 +84,9 @@ def test_standards_puck_get_pin_number_works_as_expected():
 
     standards = StandardsPuck.model_validate_json(contents)
     assert (
-        standards.get_pin_number(StandardsPin(capillary="bs1.5", contents="Silicon"))
+        standards.get_position_of_pin(
+            StandardsPin(capillary="bs1.5", contents="Silicon")
+        )
         == 4
     )
 
@@ -95,6 +97,6 @@ def test_standards_puck_get_pin_number_raises_if_no_matching_pin_exists():
 
     standards = StandardsPuck.model_validate_json(contents)
     with pytest.raises(ValueError):
-        standards.get_pin_number(
+        standards.get_position_of_pin(
             StandardsPin(capillary="bs1.5", contents="Tungsten/Boron mix")
         )

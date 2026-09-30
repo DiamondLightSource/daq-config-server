@@ -30,7 +30,7 @@ class StandardsPuck(ConfigModel):
 
     pins: dict[int, StandardsPin | None]
 
-    def get_pin_number(self, pin: StandardsPin):
+    def get_position_of_pin(self, pin: StandardsPin):
         for pin_number, loaded_pin in self.pins.items():
             if pin == loaded_pin:
                 return pin_number
