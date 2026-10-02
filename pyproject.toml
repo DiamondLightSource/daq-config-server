@@ -29,6 +29,7 @@ dependencies = [
     "urllib3",
     "requests",
     "xmltodict",
+    "numpy>=2.4.6",
 ]
 
 [dependency-groups]
