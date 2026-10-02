@@ -1,6 +1,6 @@
 from typing import Literal
 
-from pydantic import ConfigDict, field_validator
+from pydantic import ConfigDict, Field, field_validator
 
 from daq_config_server.models.base_model import ConfigModel
 
@@ -27,7 +27,7 @@ class StandardsPin(ConfigModel):
 
 class StandardsPuck(ConfigModel):
     model_config = ConfigDict(validate_default=True)
-
+    position_on_table: int = Field(ge=1, le=20)
     pins: dict[int, StandardsPin | None]
 
     def get_position_of_pin(self, pin: StandardsPin):

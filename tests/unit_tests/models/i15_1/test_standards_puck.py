@@ -10,6 +10,7 @@ def test_standards_puck_json_is_read_correctly():
     with open(TestI151DataPaths.STANDARDS_PUCK) as f:
         contents = f.read()
     expected = StandardsPuck(
+        position_on_table=1,
         pins={
             1: StandardsPin(capillary="metal", contents=None),
             2: StandardsPin(capillary="bs1.0", contents="Silicon"),
@@ -33,7 +34,7 @@ def test_standards_puck_json_is_read_correctly():
             20: StandardsPin(capillary="fq2.0", contents=None),
             21: StandardsPin(capillary="bs1.0", contents="Ga/In"),
             22: StandardsPin(capillary="bs1.0", contents="Tungsten/Boron mix"),
-        }
+        },
     )
     result = StandardsPuck.model_validate_json(contents)
     assert result == expected
@@ -75,7 +76,7 @@ def test_if_wrong_pin_numbers_parsed_then_error_raised(
     pins: dict[int, StandardsPin | None],
 ):
     with pytest.raises(ValidationError):
-        StandardsPuck(pins=pins)
+        StandardsPuck(position_on_table=1, pins=pins)
 
 
 def test_standards_puck_get_pin_number_works_as_expected():
