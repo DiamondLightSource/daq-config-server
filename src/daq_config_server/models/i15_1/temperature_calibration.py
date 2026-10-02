@@ -14,7 +14,7 @@ class ThirdOrderPolynomial(BaseModel):
     # From highest order to lowest
     coefficients: tuple[float, float, float, float]
 
-    def calc(self, value: float) -> float:
+    def calc(self, value: float, inverse: bool = False) -> float:
         return float(np.polyval(self.coefficients, value))
 
 
@@ -28,8 +28,15 @@ class TemperatureCalibration(LookupTableBase[TEMPERATURE_CALIBRATION_COLUMN_NAME
         return cls(rows=rows)
 
     @cached_property
-    def polynomial(self) -> ThirdOrderPolynomial:
+    def real_to_setpoint(self) -> ThirdOrderPolynomial:
         setpoints = np.array(self.columns[0])
         actual_temps = setpoints - np.array(self.columns[1])
         coefficients = tuple(np.polyfit(actual_temps, setpoints, deg=3))
+        return ThirdOrderPolynomial(coefficients=coefficients)
+
+    @cached_property
+    def setpoint_to_real(self) -> ThirdOrderPolynomial:
+        setpoints = np.array(self.columns[0])
+        actual_temps = setpoints - np.array(self.columns[1])
+        coefficients = tuple(np.polyfit(setpoints, actual_temps, deg=3))
         return ThirdOrderPolynomial(coefficients=coefficients)

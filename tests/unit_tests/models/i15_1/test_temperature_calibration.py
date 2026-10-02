@@ -34,10 +34,10 @@ def test_temperature_calibration_is_read_correctly(
     }
 
 
-def test_temperature_calibration_produces_expected_polynomial(
+def test_temperature_calibration_produces_expected_polynomials(
     temperature_calibration: TemperatureCalibration,
 ):
-    assert temperature_calibration.polynomial == ThirdOrderPolynomial(
+    assert temperature_calibration.real_to_setpoint == ThirdOrderPolynomial(
         coefficients=(
             1.3632771786784797e-06,
             -0.00012637763892189705,
@@ -45,9 +45,17 @@ def test_temperature_calibration_produces_expected_polynomial(
             -8.87384936825852,
         )
     )
+    assert temperature_calibration.setpoint_to_real == ThirdOrderPolynomial(
+        coefficients=(
+            -1.214726184926246e-07,
+            -0.00015139577622377191,
+            0.824064798795648,
+            5.972881969696991,
+        )
+    )
 
 
-def test_temperature_polynomial_calculates_required_setpoint_for_a_desired_temperature(
+def test_polynomial_calculates_required_setpoint_for_a_desired_temperature(
     temperature_calibration: TemperatureCalibration,
 ):
     for setpoint, negative_error in zip(
@@ -55,8 +63,23 @@ def test_temperature_polynomial_calculates_required_setpoint_for_a_desired_tempe
         temperature_calibration.columns[1],
         strict=True,
     ):
-        assert temperature_calibration.polynomial.calc(
+        assert temperature_calibration.real_to_setpoint.calc(
             setpoint - negative_error
         ) == pytest.approx(setpoint, abs=5)  # type: ignore
 
-    assert temperature_calibration.polynomial.calc(500) == 759.721816599402
+    assert temperature_calibration.real_to_setpoint.calc(500) == 759.721816599402
+
+
+def test_polynomial_calculates_real_temperature_from_setpoint(
+    temperature_calibration: TemperatureCalibration,
+):
+    for setpoint, negative_error in zip(
+        temperature_calibration.columns[0],
+        temperature_calibration.columns[1],
+        strict=True,
+    ):
+        assert temperature_calibration.setpoint_to_real.calc(setpoint) == pytest.approx(  # type: ignore
+            setpoint - negative_error, abs=5
+        )
+
+    assert temperature_calibration.setpoint_to_real.calc(759.7) == 491.37728934391555
