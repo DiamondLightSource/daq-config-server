@@ -45,14 +45,6 @@ def test_temperature_calibration_produces_expected_polynomials(
             -8.87384936825852,
         )
     )
-    assert temperature_calibration.setpoint_to_real == ThirdOrderPolynomial(
-        coefficients=(
-            -1.214726184926246e-07,
-            -0.00015139577622377191,
-            0.824064798795648,
-            5.972881969696991,
-        )
-    )
 
 
 def test_polynomial_calculates_required_setpoint_for_a_desired_temperature(
@@ -78,8 +70,12 @@ def test_polynomial_calculates_real_temperature_from_setpoint(
         temperature_calibration.columns[1],
         strict=True,
     ):
-        assert temperature_calibration.setpoint_to_real.calc(setpoint) == pytest.approx(  # type: ignore
-            setpoint - negative_error, abs=5
-        )
+        assert temperature_calibration.real_to_setpoint.inverse_calc(
+            setpoint
+        ) == pytest.approx(setpoint - negative_error, abs=5)  # type: ignore
 
-    assert temperature_calibration.setpoint_to_real.calc(759.7) == 491.37728934391555
+    # Exact inverse from above (to 13 dp)
+    assert (
+        temperature_calibration.real_to_setpoint.inverse_calc(759.721816599402)
+        == 499.9999999999999
+    )
