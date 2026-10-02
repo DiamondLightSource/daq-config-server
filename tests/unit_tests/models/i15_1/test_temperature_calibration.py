@@ -2,7 +2,7 @@ import pytest
 
 from daq_config_server.models.i15_1.temperature_calibration import (
     TemperatureCalibration,
-    ThirdOrderPolynomial,
+    ThirdOrderMonotonicPolynomial,
 )
 from tests.unit_tests.models.i15_1.conftest import TestI151DataPaths
 
@@ -37,7 +37,7 @@ def test_temperature_calibration_is_read_correctly(
 def test_temperature_calibration_produces_expected_polynomials(
     temperature_calibration: TemperatureCalibration,
 ):
-    assert temperature_calibration.real_to_setpoint == ThirdOrderPolynomial(
+    assert temperature_calibration.real_to_setpoint == ThirdOrderMonotonicPolynomial(
         coefficients=(
             1.3632771786784797e-06,
             -0.00012637763892189705,
@@ -79,3 +79,22 @@ def test_polynomial_calculates_real_temperature_from_setpoint(
         temperature_calibration.real_to_setpoint.inverse_calc(759.721816599402)
         == 499.9999999999999
     )
+
+
+def test_polynomial_raises_error_if_not_monotonically_increasing():
+    with pytest.raises(ValueError):
+        TemperatureCalibration(
+            rows=[
+                [50.0, 0.62034],
+                [100.0, 16.89903],
+                [150.0, 26.49641],
+                [200.0, 33.91664],
+                [250.0, -10],
+                [300.0, -20],
+                [350.0, -50],
+                [400.0, 96.91991],
+                [450.0, 115.6384],
+                [500.0, 135.89034],
+                [550.0, 155.75917],
+            ]
+        )
