@@ -23,8 +23,7 @@ class ThirdOrderMonotonicPolynomial(BaseModel):
         a, b, c, d = self.coefficients
         roots = np.roots([a, b, c, d - value])
         real_roots = roots[np.isclose(roots.imag, 0)].real
-        if len(real_roots) != 1:
-            raise ValueError(f"More than one root found: {real_roots}")
+        assert len(real_roots) == 1, f"More than one root found: {real_roots}"
         return float(real_roots[0])
 
     @field_validator("coefficients", mode="after")
