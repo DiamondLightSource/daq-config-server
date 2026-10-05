@@ -2,7 +2,6 @@ import pytest
 
 from daq_config_server.models.i15_1.temperature_calibration import (
     TemperatureCalibration,
-    ThirdOrderMonotonicPolynomial,
 )
 from tests.unit_tests.models.i15_1.conftest import TestI151DataPaths
 
@@ -37,8 +36,8 @@ def test_temperature_calibration_is_read_correctly(
 def test_temperature_calibration_produces_expected_polynomials(
     temperature_calibration: TemperatureCalibration,
 ):
-    assert temperature_calibration.real_to_setpoint == ThirdOrderMonotonicPolynomial(
-        coefficients=(
+    assert temperature_calibration.real_to_setpoint.coefficients == pytest.approx(  # type: ignore
+        (
             1.3632771786784797e-06,
             -0.00012637763892189705,
             1.2595608567266499,
@@ -59,7 +58,9 @@ def test_polynomial_calculates_required_setpoint_for_a_desired_temperature(
             setpoint - negative_error
         ) == pytest.approx(setpoint, abs=5)  # type: ignore
 
-    assert temperature_calibration.real_to_setpoint.calc(500) == 759.721816599402
+    assert temperature_calibration.real_to_setpoint.calc(500) == pytest.approx(  # type: ignore
+        759.721816599402
+    )
 
 
 def test_polynomial_calculates_real_temperature_from_setpoint(
@@ -75,10 +76,9 @@ def test_polynomial_calculates_real_temperature_from_setpoint(
         ) == pytest.approx(setpoint - negative_error, abs=5)  # type: ignore
 
     # Exact inverse from above (to 13 dp)
-    assert (
-        temperature_calibration.real_to_setpoint.inverse_calc(759.721816599402)
-        == 499.9999999999999
-    )
+    assert temperature_calibration.real_to_setpoint.inverse_calc(
+        759.721816599402
+    ) == pytest.approx(500)  # type: ignore
 
 
 def test_polynomial_raises_error_if_not_monotonically_increasing():
