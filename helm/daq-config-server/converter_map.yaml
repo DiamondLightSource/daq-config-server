@@ -68,3 +68,5 @@
   converter: UndulatorEnergyGapLookupTable
 - path: "/dls_sw/i15-1/software/daq_configuration/collection_specification.json"
   converter: CollectionSpecification
+- path: "/dls_sw/i15-1/software/daq_configuration/temperature_calibration/blower_calibration.txt"
+  converter: TemperatureCalibration
