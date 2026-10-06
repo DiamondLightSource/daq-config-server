@@ -29,8 +29,25 @@ def test_temperature_calibration_is_read_correctly(
             [450.0, 115.6384],
             [500.0, 135.89034],
             [550.0, 155.75917],
-        ]
+        ],
+        "real_to_setpoint": {
+            "coefficients": pytest.approx(  # type: ignore
+                (
+                    1.3632771786784797e-06,
+                    -0.00012637763892189705,
+                    1.2595608567266499,
+                    -8.87384936825852,
+                )
+            )
+        },
     }
+
+
+def test_temperature_calibration_can_be_serialised_and_desrialised(
+    temperature_calibration: TemperatureCalibration,
+):
+    serialised = temperature_calibration.model_dump()
+    TemperatureCalibration.model_validate(serialised)
 
 
 def test_temperature_calibration_produces_expected_polynomials(

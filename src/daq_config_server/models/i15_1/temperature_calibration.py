@@ -2,7 +2,7 @@ from functools import cached_property
 from typing import Literal, Self, TypeAlias, get_args
 
 import numpy as np
-from pydantic import BaseModel, field_validator, model_validator
+from pydantic import BaseModel, computed_field, field_validator, model_validator
 
 from daq_config_server.models.lookup_tables.generic_lut_models import LookupTableBase
 from daq_config_server.models.utils import parse_and_cast_lut_rows
@@ -47,6 +47,7 @@ class TemperatureCalibration(LookupTableBase[TEMPERATURE_CALIBRATION_COLUMN_NAME
         rows = parse_and_cast_lut_rows(contents, [float, float])
         return cls(rows=rows)
 
+    @computed_field
     @cached_property
     def real_to_setpoint(self) -> ThirdOrderMonotonicPolynomial:
         setpoints = np.array(self.columns[0])
