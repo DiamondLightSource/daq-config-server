@@ -59,3 +59,8 @@ class TemperatureCalibration(LookupTableBase[TEMPERATURE_CALIBRATION_COLUMN_NAME
     def check_polynomial_can_be_created(self):
         _ = self.real_to_setpoint
         return self
+
+    @computed_field
+    @property
+    def column_names(self) -> list[TEMPERATURE_CALIBRATION_COLUMN_NAMES]:
+        return self.get_column_names()

@@ -40,6 +40,7 @@ def test_temperature_calibration_is_read_correctly(
                 )
             )
         },
+        "column_names": ["setpoint", "negative_error"],
     }
 
 
