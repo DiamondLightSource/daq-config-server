@@ -2,6 +2,8 @@
 # each of the files specified below.
 - path: "/tests/test_data/test_good_lut.txt"
   converter: UndulatorEnergyGapLookupTable
+- path: "/dls_sw/i23/software/aithre/aithre_oav.xml"
+  converter: Xml
 - path: "/dls_sw/i23/software/aithre/aithre_display.configuration"
   converter: DisplayConfig
 - path: "/dls_sw/i03/software/gda_versions/var/display.configuration"
