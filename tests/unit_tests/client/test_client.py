@@ -7,7 +7,7 @@ import pydantic
 import pytest
 import requests
 from fastapi import status
-from httpx import Response
+from httpx2 import Response
 from requests import RequestException
 
 from daq_config_server.app._routes import EndPoints, ValidAcceptHeaders
