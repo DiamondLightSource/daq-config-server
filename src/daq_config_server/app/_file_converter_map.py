@@ -16,6 +16,9 @@ from daq_config_server.models.feature_settings.i04_feature_settings import (
 from daq_config_server.models.i15_1.collection_specification import (
     CollectionSpecification,
 )
+from daq_config_server.models.i15_1.temperature_calibration import (
+    TemperatureCalibration,
+)
 from daq_config_server.models.i15_1.xpdf_crystal_lut import XpdfCrystalLookupTable
 from daq_config_server.models.i15_1.xpdf_parameters import TemperatureControllersConfig
 from daq_config_server.models.lookup_tables import (
@@ -64,6 +67,7 @@ CONVERTER_FUNCS: dict[str, Converter] = {
     "TemperatureControllersConfig": TemperatureControllersConfig.from_xpdf_parameters,
     "XpdfCrystalLookupTable": XpdfCrystalLookupTable.from_contents,
     "CollectionSpecification": CollectionSpecification.from_lut,
+    "TemperatureCalibration": TemperatureCalibration.from_contents,
 }
 
 
