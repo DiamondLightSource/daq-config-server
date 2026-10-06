@@ -75,7 +75,6 @@ def test_polynomial_calculates_real_temperature_from_setpoint(
             setpoint
         ) == pytest.approx(setpoint - negative_error, abs=5)  # type: ignore
 
-    # Exact inverse from above (to 13 dp)
     assert temperature_calibration.real_to_setpoint.inverse_calc(
         759.721816599402
     ) == pytest.approx(500)  # type: ignore
