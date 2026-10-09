@@ -42,15 +42,9 @@
   converter: I09UndulatorHuEnergyGapLut
 - path: "/dls_sw/i04/software/daq_configuration/domain/domain.properties"
   converter: I04FeatureSettings
-- path: "/dls_sw/i15-1/software/gda_var/xpdfLocalParameters.xml"
-  converter: TemperatureControllersConfig
-- path: "/dls_sw/i15-1/software/daq_configuration/xpdf_crystal_lut.txt"
-  converter: XpdfCrystalLookupTable
 - path: "/dls_sw/i19-2/software/daq_configuration/lookup/DetDistToBeamXYConverterE4M.txt"
   converter: DetectorXYLookupTable
 - path: "/dls_sw/i19-2/software/daq_configuration/lookup/DetDistToBeamXYConverterTristan.txt"
   converter: DetectorXYLookupTable
 - path: "/dls_sw/i19-1/software/i19-acquisition/i19-shared/lookup/energy_to_id_gap_look_up_table.txt"
   converter: UndulatorEnergyGapLookupTable
-- path: "/dls_sw/i15-1/software/daq_configuration/collection_specification.json"
-  converter: CollectionSpecification
