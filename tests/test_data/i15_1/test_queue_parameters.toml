@@ -1,3 +1,4 @@
+add_auxiliary_scans = true
 do_wait_for_beam = true
 do_robot_load = true
 do_centring = true

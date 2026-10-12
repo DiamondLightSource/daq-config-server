@@ -18,6 +18,7 @@ class QueueParameters(ConfigModel):
     do_wait_for_beam: bool
     do_robot_load: bool
     do_centring: bool
+    add_auxiliary_scans: bool
     tiled_stale_time_s: int
     centring_params: CentringParameters
     data_collection_params: DataCollectionParameters
