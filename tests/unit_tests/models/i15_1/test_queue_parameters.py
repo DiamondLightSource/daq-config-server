@@ -17,9 +17,9 @@ def test_queue_parameters_toml_read_correctly():
         do_centring=True,
         tiled_stale_time_s=604800,
         centring_params=CentringParameters(
-            start_z=-20.0, end_z=7.0, step_size=0.1, exposure_time=0.1
+            start_z=-20.0, end_z=7.0, step_size_mm=0.1, exposure_time_s=0.1
         ),
-        data_collection_params=DataCollectionParameters(exposure_time=1.0),
+        data_collection_params=DataCollectionParameters(exposure_time_s=1.0),
     )
 
     result = QueueParameters.from_toml(contents)

@@ -6,12 +6,12 @@ from daq_config_server.models import ConfigModel
 class CentringParameters(ConfigModel):
     start_z: float
     end_z: float
-    step_size: float
-    exposure_time: float
+    step_size_mm: float
+    exposure_time_s: float
 
 
 class DataCollectionParameters(ConfigModel):
-    exposure_time: float
+    exposure_time_s: float
 
 
 class QueueParameters(ConfigModel):
