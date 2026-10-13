@@ -7,11 +7,11 @@ class CentringParameters(ConfigModel):
     start_z: float
     end_z: float
     step_size_mm: float
-    exposure_time_s: float
+    exposure_time_per_frame_s: float
 
 
 class DataCollectionParameters(ConfigModel):
-    exposure_time_s: float
+    exposure_time_per_frame_s: float
 
 
 class QueueParameters(ConfigModel):
