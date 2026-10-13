@@ -20,7 +20,8 @@ class QueueParameters(ConfigModel):
     do_centring: bool
     add_auxiliary_scans: bool
     tiled_stale_time_s: int
-    centring_params: CentringParameters
+    room_temperature_centring_params: CentringParameters
+    blower_centring_params: CentringParameters
     data_collection_params: DataCollectionParameters
 
     @classmethod

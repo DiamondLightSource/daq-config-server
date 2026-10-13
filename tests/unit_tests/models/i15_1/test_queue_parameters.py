@@ -17,8 +17,11 @@ def test_queue_parameters_toml_read_correctly():
         do_centring=True,
         add_auxiliary_scans=True,
         tiled_stale_time_s=604800,
-        centring_params=CentringParameters(
+        room_temperature_centring_params=CentringParameters(
             start_z=-20.0, end_z=7.0, step_size_mm=0.1, exposure_time_per_frame_s=0.1
+        ),
+        blower_centring_params=CentringParameters(
+            start_z=-10.0, end_z=5.0, step_size_mm=0.1, exposure_time_per_frame_s=0.1
         ),
         data_collection_params=DataCollectionParameters(exposure_time_per_frame_s=1.0),
     )
