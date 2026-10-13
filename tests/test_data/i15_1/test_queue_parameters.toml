@@ -2,7 +2,7 @@ add_auxiliary_scans = true
 do_wait_for_beam = true
 do_robot_load = true
 do_centring = true
-# Seconds until a tiled scan is no longer eligible as an auxiliary scan
+# How old a tiled scan has to be before is no longer eligible as an auxiliary scan
 tiled_stale_time_s = 604800 # One week
 
 [centring_params]
