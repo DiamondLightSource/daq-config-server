@@ -15,7 +15,6 @@ whitelist_files:
 - /dls_sw/i23/software/aithre/aithre_oav.xml
 - /dls_sw/i23/software/gda_versions/var/display.configuration
 - /dls_sw/i24/software/gda_versions/var/display.configuration
-- /dls_sw/i15-1/software/gda_var/xpdfLocalParameters.xml
 
 #For long-term directories with frequently changing files
 whitelist_dirs:
@@ -34,4 +33,3 @@ whitelist_dirs:
 - /dls_sw/i07/software/gda/config/lookupTables/
 - /dls_sw/i07/software/gda/workspace_git/gda-diamond.git/configurations/i07-config/lookupTables/
 - /dls_sw/i16/var/
-- /dls_sw/i15-1/software/daq_configuration/
