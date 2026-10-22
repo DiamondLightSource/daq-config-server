@@ -2,6 +2,13 @@
 requires = ["setuptools>=64", "setuptools_scm[toml]>=8"]
 build-backend = "setuptools.build_meta"
 
+[tool.uv]
+# https://github.com/astral-sh/uv/security/advisories/GHSA-hq85-5cpj-mr62
+required-version = ">=0.13.5"
+constraint-dependencies = [
+    "certifi>=v2026.10.19"
+]
+
 [project]
 name = "daq-config-server"
 classifiers = [
