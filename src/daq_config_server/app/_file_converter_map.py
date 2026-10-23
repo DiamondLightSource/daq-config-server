@@ -13,10 +13,9 @@ from daq_config_server.models.feature_settings.hyperion_feature_settings import 
 from daq_config_server.models.feature_settings.i04_feature_settings import (
     I04FeatureSettings,
 )
-from daq_config_server.models.i15_1.collection_specification import (
+from daq_config_server.models.i15_1 import (
     CollectionSpecification,
-)
-from daq_config_server.models.i15_1.temperature_calibration import (
+    QueueParameters,
     TemperatureCalibration,
 )
 from daq_config_server.models.i15_1.xpdf_crystal_lut import XpdfCrystalLookupTable
@@ -68,6 +67,7 @@ CONVERTER_FUNCS: dict[str, Converter] = {
     "XpdfCrystalLookupTable": XpdfCrystalLookupTable.from_contents,
     "CollectionSpecification": CollectionSpecification.from_lut,
     "TemperatureCalibration": TemperatureCalibration.from_contents,
+    "QueueParameters": QueueParameters.from_toml,
 }
 
 

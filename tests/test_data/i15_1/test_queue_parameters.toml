@@ -1,0 +1,21 @@
+add_auxiliary_scans = true
+do_wait_for_beam = true
+do_robot_load = true
+do_centring = true
+# How old a tiled scan has to be before is no longer eligible as an auxiliary scan
+tiled_stale_time_s = 604800 # One week
+
+[room_temperature_centring_params]
+start_z = -20.0
+end_z = 7.0
+step_size_mm = 0.1
+exposure_time_per_frame_s = 0.1
+
+[blower_centring_params]
+start_z = -10.0
+end_z = 5.0
+step_size_mm = 0.1
+exposure_time_per_frame_s = 0.1
+
+[data_collection_params]
+exposure_time_per_frame_s = 1.0

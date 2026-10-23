@@ -22,3 +22,4 @@ class TestI151DataPaths:
     TEMPERATURE_CALIBRATION = TEST_I15_1_DATA_DIR_PATH.joinpath(
         "test_temperature_calibration.txt"
     )
+    QUEUE_PARAMETERS = TEST_I15_1_DATA_DIR_PATH.joinpath("test_queue_parameters.toml")
