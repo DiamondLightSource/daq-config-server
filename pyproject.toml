@@ -29,6 +29,7 @@ dependencies = [
     "urllib3",
     "requests",
     "xmltodict",
+    "numpy>=2.4.6",
 ]
 
 [dependency-groups]
@@ -54,10 +55,7 @@ dev = [
 [tool.uv]
 # https://github.com/astral-sh/uv/security/advisories/GHSA-hq85-5cpj-mr62
 required-version = ">=0.13.5"
-constraint-dependencies = [
-    "certifi>=v2026.10.19",
-    "starlette>=1.1.0"
-]
+constraint-dependencies = ["certifi>=v2026.10.19", "starlette>=1.1.0"]
 
 [project.scripts]
 daq-config-server = "daq_config_server.__main__:main"

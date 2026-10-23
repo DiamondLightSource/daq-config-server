@@ -5,6 +5,7 @@ from .queue_parameters import (
     QueueParameters,
 )
 from .standards_puck import StandardsPin, StandardsPuck
+from .temperature_calibration import TemperatureCalibration
 from .xpdf_crystal_lut import XpdfCrystalLookupTable
 from .xpdf_parameters import TemperatureControllerParams, TemperatureControllersConfig
 
@@ -19,4 +20,5 @@ __all__ = [
     "QueueParameters",
     "CentringParameters",
     "DataCollectionParameters",
+    "TemperatureCalibration",
 ]
