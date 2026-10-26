@@ -19,4 +19,7 @@ class TestI151DataPaths:
         "test_tth_angle_to_collection_time.txt"
     )
     STANDARDS_PUCK = TEST_I15_1_DATA_DIR_PATH.joinpath("test_standards_puck.json")
+    TEMPERATURE_CALIBRATION = TEST_I15_1_DATA_DIR_PATH.joinpath(
+        "test_temperature_calibration.txt"
+    )
     QUEUE_PARAMETERS = TEST_I15_1_DATA_DIR_PATH.joinpath("test_queue_parameters.toml")
