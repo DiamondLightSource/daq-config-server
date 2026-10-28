@@ -54,3 +54,7 @@
   converter: UndulatorEnergyGapLookupTable
 - path: "/dls_sw/i15-1/software/daq_configuration/collection_specification.json"
   converter: CollectionSpecification
+- path: "/dls_sw/i19-1/software/daq_configuration/domain/beamline.parameters"
+  converter: BeamlineParameters
+- path: "/dls_sw/i19-2/software/daq_configuration/domain/beamline.parameters"
+  converter: BeamlineParameters
