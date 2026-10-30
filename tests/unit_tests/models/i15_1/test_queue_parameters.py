@@ -1,4 +1,5 @@
 from daq_config_server.models.i15_1.queue_parameters import (
+    BlowerCollectionParameters,
     CentringParameters,
     DataCollectionParameters,
     QueueParameters,
@@ -24,6 +25,9 @@ def test_queue_parameters_toml_read_correctly():
             start_z=-10.0, end_z=5.0, step_size_mm=0.1, exposure_time_per_frame_s=0.1
         ),
         data_collection_params=DataCollectionParameters(exposure_time_per_frame_s=1.0),
+        blower_collection_params=BlowerCollectionParameters(
+            ramp_rate=0, settle_time_s=10
+        ),
     )
 
     result = QueueParameters.from_toml(contents)

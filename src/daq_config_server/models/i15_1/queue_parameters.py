@@ -14,6 +14,11 @@ class DataCollectionParameters(ConfigModel):
     exposure_time_per_frame_s: float
 
 
+class BlowerCollectionParameters(ConfigModel):
+    ramp_rate: float
+    settle_time_s: float
+
+
 class QueueParameters(ConfigModel):
     do_wait_for_beam: bool
     do_robot_load: bool
@@ -23,6 +28,7 @@ class QueueParameters(ConfigModel):
     room_temperature_centring_params: CentringParameters
     blower_centring_params: CentringParameters
     data_collection_params: DataCollectionParameters
+    blower_collection_params: BlowerCollectionParameters
 
     @classmethod
     def from_toml(cls, contents: str) -> "QueueParameters":
