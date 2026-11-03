@@ -28,7 +28,7 @@ class QueueParameters(ConfigModel):
     room_temperature_centring_params: CentringParameters
     blower_centring_params: CentringParameters
     data_collection_params: DataCollectionParameters
-    blower_collection_params: BlowerCollectionParameters
+    blower_auxiliary_collection_params: BlowerCollectionParameters
 
     @classmethod
     def from_toml(cls, contents: str) -> "QueueParameters":

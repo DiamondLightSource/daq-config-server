@@ -21,6 +21,6 @@ exposure_time_per_frame_s = 0.1
 exposure_time_per_frame_s = 1.0
 
 # These parameters are used for auxiliary scans. For general data collections they are user defined
-[blower_collection_params]
+[blower_auxiliary_collection_params]
 ramp_rate = 0
 settle_time_s = 10
