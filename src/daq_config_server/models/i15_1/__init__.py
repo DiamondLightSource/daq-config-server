@@ -1,5 +1,6 @@
 from .collection_specification import CollectionSpecification, SpecificationPerPosition
 from .queue_parameters import (
+    BlowerCollectionParameters,
     CentringParameters,
     DataCollectionParameters,
     QueueParameters,
@@ -19,4 +20,5 @@ __all__ = [
     "QueueParameters",
     "CentringParameters",
     "DataCollectionParameters",
+    "BlowerCollectionParameters",
 ]
