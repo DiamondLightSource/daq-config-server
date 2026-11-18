@@ -12,9 +12,15 @@ ALLOWED_USER_CAPILLARIES = Literal[
     "bs1.0",
     "bs1.5",
     "bs2.0",
+    "fq0.4",
     "fq1.0",
     "fq1.5",
     "fq2.0",
+    "fq2.5",
+    "fq3.17",
+    "pi1.0",
+    "pi1.5",
+    "pi2.0",
 ]
 
 STANDARD_CAPILLARY = ALLOWED_USER_CAPILLARIES | Literal["metal"]
