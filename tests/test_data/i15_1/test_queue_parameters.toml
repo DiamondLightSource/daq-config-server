@@ -1,4 +1,5 @@
 add_auxiliary_scans = true
+do_exact_auxiliary_temperatures = false
 do_wait_for_beam = true
 do_robot_load = true
 do_centring = true

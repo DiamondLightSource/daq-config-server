@@ -24,6 +24,7 @@ class QueueParameters(ConfigModel):
     do_robot_load: bool
     do_centring: bool
     add_auxiliary_scans: bool
+    do_exact_auxiliary_temperatures: bool
     tiled_stale_time_s: int
     room_temperature_centring_params: CentringParameters
     blower_centring_params: CentringParameters
