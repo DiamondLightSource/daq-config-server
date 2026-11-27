@@ -17,6 +17,7 @@ def test_queue_parameters_toml_read_correctly():
         do_robot_load=True,
         do_centring=True,
         add_auxiliary_scans=True,
+        do_exact_auxiliary_temperatures=False,
         tiled_stale_time_s=604800,
         room_temperature_centring_params=CentringParameters(
             start_z=-20.0, end_z=7.0, step_size_mm=0.1, exposure_time_per_frame_s=0.1
